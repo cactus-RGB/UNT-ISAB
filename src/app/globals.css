@@ -3,71 +3,37 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Dark mode green theme colors - now the default */
+  --background: #0f1f14;
+  --foreground: #ededed;
   
-  /* Green theme colors */
-  --primary: #1e8a4c;
+  --primary: #25b062;
   --primary-foreground: #ffffff;
   
-  --secondary: #f0faf3;
-  --secondary-foreground: #166b3a;
+  --secondary: #1a2e20;
+  --secondary-foreground: #aef7c4;
   
-  --muted: #e6f7eb;
-  --muted-foreground: #4b5563;
+  --muted: #1f3626;
+  --muted-foreground: #9ca3af;
   
-  --accent: #25b062;
+  --accent: #34c674;
   --accent-foreground: #ffffff;
   
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   
-  --card: #ffffff;
-  --card-foreground: #171717;
+  --card: #1a2e20;
+  --card-foreground: #ededed;
   
-  --popover: #ffffff;
-  --popover-foreground: #171717;
+  --popover: #1a2e20;
+  --popover-foreground: #ededed;
   
-  --border: #e5e7eb;
-  --input: #e5e7eb;
+  --border: #2d4c39;
+  --input: #2d4c39;
   
-  --ring: #1e8a4c;
+  --ring: #25b062;
   
   --radius: 0.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f1f14;
-    --foreground: #ededed;
-    
-    /* Dark mode green theme colors */
-    --primary: #25b062;
-    --primary-foreground: #ffffff;
-    
-    --secondary: #1a2e20;
-    --secondary-foreground: #aef7c4;
-    
-    --muted: #1f3626;
-    --muted-foreground: #9ca3af;
-    
-    --accent: #34c674;
-    --accent-foreground: #ffffff;
-    
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-    
-    --card: #1a2e20;
-    --card-foreground: #ededed;
-    
-    --popover: #1a2e20;
-    --popover-foreground: #ededed;
-    
-    --border: #2d4c39;
-    --input: #2d4c39;
-    
-    --ring: #25b062;
-  }
 }
 
 body {

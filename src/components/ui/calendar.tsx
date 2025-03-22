@@ -1,45 +1,151 @@
 "use client";
 
 import React, { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CalendarProps {
   className?: string;
   selected?: Date;
   onSelect?: (date: Date | undefined) => void;
+  mode?: "single" | "range" | "multiple"; // Keep in interface for API compatibility
 }
 
 const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) => {
+  // Notice we're not destructuring 'mode' from props to avoid the ESLint error
   const [currentMonth, setCurrentMonth] = useState(selected || new Date());
-  
-  // Simple placeholder calendar component
+
+  // Remove the unused createMonthDate function
+
+  // Go to previous month
+  const prevMonth = () => {
+    setCurrentMonth(prev => {
+      const newMonth = new Date(prev);
+      newMonth.setMonth(newMonth.getMonth() - 1);
+      return newMonth;
+    });
+  };
+
+  // Go to next month
+  const nextMonth = () => {
+    setCurrentMonth(prev => {
+      const newMonth = new Date(prev);
+      newMonth.setMonth(newMonth.getMonth() + 1);
+      return newMonth;
+    });
+  };
+
+  // Generate arrays of day numbers for the current month view
+  const getDaysInMonth = () => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    
+    // First day of the month (0 = Sunday, 1 = Monday, etc.)
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    
+    // Number of days in the current month
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Array to hold all the day cells (including empty ones for proper alignment)
+    const days = [];
+
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      days.push(null);
+    }
+
+    // Add cells for each day of the month
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push(i);
+    }
+
+    return days;
+  };
+
+  // Check if a day is the selected day
+  const isSelectedDay = (day: number) => {
+    if (!selected || !day) return false;
+
+    return (
+      selected.getDate() === day &&
+      selected.getMonth() === currentMonth.getMonth() &&
+      selected.getFullYear() === currentMonth.getFullYear()
+    );
+  };
+
+  // Check if a day is today
+  const isToday = (day: number) => {
+    if (!day) return false;
+    
+    const today = new Date();
+    return (
+      today.getDate() === day &&
+      today.getMonth() === currentMonth.getMonth() &&
+      today.getFullYear() === currentMonth.getFullYear()
+    );
+  };
+
+  // Handle day selection
+  const handleSelectDay = (day: number | null) => {
+    if (!day || !onSelect) return;
+
+    const selectedDate = new Date(currentMonth);
+    selectedDate.setDate(day);
+    onSelect(selectedDate);
+  };
+
+  // Get the days array for rendering
+  const daysArray = getDaysInMonth();
+
   return (
     <div className={`border rounded-md p-3 ${className || ""}`} {...props}>
-      <div className="text-center mb-4">
-        <div className="font-bold">
+      {/* Month navigation */}
+      <div className="flex items-center justify-between mb-4">
+        <button 
+          onClick={prevMonth}
+          className="p-1 rounded-full hover:bg-gray-100"
+          aria-label="Previous month"
+        >
+          <ChevronLeft className="h-5 w-5 text-primary" />
+        </button>
+
+        <div className="font-bold text-center">
           {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </div>
+
+        <button 
+          onClick={nextMonth}
+          className="p-1 rounded-full hover:bg-gray-100"
+          aria-label="Next month"
+        >
+          <ChevronRight className="h-5 w-5 text-primary" />
+        </button>
       </div>
-      <div className="grid grid-cols-7 gap-1">
+
+      {/* Days of week header */}
+      <div className="grid grid-cols-7 gap-1 mb-2">
         {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-          <div key={day} className="text-center text-sm font-medium">
+          <div key={day} className="text-center text-sm font-medium text-muted-foreground">
             {day}
           </div>
         ))}
-        {/* This is just a placeholder grid - a real implementation would render the actual days */}
-        {Array.from({ length: 35 }, (_, i) => (
-          <button 
-            key={i} 
-            className="h-8 w-8 rounded-md hover:bg-gray-100 text-sm"
-            onClick={() => {
-              const newDate = new Date(currentMonth);
-              newDate.setDate(i + 1 - new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay());
-              onSelect?.(newDate);
-            }}
+      </div>
+
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 gap-1">
+        {daysArray.map((day, index) => (
+          <button
+            key={index}
+            className={`
+              h-8 w-8 rounded-md text-sm flex items-center justify-center
+              ${!day ? 'cursor-default' : 'hover:bg-muted'}
+              ${isSelectedDay(day as number) ? 'bg-primary text-primary-foreground' : ''}
+              ${isToday(day as number) && !isSelectedDay(day as number) ? 'border border-primary text-primary' : ''}
+            `}
+            disabled={!day}
+            onClick={() => handleSelectDay(day)}
+            aria-label={day ? `Select ${day} ${currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : 'Empty day'}
           >
-            {i + 1 - new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay() > 0 && 
-             i + 1 - new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay() <= new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate() 
-              ? i + 1 - new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay() 
-              : ''}
+            {day}
           </button>
         ))}
       </div>
