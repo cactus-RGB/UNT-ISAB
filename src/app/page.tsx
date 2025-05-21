@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,20 @@ import { ExternalLink, ChevronRight, Users, CalendarIcon, BookOpen, Image as Ima
 export default function ISABWebsite() {
   const [currentPage, setCurrentPage] = useState('home');
   const [date, setDate] = useState<Date>(new Date());
+  const [isPageTransitioning, setIsPageTransitioning] = useState(false);
+  
+  // Page transition handler
+  const handlePageChange = (page: string) => {
+    if (page === currentPage) return;
+    
+    setIsPageTransitioning(true);
+    setTimeout(() => {
+      setCurrentPage(page);
+      setIsPageTransitioning(false);
+    }, 300);
+  };
 
-  // Now using the actual officer images with .jpeg extension
+  // Officers data
   const officers = {
     current: [
       { 
@@ -51,10 +63,9 @@ export default function ISABWebsite() {
   };
 
   const importantLinks = [
-    { title: "Student Services", url: "https://vpaa.unt.edu/advising/resources/students", description: "Access UNT student resources" },
-    { title: "International & Cultural Programs", url: "https://international.unt.edu/content/international-and-cultural-programs-0", description: "Explore international programs at UNT" },
-    { title: "International Playlist", url: "https://open.spotify.com/playlist/6cLta1LoXSVpW1WETYR6zJ?si=593410c8fc934c7b", description: "Add your favorite songs from back home!" },
-    { title: "Instagram", url: "https://www.instagram.com/untisab?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", description: "Follow us on Instagram" }
+    { title: "Join ISAB", url: "#", description: "Become a member of our organization" },
+    { title: "UNT Resources", url: "#", description: "Access UNT student resources" },
+    { title: "Events Calendar", url: "#", description: "Stay updated with our upcoming events" }
   ];
 
   const events = [
@@ -81,14 +92,14 @@ export default function ISABWebsite() {
     }
   ];
 
-  // Gallery images with actual files
+  // Gallery images
   const galleryImages = [
     { url: "/assets/gallery/gallery1.jpeg", title: "First General Meeting 2024", description: "Kickoff meeting for Spring 2024" },
     { url: "/assets/gallery/gallery2.jpeg", title: "International Student Panel", description: "Discussion panel with global perspectives" },
     { url: "/assets/gallery/gallery3.jpeg", title: "Cultural Exchange Event", description: "Celebrating diversity at UNT" }
   ];
 
-  // Move getEventsForDate to the top level
+  // Get events for a specific date
   const getEventsForDate = (date: Date) => {
     return events.filter(event => 
       event.date.getDate() === date.getDate() &&
@@ -106,48 +117,53 @@ export default function ISABWebsite() {
     }
   };
 
+  // Shared card class for consistency
+  const cardClass = "transition-all duration-300 hover:shadow-xl border-primary/20 bg-secondary/40 hover:bg-secondary/60 hover:translate-y-[-4px]";
+  
+  // Shared button class for consistency
+  const navButtonClass = "flex items-center transition-all duration-300 hover:bg-primary/80 active:scale-95 relative after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:bg-primary after:transition-all after:duration-300";
+
   function Navigation() {
     return (
-      <nav className="bg-card shadow-md">
+      <nav className="bg-card shadow-md sticky top-0 z-50 transition-all duration-300">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="mr-4">
-                {/* Using actual ISAB logo with larger size */}
                 <Image
                   src="/assets/logo/ISAB Logo (Cropped).png"
                   alt="ISAB Logo"
-                  width={100}  // Increased from 50 to 100
-                  height={100} // Increased from 50 to 100
-                  className="rounded-md transition-transform hover:scale-105"
+                  width={100}
+                  height={100}
+                  className="rounded-md transition-transform duration-300 hover:scale-110"
                 />
               </div>
               <div className="flex space-x-4">
                 <Button 
                   variant={currentPage === 'home' ? "default" : "ghost"}
-                  onClick={() => setCurrentPage('home')}
-                  className="flex items-center transition-all hover:bg-primary/80 active:scale-95"
+                  onClick={() => handlePageChange('home')}
+                  className={`${navButtonClass} ${currentPage === 'home' ? 'after:w-full' : 'after:w-0 hover:after:w-full'}`}
                 >
                   <Home className="mr-2 h-4 w-4" /> Home
                 </Button>
                 <Button 
                   variant={currentPage === 'history' ? "default" : "ghost"}
-                  onClick={() => setCurrentPage('history')}
-                  className="flex items-center transition-all hover:bg-primary/80 active:scale-95"
+                  onClick={() => handlePageChange('history')}
+                  className={`${navButtonClass} ${currentPage === 'history' ? 'after:w-full' : 'after:w-0 hover:after:w-full'}`}
                 >
                   <BookOpen className="mr-2 h-4 w-4" /> History
                 </Button>
                 <Button 
                   variant={currentPage === 'gallery' ? "default" : "ghost"}
-                  onClick={() => setCurrentPage('gallery')}
-                  className="flex items-center transition-all hover:bg-primary/80 active:scale-95"
+                  onClick={() => handlePageChange('gallery')}
+                  className={`${navButtonClass} ${currentPage === 'gallery' ? 'after:w-full' : 'after:w-0 hover:after:w-full'}`}
                 >
                   <ImageIcon className="mr-2 h-4 w-4" /> Gallery
                 </Button>
                 <Button 
                   variant={currentPage === 'events' ? "default" : "ghost"}
-                  onClick={() => setCurrentPage('events')}
-                  className="flex items-center transition-all hover:bg-primary/80 active:scale-95"
+                  onClick={() => handlePageChange('events')}
+                  className={`${navButtonClass} ${currentPage === 'events' ? 'after:w-full' : 'after:w-0 hover:after:w-full'}`}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" /> Events
                 </Button>
@@ -162,14 +178,13 @@ export default function ISABWebsite() {
   function HomePage() {
     return (
       <>
-        <header className="bg-primary-gradient text-primary-foreground py-20">
+        <header className="bg-primary-gradient text-primary-foreground py-20 transition-all duration-500">
           <div className="container mx-auto px-6">
-            <h1 className="text-5xl font-bold mb-4">International Student Advisory Board</h1>
-            <p className="text-xl mb-8">University of North Texas</p>
-            {/* Learn More button now directs to History page */}
+            <h1 className="text-5xl font-bold mb-4 animate-fadeIn">International Student Advisory Board</h1>
+            <p className="text-xl mb-8 animate-fadeIn animation-delay-200">University of North Texas</p>
             <Button 
-              className="bg-background text-primary hover:bg-muted transition-all hover:scale-105 active:scale-95"
-              onClick={() => setCurrentPage('history')}
+              className="bg-background text-primary hover:bg-muted transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+              onClick={() => handlePageChange('history')}
             >
               Learn More <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
@@ -177,7 +192,7 @@ export default function ISABWebsite() {
         </header>
 
         <section className="py-16 container mx-auto px-6">
-          <Card className="mb-12 hover:shadow-lg transition-shadow">
+          <Card className={`mb-12 ${cardClass}`}>
             <CardHeader>
               <CardTitle className="text-3xl font-bold flex items-center">
                 <BookOpen className="mr-2" /> About ISAB
@@ -199,17 +214,18 @@ export default function ISABWebsite() {
               {officers.current.map((officer, index) => (
                 <Card 
                   key={index} 
-                  className="hover:shadow-lg transition-shadow border-primary/20 bg-secondary/40 hover:bg-secondary/60"
+                  className={cardClass}
                 >
                   <CardContent className="p-6">
-                    <div className="relative w-32 h-32 mx-auto mb-4">
-                      <div className="rounded-full overflow-hidden w-32 h-32 relative border-2 border-primary">
+                    <div className="relative w-32 h-32 mx-auto mb-4 group">
+                      <div className="rounded-full overflow-hidden w-32 h-32 relative border-2 border-primary transition-all duration-300 group-hover:shadow-lg group-hover:border-accent">
                         <Image
                           src={officer.image}
                           alt={`${officer.name} - ${officer.role}`}
                           fill
                           style={{ objectFit: 'cover' }}
                           sizes="(max-width: 768px) 100vw, 33vw"
+                          className="transition-transform duration-500 group-hover:scale-110"
                         />
                       </div>
                     </div>
@@ -228,13 +244,13 @@ export default function ISABWebsite() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {importantLinks.map((link, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow">
+                <Card key={index} className={cardClass}>
                   <CardContent className="p-6">
                     <h3 className="text-xl font-semibold mb-2">{link.title}</h3>
                     <p className="text-muted-foreground mb-4">{link.description}</p>
                     <Button 
                       variant="outline" 
-                      className="w-full transition-all hover:bg-primary/20 active:scale-95"
+                      className="w-full transition-all duration-300 hover:bg-primary hover:text-primary-foreground active:scale-95"
                     >
                       Visit <ExternalLink className="ml-2 h-4 w-4" />
                     </Button>
@@ -252,7 +268,7 @@ export default function ISABWebsite() {
     return (
       <div className="container mx-auto px-6 py-16">
         <h1 className="text-4xl font-bold mb-8">Our History</h1>
-        <Card className="mb-8 hover:shadow-lg transition-shadow border-primary/20 bg-secondary/40">
+        <Card className={`mb-8 ${cardClass}`}>
           <CardContent className="p-8">
             <h2 className="text-2xl font-semibold mb-4">Foundation</h2>
             <p className="text-muted-foreground mb-6">
@@ -272,10 +288,10 @@ export default function ISABWebsite() {
 
             <h2 className="text-2xl font-semibold mb-4">Key Accomplishments</h2>
             <ul className="list-disc pl-6 text-muted-foreground">
-              <li className="mb-2"><strong>Growth & Impact:</strong> Under its current leadership, ISAB has more than tripled in size, becoming a vital part of campus life.</li>
-              <li className="mb-2"><strong>Policy Advocacy:</strong> ISAB has successfully influenced university policies to better support international students.</li>
-              <li className="mb-2"><strong>Events & Community Building:</strong> Organized cultural events, networking opportunities, and support programs to help international students integrate and succeed.</li>
-              <li className="mb-2"><strong>Support System:</strong> Established mentorship programs and resource-sharing initiatives to assist new students in adapting to life in the U.S.</li>
+              <li className="mb-2 transition-all duration-200 hover:text-foreground"><strong>Growth & Impact:</strong> Under its current leadership, ISAB has more than tripled in size, becoming a vital part of campus life.</li>
+              <li className="mb-2 transition-all duration-200 hover:text-foreground"><strong>Policy Advocacy:</strong> ISAB has successfully influenced university policies to better support international students.</li>
+              <li className="mb-2 transition-all duration-200 hover:text-foreground"><strong>Events & Community Building:</strong> Organized cultural events, networking opportunities, and support programs to help international students integrate and succeed.</li>
+              <li className="mb-2 transition-all duration-200 hover:text-foreground"><strong>Support System:</strong> Established mentorship programs and resource-sharing initiatives to assist new students in adapting to life in the U.S.</li>
             </ul>
           </CardContent>
         </Card>
@@ -289,9 +305,9 @@ export default function ISABWebsite() {
         <h1 className="text-4xl font-bold mb-8">Event Gallery</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {galleryImages.map((image, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow border-primary/20 bg-secondary/40 hover:bg-secondary/60">
+            <Card key={index} className={cardClass}>
               <CardContent className="p-4">
-                <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden border-2 border-primary">
+                <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden border-2 border-primary transition-all duration-300 hover:border-accent group">
                   <div className="w-full h-full relative">
                     <Image
                       src={image.url}
@@ -299,6 +315,7 @@ export default function ISABWebsite() {
                       fill
                       style={{ objectFit: 'cover' }}
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>
                 </div>
@@ -317,7 +334,7 @@ export default function ISABWebsite() {
       <div className="container mx-auto px-6 py-16">
         <h1 className="text-4xl font-bold mb-8">ISAB Events</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card className="hover:shadow-lg transition-shadow border-primary/20 bg-secondary/40">
+          <Card className={cardClass}>
             <CardHeader>
               <CardTitle>Event Calendar</CardTitle>
             </CardHeader>
@@ -331,7 +348,7 @@ export default function ISABWebsite() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow border-primary/20 bg-secondary/40">
+          <Card className={cardClass}>
             <CardHeader>
               <CardTitle>
                 Events for {date.toLocaleDateString('en-US', { 
@@ -345,7 +362,7 @@ export default function ISABWebsite() {
               {selectedDateEvents.length > 0 ? (
                 <div className="space-y-4">
                   {selectedDateEvents.map((event, index) => (
-                    <Card key={index} className="hover:shadow-md transition-shadow bg-secondary/60">
+                    <Card key={index} className="transition-all duration-300 hover:shadow-md hover:bg-accent/10 hover:translate-y-[-2px]">
                       <CardContent className="p-4">
                         <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
                         <div className="text-muted-foreground">
@@ -374,10 +391,16 @@ export default function ISABWebsite() {
   return (
     <div>
       <Navigation />
-      {currentPage === 'home' && <HomePage />}
-      {currentPage === 'history' && <HistoryPage />}
-      {currentPage === 'gallery' && <GalleryPage />}
-      {currentPage === 'events' && <EventsPage />}
+      <div 
+        className={`transition-opacity duration-300 ${
+          isPageTransitioning ? 'opacity-0' : 'opacity-100'
+        }`}
+      >
+        {currentPage === 'home' && <HomePage />}
+        {currentPage === 'history' && <HistoryPage />}
+        {currentPage === 'gallery' && <GalleryPage />}
+        {currentPage === 'events' && <EventsPage />}
+      </div>
     </div>
   );
 }

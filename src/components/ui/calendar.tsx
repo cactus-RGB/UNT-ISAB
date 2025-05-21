@@ -13,10 +13,9 @@ interface CalendarProps {
 const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) => {
   // Notice we're not destructuring 'mode' from props to avoid the ESLint error
   const [currentMonth, setCurrentMonth] = useState(selected || new Date());
+  const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
-  // Remove the unused createMonthDate function
-
-  // Go to previous month
+  // Go to previous month with animation
   const prevMonth = () => {
     setCurrentMonth(prev => {
       const newMonth = new Date(prev);
@@ -25,7 +24,7 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
     });
   };
 
-  // Go to next month
+  // Go to next month with animation
   const nextMonth = () => {
     setCurrentMonth(prev => {
       const newMonth = new Date(prev);
@@ -93,16 +92,26 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
     onSelect(selectedDate);
   };
 
+  // Mouse enter handler for hover effects
+  const handleMouseEnter = (day: number | null) => {
+    setHoveredDay(day);
+  };
+
+  // Mouse leave handler for hover effects
+  const handleMouseLeave = () => {
+    setHoveredDay(null);
+  };
+
   // Get the days array for rendering
   const daysArray = getDaysInMonth();
 
   return (
-    <div className={`border rounded-md p-3 ${className || ""}`} {...props}>
+    <div className={`border rounded-md p-3 transition-all duration-300 hover:shadow-md ${className || ""}`} {...props}>
       {/* Month navigation */}
       <div className="flex items-center justify-between mb-4">
         <button 
           onClick={prevMonth}
-          className="p-1 rounded-full hover:bg-gray-100"
+          className="p-1 rounded-full hover:bg-primary/10 transition-all duration-300 hover:scale-110 hover:text-primary"
           aria-label="Previous month"
         >
           <ChevronLeft className="h-5 w-5 text-primary" />
@@ -114,7 +123,7 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
 
         <button 
           onClick={nextMonth}
-          className="p-1 rounded-full hover:bg-gray-100"
+          className="p-1 rounded-full hover:bg-primary/10 transition-all duration-300 hover:scale-110 hover:text-primary"
           aria-label="Next month"
         >
           <ChevronRight className="h-5 w-5 text-primary" />
@@ -137,12 +146,16 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
             key={index}
             className={`
               h-8 w-8 rounded-md text-sm flex items-center justify-center
-              ${!day ? 'cursor-default' : 'hover:bg-muted'}
-              ${isSelectedDay(day as number) ? 'bg-primary text-primary-foreground' : ''}
+              transition-all duration-200
+              ${!day ? 'cursor-default' : 'hover:bg-primary/20 hover:text-primary hover:scale-110 hover:font-medium active:scale-95'}
+              ${isSelectedDay(day as number) ? 'bg-primary text-primary-foreground scale-105 shadow-sm' : ''}
               ${isToday(day as number) && !isSelectedDay(day as number) ? 'border border-primary text-primary' : ''}
+              ${hoveredDay === day ? 'bg-primary/10 text-primary scale-105' : ''}
             `}
             disabled={!day}
             onClick={() => handleSelectDay(day)}
+            onMouseEnter={() => handleMouseEnter(day)}
+            onMouseLeave={handleMouseLeave}
             aria-label={day ? `Select ${day} ${currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : 'Empty day'}
           >
             {day}

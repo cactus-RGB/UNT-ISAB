@@ -3,37 +3,71 @@
 @tailwind utilities;
 
 :root {
-  /* Dark mode green theme colors - now the default */
-  --background: #0f1f14;
-  --foreground: #ededed;
+  --background: #ffffff;
+  --foreground: #171717;
   
-  --primary: #25b062;
+  /* Green theme colors */
+  --primary: #1e8a4c;
   --primary-foreground: #ffffff;
   
-  --secondary: #1a2e20;
-  --secondary-foreground: #aef7c4;
+  --secondary: #f0faf3;
+  --secondary-foreground: #166b3a;
   
-  --muted: #1f3626;
-  --muted-foreground: #9ca3af;
+  --muted: #e6f7eb;
+  --muted-foreground: #4b5563;
   
-  --accent: #34c674;
+  --accent: #25b062;
   --accent-foreground: #ffffff;
   
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   
-  --card: #1a2e20;
-  --card-foreground: #ededed;
+  --card: #ffffff;
+  --card-foreground: #171717;
   
-  --popover: #1a2e20;
-  --popover-foreground: #ededed;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
   
-  --border: #2d4c39;
-  --input: #2d4c39;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
   
-  --ring: #25b062;
+  --ring: #1e8a4c;
   
   --radius: 0.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0f1f14;
+    --foreground: #ededed;
+    
+    /* Dark mode green theme colors */
+    --primary: #25b062;
+    --primary-foreground: #ffffff;
+    
+    --secondary: #1a2e20;
+    --secondary-foreground: #aef7c4;
+    
+    --muted: #1f3626;
+    --muted-foreground: #9ca3af;
+    
+    --accent: #34c674;
+    --accent-foreground: #ffffff;
+    
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    
+    --card: #1a2e20;
+    --card-foreground: #ededed;
+    
+    --popover: #1a2e20;
+    --popover-foreground: #ededed;
+    
+    --border: #2d4c39;
+    --input: #2d4c39;
+    
+    --ring: #25b062;
+  }
 }
 
 body {
@@ -53,4 +87,94 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animation-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-300 {
+  animation-delay: 0.3s;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hover effects for list items */
+ul li {
+  transition: all 0.2s ease;
+}
+
+/* Button hover and active states */
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Card hover effects */
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Image hover effects */
+.image-container {
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.image-container img {
+  transition: transform 0.5s ease;
+}
+
+.image-container:hover img {
+  transform: scale(1.1);
+}
+
+/* Nav underline animation */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
 }
