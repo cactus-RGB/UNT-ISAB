@@ -99,7 +99,7 @@ const pastOfficers = [
     name: "Adrian \"Boss\" Tam",
     role: "Founding President",
     yearsServed: "Fall 2023 - Spring 2024",
-    major: "Master's in Communication",
+    major: "Master&apos;s in Communication",
     homeCountry: "Malaysia",
     keyContributions: [
       "Established the International Student Advisory Board and recruited founding members",
@@ -112,7 +112,7 @@ const pastOfficers = [
     name: "Bhavesh Gujula",
     role: "Founding Treasurer",
     yearsServed: "Fall 2023 - Spring 2024", 
-    major: "Master's in Data Analytics",
+    major: "Master&apos;s in Data Analytics",
     homeCountry: "India",
     keyContributions: [
       "Secured initial funding and financial resources essential for ISAB's early operations",
@@ -219,7 +219,10 @@ function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
   if (!isOpen || !officer) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div 
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
       <div 
         className="bg-card rounded-2xl shadow-card-elevated max-w-md w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100"
         onClick={(e) => e.stopPropagation()}
@@ -286,7 +289,7 @@ function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
           <div className="p-4 rounded-lg bg-primary/5 border-l-4 border-primary">
             <p className="text-muted-foreground text-sm mb-1">Personal Quote</p>
             <blockquote className="text-foreground font-medium italic">
-              "{officer.quote}"
+              &ldquo;{officer.quote}&rdquo;
             </blockquote>
           </div>
         </div>
