@@ -7,11 +7,10 @@ interface CalendarProps {
   className?: string;
   selected?: Date;
   onSelect?: (date: Date | undefined) => void;
-  mode?: "single" | "range" | "multiple"; // Keep in interface for API compatibility
+  mode?: "single" | "range" | "multiple";
 }
 
 const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) => {
-  // Notice we're not destructuring 'mode' from props to avoid the ESLint error
   const [currentMonth, setCurrentMonth] = useState(selected || new Date());
   const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
@@ -38,13 +37,8 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
     
-    // First day of the month (0 = Sunday, 1 = Monday, etc.)
     const firstDayOfMonth = new Date(year, month, 1).getDay();
-    
-    // Number of days in the current month
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    // Array to hold all the day cells (including empty ones for proper alignment)
     const days = [];
 
     // Add empty cells for days before the first day of the month
@@ -92,75 +86,83 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
     onSelect(selectedDate);
   };
 
-  // Mouse enter handler for hover effects
-  const handleMouseEnter = (day: number | null) => {
-    setHoveredDay(day);
-  };
-
-  // Mouse leave handler for hover effects
-  const handleMouseLeave = () => {
-    setHoveredDay(null);
-  };
-
   // Get the days array for rendering
   const daysArray = getDaysInMonth();
 
   return (
-    <div className={`border rounded-md p-3 transition-all duration-300 hover:shadow-md ${className || ""}`} {...props}>
+    <div className={`bg-card border border-border rounded-xl p-4 shadow-card hover:shadow-card-hover transition-all duration-300 ${className || ""}`} {...props}>
       {/* Month navigation */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6">
         <button 
           onClick={prevMonth}
-          className="p-1 rounded-full hover:bg-primary/10 transition-all duration-300 hover:text-primary"
+          className="p-2 rounded-lg hover:bg-muted transition-all duration-200 hover:scale-110 text-muted-foreground hover:text-primary"
           aria-label="Previous month"
         >
-          <ChevronLeft className="h-5 w-5 text-primary" />
+          <ChevronLeft className="h-5 w-5" />
         </button>
 
-        <div className="font-bold text-center">
+        <div className="font-semibold text-lg text-foreground">
           {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </div>
 
         <button 
           onClick={nextMonth}
-          className="p-1 rounded-full hover:bg-primary/10 transition-all duration-300 hover:text-primary"
+          className="p-2 rounded-lg hover:bg-muted transition-all duration-200 hover:scale-110 text-muted-foreground hover:text-primary"
           aria-label="Next month"
         >
-          <ChevronRight className="h-5 w-5 text-primary" />
+          <ChevronRight className="h-5 w-5" />
         </button>
       </div>
 
       {/* Days of week header */}
-      <div className="grid grid-cols-7 gap-1 mb-2">
+      <div className="grid grid-cols-7 gap-2 mb-4">
         {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-          <div key={day} className="text-center text-sm font-medium text-muted-foreground">
+          <div key={day} className="text-center text-sm font-medium text-muted-foreground py-2">
             {day}
           </div>
         ))}
       </div>
 
       {/* Calendar grid */}
-      <div className="grid grid-cols-7 gap-1">
-        {daysArray.map((day, index) => (
-          <button
-            key={index}
-            className={`
-              h-8 w-8 rounded-md text-sm flex items-center justify-center
-              transition-all duration-200
-              ${!day ? 'cursor-default' : 'hover:bg-primary/20 hover:text-primary'}
-              ${isSelectedDay(day as number) ? 'bg-primary text-primary-foreground' : ''}
-              ${isToday(day as number) && !isSelectedDay(day as number) ? 'border border-primary text-primary' : ''}
-              ${hoveredDay === day ? 'bg-primary/10 text-primary' : ''}
-            `}
-            disabled={!day}
-            onClick={() => handleSelectDay(day)}
-            onMouseEnter={() => handleMouseEnter(day)}
-            onMouseLeave={handleMouseLeave}
-            aria-label={day ? `Select ${day} ${currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : 'Empty day'}
-          >
-            {day}
-          </button>
-        ))}
+      <div className="grid grid-cols-7 gap-2">
+        {daysArray.map((day, index) => {
+          const isSelected = isSelectedDay(day as number);
+          const isTodayDate = isToday(day as number);
+          const isHovered = hoveredDay === day;
+          
+          return (
+            <button
+              key={index}
+              className={`
+                h-10 w-10 rounded-lg text-sm font-medium flex items-center justify-center
+                transition-all duration-200 relative
+                ${!day ? 'cursor-default invisible' : 'cursor-pointer'}
+                ${isSelected 
+                  ? 'bg-primary text-primary-foreground shadow-md ring-2 ring-primary/20' 
+                  : ''}
+                ${isTodayDate && !isSelected 
+                  ? 'bg-accent/10 text-accent border-2 border-accent' 
+                  : ''}
+                ${!isSelected && !isTodayDate && day
+                  ? 'text-foreground hover:bg-muted hover:text-primary hover:scale-110' 
+                  : ''}
+                ${isHovered && !isSelected 
+                  ? 'bg-primary/10 text-primary scale-105' 
+                  : ''}
+              `}
+              disabled={!day}
+              onClick={() => handleSelectDay(day)}
+              onMouseEnter={() => setHoveredDay(day)}
+              onMouseLeave={() => setHoveredDay(null)}
+              aria-label={day ? `Select ${day} ${currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : undefined}
+            >
+              {day}
+              {isSelected && (
+                <div className="absolute inset-0 rounded-lg bg-primary/20 pointer-events-none" />
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

@@ -3,81 +3,87 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafafa;
+  --foreground: #1a1a1a;
   
-  /* Green theme colors */
-  --primary: #1e8a4c;
+  /* Modern green theme colors */
+  --primary: #16a34a;
   --primary-foreground: #ffffff;
   
-  --secondary: #f0faf3;
-  --secondary-foreground: #166b3a;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
   
-  --muted: #e6f7eb;
-  --muted-foreground: #4b5563;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
   
-  --accent: #25b062;
+  --accent: #10b981;
   --accent-foreground: #ffffff;
   
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   
   --card: #ffffff;
-  --card-foreground: #171717;
+  --card-foreground: #1a1a1a;
   
   --popover: #ffffff;
-  --popover-foreground: #171717;
+  --popover-foreground: #1a1a1a;
   
-  --border: #e5e7eb;
-  --input: #e5e7eb;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
   
-  --ring: #1e8a4c;
+  --ring: #16a34a;
   
-  --radius: 0.5rem;
+  --radius: 0.75rem;
+  
+  /* Additional modern colors */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --info: #3b82f6;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f1f14;
-    --foreground: #ededed;
+    --background: #0a0a0a;
+    --foreground: #fafafa;
     
     /* Dark mode green theme colors */
-    --primary: #25b062;
-    --primary-foreground: #ffffff;
+    --primary: #22c55e;
+    --primary-foreground: #000000;
     
-    --secondary: #1a2e20;
-    --secondary-foreground: #aef7c4;
+    --secondary: #1a1a1a;
+    --secondary-foreground: #fafafa;
     
-    --muted: #1f3626;
-    --muted-foreground: #9ca3af;
+    --muted: #262626;
+    --muted-foreground: #a3a3a3;
     
-    --accent: #34c674;
-    --accent-foreground: #ffffff;
+    --accent: #34d399;
+    --accent-foreground: #000000;
     
     --destructive: #ef4444;
     --destructive-foreground: #ffffff;
     
-    --card: #1a2e20;
-    --card-foreground: #ededed;
+    --card: #171717;
+    --card-foreground: #fafafa;
     
-    --popover: #1a2e20;
-    --popover-foreground: #ededed;
+    --popover: #171717;
+    --popover-foreground: #fafafa;
     
-    --border: #2d4c39;
-    --input: #2d4c39;
+    --border: #404040;
+    --input: #404040;
     
-    --ring: #25b062;
+    --ring: #22c55e;
   }
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  line-height: 1.6;
 }
 
 .bg-primary-gradient {
-  background: linear-gradient(to right, var(--primary), #25b062);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
 }
 
 @layer base {
@@ -92,4 +98,17 @@ body {
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
+}
+
+/* Enhanced shadow utilities */
+.shadow-card {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.shadow-card-hover {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.shadow-card-elevated {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
