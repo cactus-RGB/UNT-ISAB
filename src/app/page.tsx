@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { ExternalLink, ChevronRight, Users, CalendarIcon, BookOpen, Image as ImageIcon, Home, Clock, MapPin } from 'lucide-react';
+import { ExternalLink, ChevronRight, Users, CalendarIcon, BookOpen, Image as ImageIcon, Home, Clock, MapPin, X, GraduationCap, Globe } from 'lucide-react';
 
 // Officers data
 const officers = [
@@ -13,31 +13,46 @@ const officers = [
     name: "Ibrahim Abubeker", 
     role: "President", 
     year: "2024-25", 
-    image: "/assets/officers/ibrahim.jpeg" 
+    image: "/assets/officers/ibrahim.jpeg",
+    major: "Computer Science",
+    homeCountry: "Ethiopia",
+    quote: "Keep it moving"
   },
   { 
     name: "Amaris Charles", 
     role: "Vice President", 
     year: "2024-25", 
-    image: "/assets/officers/amaris.jpeg" 
+    image: "/assets/officers/amaris.jpeg",
+    major: "Anthropology",
+    homeCountry: "Puerto Rico",
+    quote: "Something inspiring"
   },
   { 
     name: "Iman Mohammed", 
     role: "Secretary", 
     year: "2024-25", 
-    image: "/assets/officers/iman.jpeg" 
+    image: "/assets/officers/iman.jpeg",
+    major: "Business Analytics",
+    homeCountry: "Ethiopia",
+    quote: "Winter is coming"
   },
   { 
     name: "Mohammed Abubeker", 
     role: "Event Coordinator", 
     year: "2024-25", 
-    image: "/assets/officers/mohammed.jpeg" 
+    image: "/assets/officers/mohammed.jpeg",
+    major: "Business Computer Information Systems",
+    homeCountry: "Ethiopia",
+    quote: "Football is life"
   },
   { 
     name: "Shiori Hisaoka", 
     role: "Outreach Coordinator", 
     year: "2024-25", 
-    image: "/assets/officers/shiori.jpeg" 
+    image: "/assets/officers/shiori.jpeg",
+    major: "Psychology",
+    homeCountry: "Japan",
+    quote: "Shinzuo Sasageyo"
   }
 ];
 
@@ -78,6 +93,36 @@ const events = [
   }
 ];
 
+// Past officers data
+const pastOfficers = [
+  {
+    name: "Adrian \"Boss\" Tam",
+    role: "Founding President",
+    yearsServed: "Fall 2023 - Spring 2024",
+    major: "Master's in Communication",
+    homeCountry: "Malaysia",
+    keyContributions: [
+      "Established the International Student Advisory Board and recruited founding members",
+      "Provided foundational leadership that enabled ISAB's rapid growth and development",
+      "Created the organizational framework that continues to guide ISAB's mission today"
+    ],
+    hasPhoto: false
+  },
+  {
+    name: "Bhavesh Gujula",
+    role: "Founding Treasurer",
+    yearsServed: "Fall 2023 - Spring 2024", 
+    major: "Master's in Data Analytics",
+    homeCountry: "India",
+    keyContributions: [
+      "Secured initial funding and financial resources essential for ISAB's early operations",
+      "Managed fiscal responsibilities for inaugural events that established ISAB's presence on campus",
+      "Developed financial protocols and procedures that laid the groundwork for sustainable operations"
+    ],
+    hasPhoto: false
+  }
+];
+
 // Gallery images
 const galleryImages = [
   { url: "/assets/gallery/gallery1.jpeg", title: "First General Meeting 2024", description: "Kickoff meeting for Spring 2024" },
@@ -92,6 +137,10 @@ const getEventsForDate = (date: Date) => {
     event.date.getMonth() === date.getMonth() &&
     event.date.getFullYear() === date.getFullYear()
   );
+}
+
+interface HomePageProps {
+  onPageChange: (page: string) => void;
 };
 
 interface NavigationProps {
@@ -107,7 +156,7 @@ function Navigation({ currentPage, onPageChange }: NavigationProps) {
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-3">
               <Image
-                src="/assets/logo/ISAB Logo (Cropped).png"
+                src="/assets/logo/ISAB Logo (Cropped).PNG"
                 alt="ISAB Logo"
                 width={60}
                 height={60}
@@ -160,8 +209,90 @@ function Navigation({ currentPage, onPageChange }: NavigationProps) {
   );
 }
 
-interface HomePageProps {
-  onPageChange: (page: string) => void;
+interface OfficerModalProps {
+  officer: typeof officers[0] | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
+  if (!isOpen || !officer) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div 
+        className="bg-card rounded-2xl shadow-card-elevated max-w-md w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header with close button */}
+        <div className="relative">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/80 hover:bg-background transition-colors duration-200"
+          >
+            <X className="h-5 w-5 text-muted-foreground" />
+          </button>
+          
+          {/* Profile image */}
+          <div className="p-8 pb-4 text-center">
+            <div className="relative w-32 h-32 mx-auto mb-6">
+              <div className="rounded-full overflow-hidden w-32 h-32 relative">
+                <Image
+                  src={officer.image}
+                  alt={`${officer.name} - ${officer.role}`}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="128px"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="px-8 pb-8">
+          {/* Name and role */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-2">{officer.name}</h2>
+            <div className="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-full font-medium">
+              {officer.role}
+            </div>
+          </div>
+
+          {/* Details */}
+          <div className="space-y-4 mb-6">
+            <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <GraduationCap className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Major</p>
+                <p className="font-medium text-foreground">{officer.major}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Globe className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Home Country</p>
+                <p className="font-medium text-foreground">{officer.homeCountry}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Quote */}
+          <div className="p-4 rounded-lg bg-primary/5 border-l-4 border-primary">
+            <p className="text-muted-foreground text-sm mb-1">Personal Quote</p>
+            <blockquote className="text-foreground font-medium italic">
+              "{officer.quote}"
+            </blockquote>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function HomePage({ onPageChange }: HomePageProps) {
@@ -175,7 +306,7 @@ function HomePage({ onPageChange }: HomePageProps) {
             <p className="text-xl mb-8 opacity-90">Empowering international students at the University of North Texas</p>
             <Button 
               size="lg"
-              className="bg-white text-primary hover:bg-white/90 shadow-card-elevated"
+              className="bg-white text-primary hover:bg-gray-100 shadow-card-elevated border border-primary/20"
               onClick={() => onPageChange('history')}
             >
               Learn More <ChevronRight className="ml-2 h-5 w-5" />
@@ -211,7 +342,7 @@ function HomePage({ onPageChange }: HomePageProps) {
               >
                 <CardContent className="p-8 text-center">
                   <div className="relative w-32 h-32 mx-auto mb-6">
-                    <div className="rounded-full overflow-hidden w-32 h-32 relative ring-4 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300">
+                    <div className="rounded-full overflow-hidden w-32 h-32 relative transition-all duration-300">
                       <Image
                         src={officer.image}
                         alt={`${officer.name} - ${officer.role}`}
@@ -270,7 +401,9 @@ function HistoryPage() {
     <div className="container mx-auto px-6 py-20">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-5xl font-bold mb-12 text-foreground">Our History</h1>
-        <Card className="shadow-card-hover border-border bg-card">
+        
+        {/* Main History Content */}
+        <Card className="shadow-card-hover border-border bg-card mb-16">
           <CardContent className="p-12">
             <div className="prose prose-lg max-w-none">
               <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
@@ -318,6 +451,80 @@ function HistoryPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Legacy of Leadership Section */}
+        <div className="mb-16">
+          <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center">
+            <div className="w-2 h-10 bg-primary rounded-full mr-4"></div>
+            Legacy of Leadership
+          </h2>
+          <p className="text-muted-foreground mb-12 text-lg">
+            Honoring the founding members and past leaders who established ISAB's foundation and legacy
+          </p>
+
+          <div className="space-y-8">
+            {pastOfficers.map((officer, index) => (
+              <Card key={index} className="shadow-card-hover border-border bg-card hover:shadow-card-elevated transition-all duration-300">
+                <CardContent className="p-8">
+                  <div className="flex flex-col md:flex-row gap-8">
+                    {/* Photo placeholder */}
+                    <div className="flex-shrink-0">
+                      <div className="w-32 h-32 rounded-full bg-muted/50 border-2 border-primary/20 flex items-center justify-center">
+                        {officer.hasPhoto ? (
+                          <div className="w-full h-full rounded-full overflow-hidden">
+                            {/* Photo will be added here when available */}
+                            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                              <Users className="h-12 w-12 text-primary/60" />
+                            </div>
+                          </div>
+                        ) : (
+                          <Users className="h-12 w-12 text-primary/60" />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Officer Information */}
+                    <div className="flex-grow">
+                      <div className="mb-4">
+                        <h3 className="text-2xl font-bold text-foreground mb-2">{officer.name}</h3>
+                        <div className="flex flex-wrap items-center gap-4 mb-3">
+                          <span className="inline-flex items-center px-3 py-1 bg-primary/10 text-primary rounded-full font-medium text-sm">
+                            {officer.role}
+                          </span>
+                          <span className="text-muted-foreground font-medium">{officer.yearsServed}</span>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-6 text-sm text-muted-foreground mb-4">
+                          <div className="flex items-center">
+                            <GraduationCap className="h-4 w-4 mr-2 text-primary" />
+                            <span>{officer.major}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <Globe className="h-4 w-4 mr-2 text-primary" />
+                            <span>{officer.homeCountry}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Key Contributions */}
+                      <div>
+                        <h4 className="font-semibold text-foreground mb-3">Key Contributions</h4>
+                        <ul className="space-y-2">
+                          {officer.keyContributions.map((contribution, idx) => (
+                            <li key={idx} className="flex items-start">
+                              <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                              <span className="text-muted-foreground leading-relaxed">{contribution}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
