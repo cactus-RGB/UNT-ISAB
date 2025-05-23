@@ -103,7 +103,7 @@ const pastOfficers = [
     homeCountry: "Malaysia",
     keyContributions: [
       "Established the International Student Advisory Board and recruited founding members",
-      "Provided foundational leadership that enabled ISAB's rapid growth and development",
+                    "Provided foundational leadership that enabled ISAB&apos;s rapid growth and development",
       "Created the organizational framework that continues to guide ISAB's mission today"
     ],
     hasPhoto: false
