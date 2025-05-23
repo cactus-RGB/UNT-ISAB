@@ -115,8 +115,8 @@ const pastOfficers = [
     major: "Master&apos;s in Data Analytics",
     homeCountry: "India",
     keyContributions: [
-      "Secured initial funding and financial resources essential for ISAB's early operations",
-      "Managed fiscal responsibilities for inaugural events that established ISAB's presence on campus",
+      "Secured initial funding and financial resources essential for ISAB&apos;s early operations",
+      "Managed fiscal responsibilities for inaugural events that established ISAB&apos;s presence on campus",
       "Developed financial protocols and procedures that laid the groundwork for sustainable operations"
     ],
     hasPhoto: false
@@ -463,7 +463,7 @@ function HistoryPage() {
             Legacy of Leadership
           </h2>
           <p className="text-muted-foreground mb-12 text-lg">
-            Honoring the founding members and past leaders who established ISAB's foundation and legacy
+            Honoring the founding members and past leaders who established ISAB&apos;s foundation and legacy
           </p>
 
           <div className="space-y-8">
