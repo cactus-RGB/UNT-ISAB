@@ -13,16 +13,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     let variantClass = "";
     switch (variant) {
       case "default":
-        variantClass = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md";
+        variantClass = "bg-primary text-primary-foreground hover:bg-primary/90";
         break;
       case "outline":
-        variantClass = "border border-input bg-background hover:bg-primary/10 hover:text-primary hover:border-primary";
+        variantClass = "border border-input bg-background hover:bg-muted hover:text-muted-foreground";
         break;
       case "ghost":
-        variantClass = "hover:bg-primary/10 hover:text-primary";
+        variantClass = "hover:bg-muted hover:text-muted-foreground";
         break;
       default:
-        variantClass = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md";
+        variantClass = "bg-primary text-primary-foreground hover:bg-primary/90";
     }
 
     let sizeClass = "";
@@ -40,11 +40,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         sizeClass = "h-10 px-4 py-2";
     }
 
-    const buttonClass = `inline-flex items-center justify-center rounded-md font-medium 
-      transition-all duration-300 ease-in-out
-      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring 
-      disabled:opacity-50 disabled:pointer-events-none
-      hover:translate-y-[-2px] active:translate-y-0
+    const buttonClass = `inline-flex items-center justify-center rounded-md font-medium transition-all duration-300
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50
       ${variantClass} ${sizeClass} ${className || ""}`;
 
     return (

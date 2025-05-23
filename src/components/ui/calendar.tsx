@@ -15,7 +15,7 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
   const [currentMonth, setCurrentMonth] = useState(selected || new Date());
   const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
-  // Go to previous month with animation
+  // Go to previous month
   const prevMonth = () => {
     setCurrentMonth(prev => {
       const newMonth = new Date(prev);
@@ -24,7 +24,7 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
     });
   };
 
-  // Go to next month with animation
+  // Go to next month
   const nextMonth = () => {
     setCurrentMonth(prev => {
       const newMonth = new Date(prev);
@@ -111,7 +111,7 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
       <div className="flex items-center justify-between mb-4">
         <button 
           onClick={prevMonth}
-          className="p-1 rounded-full hover:bg-primary/10 transition-all duration-300 hover:scale-110 hover:text-primary"
+          className="p-1 rounded-full hover:bg-primary/10 transition-all duration-300 hover:text-primary"
           aria-label="Previous month"
         >
           <ChevronLeft className="h-5 w-5 text-primary" />
@@ -123,7 +123,7 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
 
         <button 
           onClick={nextMonth}
-          className="p-1 rounded-full hover:bg-primary/10 transition-all duration-300 hover:scale-110 hover:text-primary"
+          className="p-1 rounded-full hover:bg-primary/10 transition-all duration-300 hover:text-primary"
           aria-label="Next month"
         >
           <ChevronRight className="h-5 w-5 text-primary" />
@@ -147,10 +147,10 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
             className={`
               h-8 w-8 rounded-md text-sm flex items-center justify-center
               transition-all duration-200
-              ${!day ? 'cursor-default' : 'hover:bg-primary/20 hover:text-primary hover:scale-110 hover:font-medium active:scale-95'}
-              ${isSelectedDay(day as number) ? 'bg-primary text-primary-foreground scale-105 shadow-sm' : ''}
+              ${!day ? 'cursor-default' : 'hover:bg-primary/20 hover:text-primary'}
+              ${isSelectedDay(day as number) ? 'bg-primary text-primary-foreground' : ''}
               ${isToday(day as number) && !isSelectedDay(day as number) ? 'border border-primary text-primary' : ''}
-              ${hoveredDay === day ? 'bg-primary/10 text-primary scale-105' : ''}
+              ${hoveredDay === day ? 'bg-primary/10 text-primary' : ''}
             `}
             disabled={!day}
             onClick={() => handleSelectDay(day)}
