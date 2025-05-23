@@ -104,7 +104,7 @@ const pastOfficers = [
     keyContributions: [
       "Established the International Student Advisory Board and recruited founding members",
                     "Provided foundational leadership that enabled ISAB&apos;s rapid growth and development",
-      "Created the organizational framework that continues to guide ISAB's mission today"
+                    "Created the organizational framework that continues to guide ISAB&apos;s mission today"
     ],
     hasPhoto: false
   },
@@ -215,6 +215,7 @@ interface OfficerModalProps {
   onClose: () => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
   if (!isOpen || !officer) return null;
 
