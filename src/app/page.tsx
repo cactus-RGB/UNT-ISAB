@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -217,7 +217,23 @@ interface OfficerModalProps {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
+  console.log('Modal render:', { isOpen, officerName: officer?.name }); // Debug log
+  
   if (!isOpen || !officer) return null;
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isOpen, onClose]);
 
   return (
     <div 
