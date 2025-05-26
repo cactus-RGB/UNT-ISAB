@@ -219,9 +219,7 @@ interface OfficerModalProps {
 function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
   console.log('Modal render:', { isOpen, officerName: officer?.name }); // Debug log
   
-  if (!isOpen || !officer) return null;
-
-  // Handle escape key
+  // Handle escape key - MUST be before any early returns
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -234,6 +232,8 @@ function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
       return () => document.removeEventListener('keydown', handleEscape);
     }
   }, [isOpen, onClose]);
+  
+  if (!isOpen || !officer) return null;
 
   return (
     <div 
