@@ -217,7 +217,7 @@ interface OfficerModalProps {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
-  console.log('Modal render:', { isOpen, officerName: officer?.name }); // Debug log
+  console.log('🔍 OfficerModal render:', { isOpen, officerName: officer?.name });
   
   // Handle escape key - MUST be before any early returns
   useEffect(() => {
@@ -233,7 +233,12 @@ function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
     }
   }, [isOpen, onClose]);
   
-  if (!isOpen || !officer) return null;
+  if (!isOpen || !officer) {
+    console.log('🚫 Modal not rendering:', { isOpen, hasOfficer: !!officer });
+    return null;
+  }
+
+  console.log('✅ Modal should render for:', officer.name);
 
   return (
     <div 
