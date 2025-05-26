@@ -1,14 +1,24 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { ExternalLink, ChevronRight, Users, CalendarIcon, BookOpen, Image as ImageIcon, Home, Clock, MapPin, X, GraduationCap, Globe } from 'lucide-react';
 
-// Officers data
-const officers = [
+// Officers data with proper typing
+interface Officer {
+  name: string;
+  role: string;
+  year: string;
+  image: string;
+  major: string;
+  homeCountry: string;
+  quote: string;
+}
+
+const officers: Officer[] = [
   { 
     name: "Ibrahim Abubeker", 
     role: "President", 
@@ -217,8 +227,6 @@ interface OfficerModalProps {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
-  console.log('🔍 OfficerModal render:', { isOpen, officerName: officer?.name });
-  
   // Handle escape key - MUST be before any early returns
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -233,12 +241,7 @@ function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
     }
   }, [isOpen, onClose]);
   
-  if (!isOpen || !officer) {
-    console.log('🚫 Modal not rendering:', { isOpen, hasOfficer: !!officer });
-    return null;
-  }
-
-  console.log('✅ Modal should render for:', officer.name);
+  if (!isOpen || !officer) return null;
 
   return (
     <div 
@@ -331,7 +334,7 @@ function HomePage({ onPageChange }: HomePageProps) {
             <p className="text-xl mb-8 opacity-90">Empowering international students at the University of North Texas</p>
             <Button 
               size="lg"
-              className="bg-white text-primary hover:bg-gray-100 shadow-card-elevated border border-primary/20"
+              className="bg-white text-green-700 hover:bg-gray-50 shadow-lg border-2 border-green-600 font-semibold"
               onClick={() => onPageChange('history')}
             >
               Learn More <ChevronRight className="ml-2 h-5 w-5" />
