@@ -7,18 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { ExternalLink, ChevronRight, Users, CalendarIcon, BookOpen, Image as ImageIcon, Home, Clock, MapPin, X, GraduationCap, Globe } from 'lucide-react';
 
-// Officers data with proper typing
-interface Officer {
-  name: string;
-  role: string;
-  year: string;
-  image: string;
-  major: string;
-  homeCountry: string;
-  quote: string;
-}
-
-const officers: Officer[] = [
+// Officers data
+const officers = [
   { 
     name: "Ibrahim Abubeker", 
     role: "President", 
@@ -26,6 +16,7 @@ const officers: Officer[] = [
     image: "/assets/officers/ibrahim.jpeg",
     major: "Computer Science",
     homeCountry: "Ethiopia",
+    countryFlag: "🇪🇹",
     quote: "Keep it moving"
   },
   { 
@@ -35,6 +26,7 @@ const officers: Officer[] = [
     image: "/assets/officers/amaris.jpeg",
     major: "Anthropology",
     homeCountry: "Puerto Rico",
+    countryFlag: "🇵🇷",
     quote: "Something inspiring"
   },
   { 
@@ -44,6 +36,7 @@ const officers: Officer[] = [
     image: "/assets/officers/iman.jpeg",
     major: "Business Analytics",
     homeCountry: "Ethiopia",
+    countryFlag: "🇪🇹",
     quote: "Winter is coming"
   },
   { 
@@ -53,6 +46,7 @@ const officers: Officer[] = [
     image: "/assets/officers/mohammed.jpeg",
     major: "Business Computer Information Systems",
     homeCountry: "Ethiopia",
+    countryFlag: "🇪🇹",
     quote: "Football is life"
   },
   { 
@@ -62,14 +56,31 @@ const officers: Officer[] = [
     image: "/assets/officers/shiori.jpeg",
     major: "Psychology",
     homeCountry: "Japan",
+    countryFlag: "🇯🇵",
     quote: "Shinzuo Sasageyo"
   }
 ];
 
+// Important Links - Customize URLs here
 const importantLinks = [
-  { title: "Join ISAB", url: "mailto:untisab23@gmail.com?subject=ISAB Membership Inquiry", description: "Become a member of our organization", icon: Users },
-  { title: "UNT Resources", url: "https://international.unt.edu/programs-and-events/index.html", description: "Access UNT student resources", icon: BookOpen },
-  { title: "Events Calendar", url: "#", description: "Stay updated with our upcoming events", icon: CalendarIcon }
+  { 
+    title: "Join ISAB", 
+    url: "mailto:isab@unt.edu?subject=ISAB Membership Inquiry", 
+    description: "Become a member of our organization", 
+    icon: Users 
+  },
+  { 
+    title: "UNT Resources", 
+    url: "https://international.unt.edu/current-students", 
+    description: "Access UNT student resources", 
+    icon: BookOpen 
+  },
+  { 
+    title: "Events Calendar", 
+    url: "#", // TODO: Add your events calendar URL here
+    description: "Stay updated with our upcoming events", 
+    icon: CalendarIcon 
+  }
 ];
 
 const events = [
@@ -111,6 +122,7 @@ const pastOfficers = [
     yearsServed: "Fall 2023 - Spring 2024",
     major: "Master&apos;s in Communication",
     homeCountry: "Malaysia",
+    countryFlag: "🇲🇾",
     keyContributions: [
       "Established the International Student Advisory Board and recruited founding members",
       "Provided foundational leadership that enabled ISAB&apos;s rapid growth and development",
@@ -124,6 +136,7 @@ const pastOfficers = [
     yearsServed: "Fall 2023 - Spring 2024", 
     major: "Master&apos;s in Data Analytics",
     homeCountry: "India",
+    countryFlag: "🇮🇳",
     keyContributions: [
       "Secured initial funding and financial resources essential for ISAB&apos;s early operations",
       "Managed fiscal responsibilities for inaugural events that established ISAB&apos;s presence on campus",
@@ -168,8 +181,8 @@ function Navigation({ currentPage, onPageChange }: NavigationProps) {
               <Image
                 src="/assets/logo/ISAB Logo (Cropped).PNG"
                 alt="ISAB Logo"
-                width={60}
-                height={60}
+                width={80}
+                height={80}
                 className="rounded-xl transition-transform duration-300 hover:scale-110 shadow-sm"
               />
               <div className="hidden md:block">
@@ -182,33 +195,33 @@ function Navigation({ currentPage, onPageChange }: NavigationProps) {
               <Button 
                 variant={currentPage === 'home' ? "default" : "ghost"}
                 onClick={() => onPageChange('home')}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 text-base"
               >
-                <Home className="h-4 w-4" />
+                <Home className="h-5 w-5" />
                 <span>Home</span>
               </Button>
               <Button 
                 variant={currentPage === 'history' ? "default" : "ghost"}
                 onClick={() => onPageChange('history')}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 text-base"
               >
-                <BookOpen className="h-4 w-4" />
+                <BookOpen className="h-5 w-5" />
                 <span>History</span>
               </Button>
               <Button 
                 variant={currentPage === 'gallery' ? "default" : "ghost"}
                 onClick={() => onPageChange('gallery')}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 text-base"
               >
-                <ImageIcon className="h-4 w-4" />
+                <ImageIcon className="h-5 w-5" />
                 <span>Gallery</span>
               </Button>
               <Button 
                 variant={currentPage === 'events' ? "default" : "ghost"}
                 onClick={() => onPageChange('events')}
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 text-base"
               >
-                <CalendarIcon className="h-4 w-4" />
+                <CalendarIcon className="h-5 w-5" />
                 <span>Events</span>
               </Button>
             </div>
@@ -226,20 +239,6 @@ interface OfficerModalProps {
 }
 
 function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
-  // Handle escape key - MUST be before any early returns
-  useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-      return () => document.removeEventListener('keydown', handleEscape);
-    }
-  }, [isOpen, onClose]);
-  
   if (!isOpen || !officer) return null;
 
   return (
@@ -304,7 +303,9 @@ function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Home Country</p>
-                <p className="font-medium text-foreground">{officer.homeCountry}</p>
+                <p className="font-medium text-foreground">
+                  {officer.countryFlag} {officer.homeCountry}
+                </p>
               </div>
             </div>
           </div>
@@ -357,8 +358,10 @@ function HomePage({ onPageChange }: HomePageProps) {
       <header className="bg-primary-gradient text-primary-foreground py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl">
-            <h1 className="text-6xl font-bold mb-6 leading-tight">International Student Advisory Board</h1>
+          <div className="max-w-6xl">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 leading-tight whitespace-nowrap">
+              International Student Advisory Board
+            </h1>
             <p className="text-xl mb-8 opacity-90">Empowering international students at the University of North Texas</p>
             <Button 
               size="lg"
@@ -391,7 +394,7 @@ function HomePage({ onPageChange }: HomePageProps) {
             <Users className="mr-3 text-primary" /> Current Officers
           </h2>
           <p className="text-muted-foreground mb-12 text-lg">
-            Click on any officer card to view their detailed bio, including their major, home country, and personal quote
+            Click on any officer card to view their detailed information including major, home country, and personal quote
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -416,19 +419,7 @@ function HomePage({ onPageChange }: HomePageProps) {
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2">{officer.name}</h3>
                   <p className="text-primary font-medium mb-1">{officer.role}</p>
-                  <p className="text-muted-foreground text-sm mb-2">{officer.year}</p>
-                  <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground">
-                    <span className="flex items-center">
-                      <GraduationCap className="h-3 w-3 mr-1" />
-                      {officer.major}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-center mt-2">
-                    <span className="flex items-center text-xs text-muted-foreground">
-                      <Globe className="h-3 w-3 mr-1" />
-                      {officer.homeCountry}
-                    </span>
-                  </div>
+                  <p className="text-muted-foreground text-sm mb-4">{officer.year}</p>
                   
                   {/* Visual hint that the card is clickable */}
                   <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -460,6 +451,14 @@ function HomePage({ onPageChange }: HomePageProps) {
                     <Button 
                       variant="outline" 
                       className="w-full"
+                      onClick={() => {
+                        if (link.url.startsWith('mailto:')) {
+                          window.location.href = link.url;
+                        } else if (link.url !== '#') {
+                          window.open(link.url, '_blank', 'noopener,noreferrer');
+                        }
+                      }}
+                      disabled={link.url === '#'}
                     >
                       Visit <ExternalLink className="ml-2 h-4 w-4" />
                     </Button>
@@ -588,7 +587,7 @@ function HistoryPage() {
                           </div>
                           <div className="flex items-center">
                             <Globe className="h-4 w-4 mr-2 text-primary" />
-                            <span>{officer.homeCountry}</span>
+                            <span>{officer.countryFlag} {officer.homeCountry}</span>
                           </div>
                         </div>
                       </div>
