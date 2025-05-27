@@ -33,9 +33,9 @@ function Footer() {
           </div>
           <div>
             <h3 className="text-xl font-bold mb-4">Contact Us</h3>
-            <p className="text-secondary">Email: isab@unt.edu</p>
-            <p className="text-secondary">Office: UNT Union, Room 345</p>
-            <p className="text-secondary">Phone: (940) 123-4567</p>
+            <p className="text-secondary">Email: untisab23@gmail.com</p>
+            <p className="text-secondary">Office: Marquis Hall 1511 W Mulberry St, Denton, TX 76201</p>
+            <p className="text-secondary">Phone: (214)-801-6149</p>
           </div>
           <div>
             <h3 className="text-xl font-bold mb-4">Follow Us</h3>

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -103,8 +103,8 @@ const pastOfficers = [
     homeCountry: "Malaysia",
     keyContributions: [
       "Established the International Student Advisory Board and recruited founding members",
-                    "Provided foundational leadership that enabled ISAB&apos;s rapid growth and development",
-                    "Created the organizational framework that continues to guide ISAB&apos;s mission today"
+      "Provided foundational leadership that enabled ISAB&apos;s rapid growth and development",
+      "Created the organizational framework that continues to guide ISAB&apos;s mission today"
     ],
     hasPhoto: false
   },
@@ -215,7 +215,6 @@ interface OfficerModalProps {
   onClose: () => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
   if (!isOpen || !officer) return null;
 
@@ -300,6 +299,35 @@ function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
 }
 
 function HomePage({ onPageChange }: HomePageProps) {
+  // Step 1: Add state management for the modal system
+  const [selectedOfficer, setSelectedOfficer] = useState<typeof officers[0] | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Step 2: Create functions to control the modal
+  const openOfficerModal = (officer: typeof officers[0]) => {
+    setSelectedOfficer(officer);  // Remember which officer was clicked
+    setIsModalOpen(true);         // Show the modal
+  };
+
+  const closeOfficerModal = () => {
+    setIsModalOpen(false);        // Hide the modal
+    setSelectedOfficer(null);     // Clear the selected officer
+  };
+
+  // Step 3: Add keyboard support (ESC key to close modal)
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isModalOpen) {
+        closeOfficerModal();
+      }
+    };
+
+    if (isModalOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isModalOpen]);
+
   return (
     <>
       <header className="bg-primary-gradient text-primary-foreground py-24 relative overflow-hidden">
@@ -310,7 +338,7 @@ function HomePage({ onPageChange }: HomePageProps) {
             <p className="text-xl mb-8 opacity-90">Empowering international students at the University of North Texas</p>
             <Button 
               size="lg"
-              className="bg-white text-primary hover:bg-gray-100 shadow-card-elevated border border-primary/20"
+              className="bg-white text-green-700 hover:bg-gray-50 shadow-lg border-2 border-green-600 font-semibold"
               onClick={() => onPageChange('history')}
             >
               Learn More <ChevronRight className="ml-2 h-5 w-5" />
@@ -335,16 +363,21 @@ function HomePage({ onPageChange }: HomePageProps) {
         </Card>
 
         <div className="mb-16">
-          <h2 className="text-4xl font-bold mb-12 flex items-center text-foreground">
+          <h2 className="text-4xl font-bold mb-4 flex items-center text-foreground">
             <Users className="mr-3 text-primary" /> Current Officers
           </h2>
+          <p className="text-muted-foreground mb-12 text-lg">
+            Click on any officer card to view their detailed bio, including their major, home country, and personal quote
+          </p>
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {officers.map((officer, index) => (
-              <Card 
-                key={index} 
-                className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card hover:-translate-y-2"
+              <div
+                key={index}
+                onClick={() => openOfficerModal(officer)}
+                className="group transition-all duration-300 hover:shadow-card-elevated border border-border bg-card hover:-translate-y-2 cursor-pointer rounded-lg overflow-hidden"
               >
-                <CardContent className="p-8 text-center">
+                <div className="p-8 text-center">
                   <div className="relative w-32 h-32 mx-auto mb-6">
                     <div className="rounded-full overflow-hidden w-32 h-32 relative transition-all duration-300">
                       <Image
@@ -359,9 +392,26 @@ function HomePage({ onPageChange }: HomePageProps) {
                   </div>
                   <h3 className="text-xl font-bold text-foreground mb-2">{officer.name}</h3>
                   <p className="text-primary font-medium mb-1">{officer.role}</p>
-                  <p className="text-muted-foreground text-sm">{officer.year}</p>
-                </CardContent>
-              </Card>
+                  <p className="text-muted-foreground text-sm mb-2">{officer.year}</p>
+                  <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground">
+                    <span className="flex items-center">
+                      <GraduationCap className="h-3 w-3 mr-1" />
+                      {officer.major}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-center mt-2">
+                    <span className="flex items-center text-xs text-muted-foreground">
+                      <Globe className="h-3 w-3 mr-1" />
+                      {officer.homeCountry}
+                    </span>
+                  </div>
+                  
+                  {/* Visual hint that the card is clickable */}
+                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="text-sm text-primary">Click to view bio →</p>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -396,6 +446,15 @@ function HomePage({ onPageChange }: HomePageProps) {
           </div>
         </div>
       </section>
+
+      {/* Step 5: Conditionally render the modal */}
+      {isModalOpen && selectedOfficer && (
+        <OfficerModal 
+          officer={selectedOfficer}
+          isOpen={isModalOpen}
+          onClose={closeOfficerModal}
+        />
+      )}
     </>
   );
 }
