@@ -7,8 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { ExternalLink, ChevronRight, Users, CalendarIcon, BookOpen, Image as ImageIcon, Home, Clock, MapPin, X, GraduationCap, Globe } from 'lucide-react';
 
-// Officers data
-const officers = [
+// Officers data with proper typing
+interface Officer {
+  name: string;
+  role: string;
+  year: string;
+  image: string;
+  major: string;
+  homeCountry: string;
+  quote: string;
+}
+
+const officers: Officer[] = [
   { 
     name: "Ibrahim Abubeker", 
     role: "President", 
@@ -216,6 +226,20 @@ interface OfficerModalProps {
 }
 
 function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
+  // Handle escape key - MUST be before any early returns
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isOpen, onClose]);
+  
   if (!isOpen || !officer) return null;
 
   return (
