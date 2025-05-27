@@ -67,8 +67,8 @@ const officers: Officer[] = [
 ];
 
 const importantLinks = [
-  { title: "Join ISAB", url: "#", description: "Become a member of our organization", icon: Users },
-  { title: "UNT Resources", url: "#", description: "Access UNT student resources", icon: BookOpen },
+  { title: "Join ISAB", url: "mailto:untisab23@gmail.com?subject=ISAB Membership Inquiry", description: "Become a member of our organization", icon: Users },
+  { title: "UNT Resources", url: "https://international.unt.edu/programs-and-events/index.html", description: "Access UNT student resources", icon: BookOpen },
   { title: "Events Calendar", url: "#", description: "Stay updated with our upcoming events", icon: CalendarIcon }
 ];
 
