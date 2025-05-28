@@ -20,14 +20,14 @@ const officers = [
     quote: "Live your life"
   },
   { 
-    name: "Amaris Charles", 
+    name: "Shiori Hisaoka", 
     role: "Vice President", 
     year: "2024-25", 
-    image: "/assets/officers/amaris.jpeg",
-    major: "Anthropology",
-    homeCountry: "Puerto Rico",
-    countryFlag: "🏝️",
-    quote: "Something inspiring"
+    image: "/assets/officers/shiori.jpeg",
+    major: "Psychology",
+    homeCountry: "Japan",
+    countryFlag: "🏯",
+    quote: "Shinzuo Sasageyo"
   },
   { 
     name: "Iman Mohammed", 
@@ -49,16 +49,7 @@ const officers = [
     countryFlag: "🌍",
     quote: "Football is life"
   },
-  { 
-    name: "Shiori Hisaoka", 
-    role: "Outreach Coordinator", 
-    year: "2024-25", 
-    image: "/assets/officers/shiori.jpeg",
-    major: "Psychology",
-    homeCountry: "Japan",
-    countryFlag: "🏯",
-    quote: "Shinzuo Sasageyo"
-  }
+
 ];
 
 // Important Links - Customize URLs here
@@ -70,7 +61,7 @@ const importantLinks = [
     icon: Users 
   },
   { 
-    title: "International Affairs Programms", 
+    title: "International Affairs Programs", 
     url: "https://international.unt.edu/programs-and-events/index.html", 
     description: "Programs and events for international students", 
     icon: CalendarIcon 
@@ -120,29 +111,111 @@ const pastOfficers = [
     name: "Adrian \"Boss\" Tam",
     role: "Founding President",
     yearsServed: "Fall 2023 - Spring 2024",
-    major: "Master&apos;s in Communication",
+    major: "Master's in Communication",
     homeCountry: "Malaysia",
-    countryFlag: "🌏",
+    //countryFlag: "🇲🇾",
+    image: "/assets/officers/Boss.jpg",
     keyContributions: [
       "Established the International Student Advisory Board and recruited founding members",
-      "Provided foundational leadership that enabled ISAB&apos;s rapid growth and development",
-      "Created the organizational framework that continues to guide ISAB&apos;s mission today"
+      "Provided foundational leadership that enabled ISAB's rapid growth and development",
+      "Created the organizational framework that continues to guide ISAB's mission today"
     ],
-    hasPhoto: false
+    hasPhoto: true
+  },
+  {
+    name: "Amaris Charles",
+    role: "Founding Vice President",
+    yearsServed: "Spring 2024 - Spring 2025",
+    major: "Anthropology",
+    homeCountry: "Puerto Rico",
+    //countryFlag: "🇵🇷",
+    image: "/assets/officers/amaris.jpeg", // Using existing current officer photo
+    keyContributions: [
+      "Served as Founding Vice President, providing essential leadership during ISAB's formative period",
+      "Developed comprehensive event management strategies that established ISAB's signature programming approach",
+      "Mentored incoming leadership and created sustainable organizational practices that continue to drive ISAB's success",
+      "Spearheaded cultural initiatives that significantly enhanced international student engagement and campus visibility"
+    ],
+    hasPhoto: true
   },
   {
     name: "Bhavesh Gujula",
     role: "Founding Treasurer",
     yearsServed: "Fall 2023 - Spring 2024", 
-    major: "Master&apos;s in Data Analytics",
+    major: "Master's in Data Analytics",
     homeCountry: "India",
-    countryFlag: "🌏",
+    //countryFlag: "🇮🇳",
+    image: "/assets/officers/Bhavesh.jpg",
     keyContributions: [
-      "Secured initial funding and financial resources essential for ISAB&apos;s early operations",
-      "Managed fiscal responsibilities for inaugural events that established ISAB&apos;s presence on campus",
+      "Secured initial funding and financial resources essential for ISAB's early operations",
+      "Managed fiscal responsibilities for inaugural events that established ISAB's presence on campus",
       "Developed financial protocols and procedures that laid the groundwork for sustainable operations"
     ],
-    hasPhoto: false
+    hasPhoto: true
+  },
+  {
+    name: "Sai Kaushik",
+    role: "International Student Support Coordinator",
+    yearsServed: "Spring 2024 - Fall 2024",
+    major: "Business Analytics",
+    homeCountry: "India",
+    //countryFlag: "🇮🇳",
+    image: "/assets/officers/Sai.jpg",
+    keyContributions: [
+      "Leveraged extensive knowledge from his role as International Affairs student assistant to provide expert guidance on immigration processes and campus resources",
+      "Developed comprehensive support frameworks for international students navigating complex university systems and federal regulations",
+      "Created resource databases and informational materials that streamlined access to critical student services",
+      "Served as a vital bridge between international students and university administration, advocating for policy improvements based on firsthand experience"
+    ],
+    hasPhoto: true // Set to true when photo is available
+  },
+  {
+    name: "Laura DeCesero",
+    role: "Essential Needs Coordinator & Secretary",
+    yearsServed: "Spring 2024 - Fall 2024",
+    major: "Biomedical Engineering",
+    homeCountry: "Italy",
+    //countryFlag: "🇮🇹",
+    image: "/assets/officers/laura-decesero.jpeg",
+    keyContributions: [
+      "Designed and implemented comprehensive international student needs assessment survey, providing critical data for university policy improvements",
+      "Served dual roles as Secretary and Essential Needs Coordinator, ensuring organizational efficiency and student advocacy",
+      "Co-organized the inaugural 'Rhythms of the World' cultural celebration, establishing a cornerstone annual tradition",
+      "Created systematic documentation processes that improved organizational continuity and institutional memory"
+    ],
+    hasPhoto: false // Set to true when photo is available
+  },
+  {
+    name: "Yong Papunggon",
+    role: "Event Coordinator",
+    yearsServed: "Spring 2024 - Fall 2024",
+    major: "Accounting",
+    homeCountry: "Thailand",
+    countryFlag: "🇹🇭",
+    //image: "/assets/officers/Yong.jpg",
+    keyContributions: [
+      "Pioneered and executed UNT's first-ever Songkran Festival, creating a landmark cultural event that significantly elevated ISAB's campus presence",
+      "Developed innovative event planning frameworks that became the template for future large-scale cultural celebrations",
+      "Successfully coordinated multiple high-impact events that attracted diverse audiences and strengthened intercultural connections",
+      "Established strategic partnerships with campus organizations and local community groups, expanding ISAB's collaborative network"
+    ],
+    hasPhoto: true // Set to true when photo is available
+  },
+  {
+    name: "Chaehyeon Kim",
+    role: "Communication Coordinator",
+    yearsServed: "Spring 2024 - Fall 2024",
+    major: "Art",
+    homeCountry: "South Korea",
+    //countryFlag: "🇰🇷",
+    image: "/assets/officers/chaehyeon.jpg",
+    keyContributions: [
+      "Spearheaded ISAB's digital presence strategy, establishing the organization's foundational social media framework",
+      "Designed and produced the inaugural officer introduction posts, creating the visual identity template for future leadership announcements",
+      "Developed content creation standards and brand guidelines that elevated ISAB's professional image across all digital platforms",
+      "Implemented strategic communication initiatives that significantly increased student engagement and organizational visibility during ISAB's critical growth phase"
+    ],
+    hasPhoto: true // Set to true when photo is available
   }
 ];
 
