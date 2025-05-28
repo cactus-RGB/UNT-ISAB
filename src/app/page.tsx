@@ -113,7 +113,7 @@ const pastOfficers = [
     yearsServed: "Fall 2023 - Spring 2024",
     major: "Master's in Communication",
     homeCountry: "Malaysia",
-    //countryFlag: "🇲🇾",
+    countryFlag: "🇲🇾",
     image: "/assets/officers/Boss.jpg",
     keyContributions: [
       "Established the International Student Advisory Board and recruited founding members",
@@ -191,8 +191,8 @@ const pastOfficers = [
     yearsServed: "Spring 2024 - Fall 2024",
     major: "Accounting",
     homeCountry: "Thailand",
-    countryFlag: "🇹🇭",
-    //image: "/assets/officers/Yong.jpg",
+    //countryFlag: "🇹🇭",
+    image: "/assets/officers/Yong.jpg",
     keyContributions: [
       "Pioneered and executed UNT's first-ever Songkran Festival, creating a landmark cultural event that significantly elevated ISAB's campus presence",
       "Developed innovative event planning frameworks that became the template for future large-scale cultural celebrations",
@@ -626,18 +626,21 @@ function HistoryPage() {
               <Card key={index} className="shadow-card-hover border-border bg-card hover:shadow-card-elevated transition-all duration-300">
                 <CardContent className="p-8">
                   <div className="flex flex-col md:flex-row gap-8">
-                    {/* Photo placeholder */}
+                    {/* FIXED Photo section */}
                     <div className="flex-shrink-0">
-                      <div className="w-32 h-32 rounded-full bg-muted/50 border-2 border-primary/20 flex items-center justify-center">
-                        {officer.hasPhoto ? (
-                          <div className="w-full h-full rounded-full overflow-hidden">
-                            {/* Photo will be added here when available */}
-                            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                              <Users className="h-12 w-12 text-primary/60" />
-                            </div>
-                          </div>
+                      <div className="w-32 h-32 rounded-full border-2 border-primary/20 overflow-hidden">
+                        {officer.hasPhoto && officer.image ? (
+                          <Image
+                            src={officer.image}
+                            alt={`${officer.name} - ${officer.role}`}
+                            width={128}
+                            height={128}
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
-                          <Users className="h-12 w-12 text-primary/60" />
+                          <div className="w-full h-full bg-muted/50 flex items-center justify-center">
+                            <Users className="h-12 w-12 text-primary/60" />
+                          </div>
                         )}
                       </div>
                     </div>
