@@ -16,8 +16,8 @@ const officers = [
     image: "/assets/officers/ibrahim.jpeg",
     major: "Computer Science",
     homeCountry: "Ethiopia",
-    countryFlag: "🇪🇹",
-    quote: "Keep it moving"
+    countryFlag: "🌍",
+    quote: "Live your life"
   },
   { 
     name: "Amaris Charles", 
@@ -26,7 +26,7 @@ const officers = [
     image: "/assets/officers/amaris.jpeg",
     major: "Anthropology",
     homeCountry: "Puerto Rico",
-    countryFlag: "🇵🇷",
+    countryFlag: "🏝️",
     quote: "Something inspiring"
   },
   { 
@@ -36,7 +36,7 @@ const officers = [
     image: "/assets/officers/iman.jpeg",
     major: "Business Analytics",
     homeCountry: "Ethiopia",
-    countryFlag: "🇪🇹",
+    countryFlag: "🌍",
     quote: "Winter is coming"
   },
   { 
@@ -46,7 +46,7 @@ const officers = [
     image: "/assets/officers/mohammed.jpeg",
     major: "Business Computer Information Systems",
     homeCountry: "Ethiopia",
-    countryFlag: "🇪🇹",
+    countryFlag: "🌍",
     quote: "Football is life"
   },
   { 
@@ -56,7 +56,7 @@ const officers = [
     image: "/assets/officers/shiori.jpeg",
     major: "Psychology",
     homeCountry: "Japan",
-    countryFlag: "🇯🇵",
+    countryFlag: "🏯",
     quote: "Shinzuo Sasageyo"
   }
 ];
@@ -65,21 +65,21 @@ const officers = [
 const importantLinks = [
   { 
     title: "Join ISAB", 
-    url: "mailto:isab@unt.edu?subject=ISAB Membership Inquiry", 
+    url: "https://unt.campuslabs.com/engage/organization/untisab", 
     description: "Become a member of our organization", 
     icon: Users 
   },
   { 
-    title: "UNT Resources", 
-    url: "https://international.unt.edu/current-students", 
-    description: "Access UNT student resources", 
-    icon: BookOpen 
+    title: "International Affairs Programms", 
+    url: "https://international.unt.edu/programs-and-events/index.html", 
+    description: "Programs and events for international students", 
+    icon: CalendarIcon 
   },
   { 
-    title: "Events Calendar", 
-    url: "#", // TODO: Add your events calendar URL here
-    description: "Stay updated with our upcoming events", 
-    icon: CalendarIcon 
+    title: "UNT Resources", 
+    url: "https://studentaffairs.unt.edu/push/unt-resources/index.html", 
+    description: "Access UNT student resources", 
+    icon: BookOpen
   }
 ];
 
@@ -122,7 +122,7 @@ const pastOfficers = [
     yearsServed: "Fall 2023 - Spring 2024",
     major: "Master&apos;s in Communication",
     homeCountry: "Malaysia",
-    countryFlag: "🇲🇾",
+    countryFlag: "🌏",
     keyContributions: [
       "Established the International Student Advisory Board and recruited founding members",
       "Provided foundational leadership that enabled ISAB&apos;s rapid growth and development",
@@ -136,7 +136,7 @@ const pastOfficers = [
     yearsServed: "Fall 2023 - Spring 2024", 
     major: "Master&apos;s in Data Analytics",
     homeCountry: "India",
-    countryFlag: "🇮🇳",
+    countryFlag: "🌏",
     keyContributions: [
       "Secured initial funding and financial resources essential for ISAB&apos;s early operations",
       "Managed fiscal responsibilities for inaugural events that established ISAB&apos;s presence on campus",

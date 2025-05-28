@@ -33,21 +33,55 @@ function Footer() {
           </div>
           <div>
             <h3 className="text-xl font-bold mb-4">Contact Us</h3>
-            <p className="text-secondary">Email: untisab23@gmail.com</p>
-            <p className="text-secondary">Office: Marquis Hall 1511 W Mulberry St, Denton, TX 76201</p>
-            <p className="text-secondary">Phone: (214)-801-6149</p>
+            <div className="space-y-2">
+              <p className="text-secondary">
+                Email: <a 
+                  href="mailto:untisab23@gmail.com" 
+                  className="text-primary-foreground hover:text-secondary underline transition-colors duration-200"
+                >
+                  untisab23@gmail.com
+                </a>
+              </p>
+              <p className="text-secondary">
+                Office: <a 
+                  href="https://maps.google.com/?q=Marquis+Hall+1511+W+Mulberry+St+Denton+TX+76201" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary-foreground hover:text-secondary underline transition-colors duration-200"
+                >
+                  Marquis Hall 1511 W Mulberry St, Denton, TX 76201
+                </a>
+              </p>
+              <p className="text-secondary">
+                Phone: <a 
+                  href="tel:+12148016149" 
+                  className="text-primary-foreground hover:text-secondary underline transition-colors duration-200"
+                >
+                  (214)-801-6149
+                </a>
+              </p>
+            </div>
           </div>
           <div>
-            <h3 className="text-xl font-bold mb-4">Follow Us</h3>
-            <div className="flex space-x-4">
-              <a href="#" className="text-primary-foreground hover:text-secondary flex items-center">
-                <ExternalLink className="h-4 w-4 mr-1" /> Instagram
+            <h3 className="text-xl font-bold mb-4">Follow UNT</h3>
+            <div className="space-y-3">
+              <a 
+                href="https://www.instagram.com/untisab?igsh=amJqYXViZ2lvcHl4" 
+                className="text-primary-foreground hover:text-secondary flex items-center transition-colors duration-200"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" /> ISAB
               </a>
-              <a href="#" className="text-primary-foreground hover:text-secondary flex items-center">
-                <ExternalLink className="h-4 w-4 mr-1" /> Twitter
+              <a 
+                href="https://www.instagram.com/untinternational?igsh=d2d5Z3F0YWluYzNy" 
+                className="text-primary-foreground hover:text-secondary flex items-center transition-colors duration-200"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" /> International Affairs
               </a>
-              <a href="#" className="text-primary-foreground hover:text-secondary flex items-center">
-                <ExternalLink className="h-4 w-4 mr-1" /> Facebook
+              <a 
+                href="https://www.instagram.com/unt?igsh=aHR4MzhzZ3lxYnhx" 
+                className="text-primary-foreground hover:text-secondary flex items-center transition-colors duration-200"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" /> UNT
               </a>
             </div>
           </div>
