@@ -575,7 +575,7 @@ const semesterBoards: SemesterBoard[] = [
     id: 'spring-2024-board',
     title: 'Spring 2024 Board', 
     period: 'Spring 2024',
-    description: 'The expansion era that transformed ISAB into a campus powerhouse. This dynamic 8-member team organized ISAB\'s first major events and established key traditions that continue today. Key achievements: Inaugural Songkran Festival, first Town Hall meeting, International Sash Ceremony, Vice Provost Luncheon, and UNT\'s first International Student Advisory Board recognition.',
+    description: 'The expansion era that transformed ISAB into a campus powerhouse. This dynamic 8-member team organized ISAB&apos;s first major events and established key traditions that continue today. Key achievements: Inaugural Songkran Festival, first Town Hall meeting, International Sash Ceremony, Vice Provost Luncheon, and UNT&apos;s first International Student Advisory Board recognition.',
     coverImage: '/assets/boards/spring-2024/cover.jpg',
     totalOfficers: 8,
     officers: [
@@ -593,7 +593,7 @@ const semesterBoards: SemesterBoard[] = [
     id: 'fall-2024-board',
     title: 'Fall 2024 Board',
     period: 'Fall 2024', 
-    description: 'The consolidation period that strengthened ISAB\'s campus presence and enhanced student engagement. This experienced team focused on sustainable growth and community building. Key achievements: Football 101 cultural bridge event, Homecoming Week participation, Rhythms of the World celebration, comprehensive international student survey, and expanded social media presence.',
+    description: 'The consolidation period that strengthened ISAB&apos;s campus presence and enhanced student engagement. This experienced team focused on sustainable growth and community building. Key achievements: Football 101 cultural bridge event, Homecoming Week participation, Rhythms of the World celebration, comprehensive international student survey, and expanded social media presence.',
     coverImage: '/assets/boards/fall-2024/cover.jpeg',
     totalOfficers: 8,
     officers: [
@@ -611,7 +611,7 @@ const semesterBoards: SemesterBoard[] = [
     id: 'spring-2025-board',
     title: 'Spring 2025 Board',
     period: 'Spring 2025',
-    description: 'The current innovation-focused leadership driving ISAB toward new heights of impact and engagement. This streamlined 5-member team emphasizes quality programming and strategic growth. Ongoing initiatives: Second annual Songkran Festival, expanded town hall format, Valentine\'s Art Night, enhanced Google Calendar integration, and strengthened university partnerships.',
+    description: 'The current innovation-focused leadership driving ISAB toward new heights of impact and engagement. This streamlined 5-member team emphasizes quality programming and strategic growth. Ongoing initiatives: Second annual Songkran Festival, expanded town hall format, Valentine&apos;s Art Night, enhanced Google Calendar integration, and strengthened university partnerships.',
     coverImage: '/assets/boards/spring-2025/cover.jpeg',
     totalOfficers: 5,
     officers: [
@@ -686,7 +686,7 @@ const eventGalleries = [
     id: 'eve-nations-2024',
     title: 'Eve of Nations OU Trip',
     date: 'April 12, 2024',
-    description: 'First annual trip to University of Oklahoma\'s cultural celebration',
+    description: 'First annual trip to University of Oklahoma&apos;s cultural celebration',
     coverImage: '/assets/gallery/evenations/cover.jpg',
     totalImages: 16,
     images: [
@@ -700,7 +700,7 @@ const eventGalleries = [
     id: 'songkran-2024',
     title: 'Songkran Water Festival',
     date: 'April 17, 2024',
-    description: 'UNT\'s first-ever Songkran Festival celebration organized by Yong Pappunggon',
+    description: 'UNT&apos;s first-ever Songkran Festival celebration organized by Yong Pappunggon',
     coverImage: '/assets/gallery/songkran/cover.jpg',
     totalImages: 25,
     images: [
@@ -955,7 +955,7 @@ const eventGalleries = [
     id: 'eve-nations-2025',
     title: 'Eve of Nations OU Trip 2',
     date: 'April 11, 2025',
-    description: 'Second annual trip to University of Oklahoma\'s cultural celebration',
+    description: 'Second annual trip to University of Oklahoma&apos;s cultural celebration',
     coverImage: '/assets/gallery/evenations2/cover.jpg',
     totalImages: 18,
     images: [
