@@ -13,7 +13,7 @@ const officers = [
     name: "Ibrahim Abubeker", 
     role: "President", 
     year: "2024-25", 
-    image: "/assets/officers/ibrahim.jpeg",
+    image: "/assets/officers/Ibrahim.jpg",
     major: "Computer Science",
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
@@ -23,7 +23,7 @@ const officers = [
     name: "Amaris Charles", 
     role: "Vice President", 
     year: "2024-25", 
-    image: "/assets/officers/amaris.jpeg",
+    image: "/assets/officers/Amaris.jpeg",
     major: "Anthropology",
     homeCountry: "Puerto Rico",
     countryFlag: "🇵🇷",
@@ -33,7 +33,7 @@ const officers = [
     name: "Iman Mohammed", 
     role: "Secretary", 
     year: "2024-25", 
-    image: "/assets/officers/iman.jpeg",
+    image: "/assets/officers/Iman.jpeg",
     major: "Business Analytics",
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
@@ -43,7 +43,7 @@ const officers = [
     name: "Shiori Hisaoka", 
     role: "Outreach Coordinator", 
     year: "2024-25", 
-    image: "/assets/officers/shiori.jpeg",
+    image: "/assets/officers/Shiori.jpeg",
     major: "Psychology",
     homeCountry: "Japan",
     countryFlag: "🇯🇵",
@@ -53,7 +53,7 @@ const officers = [
     name: "Mohammed Abubeker", 
     role: "Event Coordinator", 
     year: "2024-25", 
-    image: "/assets/officers/mohammed.jpeg",
+    image: "/assets/officers/Mohammed.jpeg",
     major: "Business Computer Information Systems",
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
@@ -290,7 +290,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Anthropology", 
     homeCountry: "Puerto Rico",
     countryFlag: "🇵🇷",
-    image: "/assets/officers/amaris.jpeg",
+    image: "/assets/officers/Amaris.jpeg",
     hasPhoto: true,
     roles: [
       { semester: "Founding Board", period: "December 2023", role: "Founding Vice President" },
@@ -314,7 +314,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Computer Science",
     homeCountry: "Ethiopia", 
     countryFlag: "🇪🇹",
-    image: "/assets/officers/ibrahim.jpeg",
+    image: "/assets/officers/Ibrahim.jpg",
     hasPhoto: true,
     roles: [
       { semester: "Founding Board", period: "December 2023", role: "Founding Secretary" },
@@ -383,8 +383,8 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Biomedical Engineering",
     homeCountry: "Italy",
     countryFlag: "🇮🇹",
-    image: "/assets/officers/laura-decesero.jpeg",
-    hasPhoto: false,
+    image: "/assets/officers/Laura.jpg",
+    hasPhoto: true,
     roles: [
       { semester: "Spring 2024", period: "Spring 2024", role: "International Student Support Coordinator" },
       { semester: "Fall 2024", period: "Fall 2024", role: "Secretary" }
@@ -405,7 +405,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Art",
     homeCountry: "South Korea",
     countryFlag: "🇰🇷",
-    image: "/assets/officers/chaehyeon.jpg",
+    image: "/assets/officers/Chaehyeon.jpg",
     hasPhoto: true,
     roles: [
       { semester: "Spring 2024", period: "Spring 2024", role: "Communications Coordinator" }
@@ -446,7 +446,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Data Science",
     homeCountry: "India", 
     countryFlag: "🇮🇳",
-    image: "/assets/officers/suma.jpg",
+    image: "/assets/officers/Suma.jpg",
     hasPhoto: true,
     roles: [
       { semester: "Fall 2024", period: "Fall 2024", role: "International Student Support Coordinator" }
@@ -466,7 +466,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "English",
     homeCountry: "Brazil",
     countryFlag: "🇧🇷",
-    image: "/assets/officers/marina.jpg", 
+    image: "/assets/officers/Marina.jpg", 
     hasPhoto: true,
     roles: [
       { semester: "Fall 2024", period: "Fall 2024", role: "Outreach Coordinator" }
@@ -486,7 +486,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Business Analytics", 
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
-    image: "/assets/officers/iman.jpeg",
+    image: "/assets/officers/Iman.jpeg",
     hasPhoto: true,
     roles: [
       { semester: "Fall 2024", period: "Fall 2024", role: "Secretary" },
@@ -506,7 +506,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Psychology",
     homeCountry: "Japan",
     countryFlag: "🇯🇵", 
-    image: "/assets/officers/shiori.jpeg",
+    image: "/assets/officers/Shiori.jpeg",
     hasPhoto: true,
     roles: [
       { semester: "Fall 2024", period: "Fall 2024", role: "Event Coordinator" },
@@ -527,7 +527,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Business Computer Information Systems",
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
-    image: "/assets/officers/mohammed.jpeg", 
+    image: "/assets/officers/Mohammed.jpeg", 
     hasPhoto: true,
     roles: [
       { semester: "Fall 2024", period: "Fall 2024", role: "Outreach Coordinator" },
@@ -561,8 +561,8 @@ const semesterBoards: SemesterBoard[] = [
     id: 'founding-board-2023',
     title: 'Founding Board',
     period: 'December 2023',
-    description: 'The pioneering leadership team that established ISAB and laid the foundation for its future growth',
-    coverImage: '/assets/boards/founding-2023/cover.jpg',
+    description: 'The pioneering leadership team that established ISAB from the ground up. This foundational board created the organizational framework, secured initial university recognition, and laid the groundwork for all future growth. Key achievements: Official ISAB establishment, initial member recruitment, and organizational charter development.',
+    coverImage: '/assets/boards/founding-2023/cover.jpeg',
     totalOfficers: 4,
     officers: [
       { id: "adrian-tam", role: "Founding President" },
@@ -575,7 +575,7 @@ const semesterBoards: SemesterBoard[] = [
     id: 'spring-2024-board',
     title: 'Spring 2024 Board', 
     period: 'Spring 2024',
-    description: 'The dynamic team that drove ISAB\'s major growth phase, organizing landmark events and establishing key traditions',
+    description: 'The expansion era that transformed ISAB into a campus powerhouse. This dynamic 8-member team organized ISAB\'s first major events and established key traditions that continue today. Key achievements: Inaugural Songkran Festival, first Town Hall meeting, International Sash Ceremony, Vice Provost Luncheon, and UNT\'s first International Student Advisory Board recognition.',
     coverImage: '/assets/boards/spring-2024/cover.jpg',
     totalOfficers: 8,
     officers: [
@@ -593,8 +593,8 @@ const semesterBoards: SemesterBoard[] = [
     id: 'fall-2024-board',
     title: 'Fall 2024 Board',
     period: 'Fall 2024', 
-    description: 'The expanded leadership team that consolidated ISAB\'s growth and enhanced its campus presence',
-    coverImage: '/assets/boards/fall-2024/cover.jpg',
+    description: 'The consolidation period that strengthened ISAB\'s campus presence and enhanced student engagement. This experienced team focused on sustainable growth and community building. Key achievements: Football 101 cultural bridge event, Homecoming Week participation, Rhythms of the World celebration, comprehensive international student survey, and expanded social media presence.',
+    coverImage: '/assets/boards/fall-2024/cover.jpeg',
     totalOfficers: 8,
     officers: [
       { id: "ibrahim-abubeker", role: "President" },
@@ -611,8 +611,8 @@ const semesterBoards: SemesterBoard[] = [
     id: 'spring-2025-board',
     title: 'Spring 2025 Board',
     period: 'Spring 2025',
-    description: 'The current leadership team continuing ISAB\'s mission and expanding its impact on campus',
-    coverImage: '/assets/boards/spring-2025/cover.jpg',
+    description: 'The current innovation-focused leadership driving ISAB toward new heights of impact and engagement. This streamlined 5-member team emphasizes quality programming and strategic growth. Ongoing initiatives: Second annual Songkran Festival, expanded town hall format, Valentine\'s Art Night, enhanced Google Calendar integration, and strengthened university partnerships.',
+    coverImage: '/assets/boards/spring-2025/cover.jpeg',
     totalOfficers: 5,
     officers: [
       { id: "ibrahim-abubeker", role: "President" },
@@ -1369,112 +1369,132 @@ function HistoryPage() {
   // Main history view
   if (!selectedBoard) {
     return (
-      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 sm:mb-12 text-foreground">Our History</h1>
-          
-          {/* Main History Content */}
-          <Card className="shadow-card-hover border-border bg-card mb-16">
-            <CardContent className="p-12">
-              <div className="prose prose-lg max-w-none">
-                <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
-                  <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
-                  Foundation
-                </h2>
-                <p className="text-muted-foreground mb-8 leading-relaxed">
-                  The International Student Advisory Board (ISAB) at UNT was founded to amplify the voices 
-                  of international students, ensuring their concerns and needs are heard and addressed by 
-                  the university administration. Officially inaugurated on January 30, 2024, ISAB started as a small 
-                  initiative but quickly grew into a recognized student organization. The board was created 
-                  to foster a welcoming environment for international students, advocating for their interests 
-                  and enhancing their experience at UNT.
-                </p>
-                
-                <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
-                  <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
-                  Mission
-                </h2>
-                <p className="text-muted-foreground mb-8 leading-relaxed">
-                  Our mission is to serve as the voice for international students at UNT, advocating 
-                  for their needs and fostering a welcoming community that celebrates diversity.
-                </p>
+      <div className="w-full">
+        {/* History Banner */}
+        <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden">
+          <Image
+            src="/assets/banners/history-banner.jpg"
+            alt="ISAB History"
+            fill
+            style={{ objectFit: 'cover' }}
+            sizes="100vw"
+            className="w-full h-full"
+          />
+          <div className="absolute inset-0 bg-black/40"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center text-white">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">Our Legacy</h1>
+              <p className="text-lg sm:text-xl md:text-2xl opacity-90">Celebrating ISAB's Journey of Growth and Impact</p>
+            </div>
+          </div>
+        </div>
 
-                <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
-                  <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
-                  Key Accomplishments
-                </h2>
-                <div className="space-y-6">
-                  {[
-                    { title: "Growth & Impact", desc: "Since inauguration, ISAB has hosted over 25 major events including the inaugural Songkran Festival, Rhythms of the World, and multiple town halls, becoming a vital part of campus life." },
-                    { title: "Policy Advocacy", desc: "ISAB has successfully influenced university policies through dedicated town halls and direct engagement with administration to better support international students." },
-                    { title: "Cultural Celebrations", desc: "Organized landmark events like UNT's first Songkran Water Festival, International Sash Ceremony, and collaborative celebrations that have become annual traditions." },
-                    { title: "Community Building", desc: "Established comprehensive support through events like Football 101, International Game Nights, and Employment Opportunities meetings to help international students integrate and succeed." }
-                  ].map((item, index) => (
-                    <div key={index} className="flex items-start space-x-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors duration-200">
-                      <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
-                      <div>
-                        <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
-                        <p className="text-muted-foreground">{item.desc}</p>
+        <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
+          <div className="max-w-4xl mx-auto">
+            
+            {/* Main History Content */}
+            <Card className="shadow-card-hover border-border bg-card mb-16">
+              <CardContent className="p-12">
+                <div className="prose prose-lg max-w-none">
+                  <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
+                    <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
+                    Foundation
+                  </h2>
+                  <p className="text-muted-foreground mb-8 leading-relaxed">
+                    The International Student Advisory Board (ISAB) at UNT was founded to amplify the voices 
+                    of international students, ensuring their concerns and needs are heard and addressed by 
+                    the university administration. Officially inaugurated on January 30, 2024, ISAB started as a small 
+                    initiative but quickly grew into a recognized student organization. The board was created 
+                    to foster a welcoming environment for international students, advocating for their interests 
+                    and enhancing their experience at UNT.
+                  </p>
+                  
+                  <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
+                    <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
+                    Mission
+                  </h2>
+                  <p className="text-muted-foreground mb-8 leading-relaxed">
+                    Our mission is to serve as the voice for international students at UNT, advocating 
+                    for their needs and fostering a welcoming community that celebrates diversity.
+                  </p>
+
+                  <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
+                    <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
+                    Key Accomplishments
+                  </h2>
+                  <div className="space-y-6">
+                    {[
+                      { title: "Growth & Impact", desc: "Since inauguration, ISAB has hosted over 25 major events including the inaugural Songkran Festival, Rhythms of the World, and multiple town halls, becoming a vital part of campus life." },
+                      { title: "Policy Advocacy", desc: "ISAB has successfully influenced university policies through dedicated town halls and direct engagement with administration to better support international students." },
+                      { title: "Cultural Celebrations", desc: "Organized landmark events like UNT's first Songkran Water Festival, International Sash Ceremony, and collaborative celebrations that have become annual traditions." },
+                      { title: "Community Building", desc: "Established comprehensive support through events like Football 101, International Game Nights, and Employment Opportunities meetings to help international students integrate and succeed." }
+                    ].map((item, index) => (
+                      <div key={index} className="flex items-start space-x-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors duration-200">
+                        <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                        <div>
+                          <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
+                          <p className="text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Legacy of Leadership Section - Folder View */}
+            <div className="mb-16">
+              <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center">
+                <div className="w-2 h-10 bg-primary rounded-full mr-4"></div>
+                Legacy of Leadership
+              </h2>
+              <p className="text-muted-foreground mb-12 text-lg">
+                Click on any semester board to view the officers who served during that period
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+                {semesterBoards.map((board, index) => (
+                  <Card 
+                    key={index} 
+                    className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2"
+                    onClick={() => openBoardView(board.id)}
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={board.coverImage}
+                        alt={board.title}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      
+                      {/* Officer count badge */}
+                      <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                        {board.totalOfficers} officers
+                      </div>
+
+                      {/* Leadership icon overlay */}
+                      <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        <Users className="h-5 w-5 text-white" />
                       </div>
                     </div>
-                  ))}
-                </div>
+                    
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
+                        {board.title}
+                      </h3>
+                      <p className="text-primary font-medium text-sm mb-3">{board.period}</p>
+                      <p className="text-muted-foreground leading-relaxed text-sm">{board.description}</p>
+                      
+                      <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <p className="text-sm text-primary font-medium">Click to view officers →</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Legacy of Leadership Section - Folder View */}
-          <div className="mb-16">
-            <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center">
-              <div className="w-2 h-10 bg-primary rounded-full mr-4"></div>
-              Legacy of Leadership
-            </h2>
-            <p className="text-muted-foreground mb-12 text-lg">
-              Click on any semester board to view the officers who served during that period
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-              {semesterBoards.map((board, index) => (
-                <Card 
-                  key={index} 
-                  className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2"
-                  onClick={() => openBoardView(board.id)}
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
-                      src={board.coverImage}
-                      alt={board.title}
-                      fill
-                      style={{ objectFit: 'cover' }}
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      className="transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    
-                    {/* Officer count badge */}
-                    <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
-                      {board.totalOfficers} officers
-                    </div>
-
-                    {/* Leadership icon overlay */}
-                    <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <Users className="h-5 w-5 text-white" />
-                    </div>
-                  </div>
-                  
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
-                      {board.title}
-                    </h3>
-                    <p className="text-primary font-medium text-sm mb-2">{board.period}</p>
-                    <p className="text-muted-foreground leading-relaxed">{board.description}</p>
-                    
-                    <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <p className="text-sm text-primary font-medium">Click to view officers →</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
             </div>
           </div>
         </div>
