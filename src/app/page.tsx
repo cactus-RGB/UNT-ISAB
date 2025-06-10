@@ -23,7 +23,7 @@ const officers = [
     name: "Amaris Charles", 
     role: "Vice President", 
     year: "2024-25", 
-    image: "/assets/officers/Amaris.jpeg",
+    image: "/assets/officers/Amaris.jpg",
     major: "Anthropology",
     homeCountry: "Puerto Rico",
     countryFlag: "🇵🇷",
@@ -33,7 +33,7 @@ const officers = [
     name: "Iman Mohammed", 
     role: "Secretary", 
     year: "2024-25", 
-    image: "/assets/officers/Iman.jpeg",
+    image: "/assets/officers/Iman.jpg",
     major: "Business Analytics",
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
@@ -43,7 +43,7 @@ const officers = [
     name: "Shiori Hisaoka", 
     role: "Outreach Coordinator", 
     year: "2024-25", 
-    image: "/assets/officers/Shiori.jpeg",
+    image: "/assets/officers/Shiori.jpg",
     major: "Psychology",
     homeCountry: "Japan",
     countryFlag: "🇯🇵",
@@ -53,7 +53,7 @@ const officers = [
     name: "Mohammed Abubeker", 
     role: "Event Coordinator", 
     year: "2024-25", 
-    image: "/assets/officers/Mohammed.jpeg",
+    image: "/assets/officers/Mohammed.jpg",
     major: "Business Computer Information Systems",
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
@@ -290,7 +290,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Anthropology", 
     homeCountry: "Puerto Rico",
     countryFlag: "🇵🇷",
-    image: "/assets/officers/Amaris.jpeg",
+    image: "/assets/officers/Amaris.jpg",
     hasPhoto: true,
     roles: [
       { semester: "Founding Board", period: "December 2023", role: "Founding Vice President" },
@@ -326,7 +326,8 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       "Rose from Founding Secretary to President, demonstrating exceptional leadership growth",
       "Maintained organizational continuity through detailed documentation and record-keeping",
       "Led ISAB's expansion phase as President with innovative programming and increased membership",
-      "Strengthened university relationships and policy advocacy initiatives"
+      "Strengthened university relationships and policy advocacy initiatives",
+      "Created the ISAB website, detailing the org's history and officer achievements as a solo developer"
     ],
     roleSpecificHighlights: {
       "Founding Secretary": ["Established documentation protocols", "Maintained founding meeting records"],
@@ -358,7 +359,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "sai-kaushik": {
     name: "Sai Kaushik Kollepalli",
-    major: "Business Analytics",
+    major: "Master's in Business Analytics",
     homeCountry: "India",
     countryFlag: "🇮🇳",
     image: "/assets/officers/Sai.jpg",
@@ -486,7 +487,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Business Analytics", 
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
-    image: "/assets/officers/Iman.jpeg",
+    image: "/assets/officers/Iman.jpg",
     hasPhoto: true,
     roles: [
       { semester: "Fall 2024", period: "Fall 2024", role: "Secretary" },
@@ -506,7 +507,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Psychology",
     homeCountry: "Japan",
     countryFlag: "🇯🇵", 
-    image: "/assets/officers/Shiori.jpeg",
+    image: "/assets/officers/Shiori.jpg",
     hasPhoto: true,
     roles: [
       { semester: "Fall 2024", period: "Fall 2024", role: "Event Coordinator" },
@@ -527,10 +528,9 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
     major: "Business Computer Information Systems",
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
-    image: "/assets/officers/Mohammed.jpeg", 
+    image: "/assets/officers/Mohammed.jpg", 
     hasPhoto: true,
     roles: [
-      { semester: "Fall 2024", period: "Fall 2024", role: "Outreach Coordinator" },
       { semester: "Spring 2025", period: "Spring 2025", role: "Event Coordinator" }
     ],
     overallContributions: [
