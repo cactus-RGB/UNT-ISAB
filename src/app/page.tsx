@@ -897,7 +897,7 @@ const eventGalleries = [
   },
   {
     id: 'valentines-art-2025',
-    title: 'Valentine\'s Day Art Night',
+    title: 'Valentine&apos;s Day Art Night',
     date: 'February 11, 2025',
     description: 'Creative art workshop celebrating love and friendship across cultures',
     coverImage: '/assets/gallery/valentines/cover.jpg',
