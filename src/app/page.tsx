@@ -1378,7 +1378,7 @@ function HistoryPage() {
     return (
       <div className="w-full">
         {/* History Banner */}
-        <div className="relative h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[32rem] overflow-hidden">
+        <div className="relative h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[40rem] 2xl:h-[48rem] overflow-hidden">
           <Image
             src="/assets/banners/history-banner.jpg"
             alt="ISAB History"
