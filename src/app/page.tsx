@@ -7,6 +7,87 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { ExternalLink, ChevronRight, Users, CalendarIcon, BookOpen, Image as ImageIcon, Home, Clock, MapPin, X, GraduationCap, Globe, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
 
+// Add custom styles for 3D flip animations
+const customStyles = `
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .group:hover .rotateY-6 {
+    transform: rotateY(6deg);
+  }
+  
+  .group:hover .rotateY-12 {
+    transform: rotateY(12deg);
+  }
+  
+  .rotateY-180 {
+    transform: rotateY(180deg);
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .animate-flip-to-modal {
+    animation: flipToModal 0.5s ease-in-out;
+  }
+  
+  .animate-modal-entrance {
+    animation: modalEntrance 0.3s ease-out;
+  }
+  
+  .animate-modal-content-entrance {
+    animation: modalContentEntrance 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
+  @keyframes flipToModal {
+    0% {
+      transform: rotateY(0deg) scale(1);
+    }
+    50% {
+      transform: rotateY(90deg) scale(0.8);
+    }
+    100% {
+      transform: rotateY(180deg) scale(1.1);
+    }
+  }
+  
+  @keyframes modalEntrance {
+    0% {
+      opacity: 0;
+      backdrop-filter: blur(0px);
+    }
+    100% {
+      opacity: 1;
+      backdrop-filter: blur(8px);
+    }
+  }
+  
+  @keyframes modalContentEntrance {
+    0% {
+      transform: rotateY(180deg) scale(1.1);
+      opacity: 0;
+    }
+    50% {
+      transform: rotateY(90deg) scale(0.9);
+      opacity: 0.5;
+    }
+    100% {
+      transform: rotateY(0deg) scale(1);
+      opacity: 1;
+    }
+  }
+`;
+
+// Inject styles only once
+if (typeof document !== 'undefined' && !document.getElementById('isab-flip-animations')) {
+  const styleElement = document.createElement('style');
+  styleElement.id = 'isab-flip-animations';
+  styleElement.textContent = customStyles;
+  document.head.appendChild(styleElement);
+}
+
 // Current officers data (Spring 2025 Board)
 const officers = [
   { 
@@ -1073,6 +1154,17 @@ interface OfficerModalProps {
 }
 
 function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsAnimating(true);
+      // Reset animation state after entrance
+      const timer = setTimeout(() => setIsAnimating(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -1090,11 +1182,15 @@ function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
 
   return (
     <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300 ${
+        isAnimating ? 'animate-modal-entrance' : ''
+      }`}
       onClick={onClose}
     >
       <div 
-        className="bg-card rounded-2xl shadow-card-elevated max-w-md w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100"
+        className={`bg-card rounded-2xl shadow-card-elevated max-w-md w-full max-h-[90vh] overflow-y-auto transform transition-all duration-500 ${
+          isAnimating ? 'animate-modal-content-entrance' : 'scale-100'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with close button */}
@@ -1173,10 +1269,21 @@ function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
 function HomePage({ onPageChange }: HomePageProps) {
   const [selectedOfficer, setSelectedOfficer] = useState<typeof officers[0] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [flippingCardIndex, setFlippingCardIndex] = useState<number | null>(null);
 
-  const openOfficerModal = (officer: typeof officers[0]) => {
-    setSelectedOfficer(officer);
-    setIsModalOpen(true);
+  const openOfficerModal = (officer: typeof officers[0], cardIndex: number) => {
+    setFlippingCardIndex(cardIndex);
+    
+    // Start the flip animation
+    setTimeout(() => {
+      setSelectedOfficer(officer);
+      setIsModalOpen(true);
+      
+      // Reset flip state after modal opens
+      setTimeout(() => {
+        setFlippingCardIndex(null);
+      }, 300);
+    }, 250); // Half of the flip animation duration
   };
 
   const closeOfficerModal = () => {
@@ -1245,10 +1352,15 @@ function HomePage({ onPageChange }: HomePageProps) {
             {officers.map((officer, index) => (
               <div
                 key={index}
-                onClick={() => openOfficerModal(officer)}
-                className="group transition-all duration-300 hover:shadow-card-elevated border border-border bg-primary-gradient hover:-translate-y-2 cursor-pointer rounded-lg overflow-hidden"
+                onClick={() => openOfficerModal(officer, index)}
+                className={`group transition-all duration-500 hover:shadow-card-elevated border border-border bg-primary-gradient hover:-translate-y-2 cursor-pointer rounded-lg overflow-hidden perspective-1000 ${
+                  flippingCardIndex === index ? 'animate-flip-to-modal' : ''
+                }`}
+                style={{ transformStyle: 'preserve-3d' }}
               >
-                <div className="p-8 text-center">
+                <div className={`p-8 text-center transition-transform duration-500 ${
+                  flippingCardIndex === index ? 'rotateY-180' : 'group-hover:rotateY-12'
+                }`}>
                   <div className="relative w-32 h-32 mx-auto mb-6">
                     <div className="rounded-full overflow-hidden w-32 h-32 relative transition-all duration-300">
                       <Image
@@ -1283,29 +1395,35 @@ function HomePage({ onPageChange }: HomePageProps) {
             {importantLinks.map((link, index) => {
               const IconComponent = link.icon;
               return (
-                <Card key={index} className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card hover:-translate-y-2">
+                <Card 
+                  key={index} 
+                  className="group transition-all duration-500 hover:shadow-card-elevated border-border bg-card hover:-translate-y-2"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
                   <CardContent className="p-8">
-                    <div className="flex items-center mb-4">
-                      <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                        <IconComponent className="h-6 w-6" />
+                    <div className="transition-transform duration-500 group-hover:rotateY-6">
+                      <div className="flex items-center mb-4">
+                        <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                          <IconComponent className="h-6 w-6" />
+                        </div>
+                        <h3 className="text-xl font-bold ml-4 text-foreground">{link.title}</h3>
                       </div>
-                      <h3 className="text-xl font-bold ml-4 text-foreground">{link.title}</h3>
+                      <p className="text-muted-foreground mb-6">{link.description}</p>
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => {
+                          if (link.url.startsWith('mailto:')) {
+                            window.location.href = link.url;
+                          } else if (link.url !== '#') {
+                            window.open(link.url, '_blank', 'noopener,noreferrer');
+                          }
+                        }}
+                        disabled={link.url === '#'}
+                      >
+                        Visit <ExternalLink className="ml-2 h-4 w-4" />
+                      </Button>
                     </div>
-                    <p className="text-muted-foreground mb-6">{link.description}</p>
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={() => {
-                        if (link.url.startsWith('mailto:')) {
-                          window.location.href = link.url;
-                        } else if (link.url !== '#') {
-                          window.open(link.url, '_blank', 'noopener,noreferrer');
-                        }
-                      }}
-                      disabled={link.url === '#'}
-                    >
-                      Visit <ExternalLink className="ml-2 h-4 w-4" />
-                    </Button>
                   </CardContent>
                 </Card>
               );
@@ -1330,6 +1448,7 @@ function HistoryPage() {
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
   const [selectedOfficer, setSelectedOfficer] = useState<(OfficerProfile & { currentRole?: string }) | null>(null);
   const [isOfficerModalOpen, setIsOfficerModalOpen] = useState(false);
+  const [flippingOfficerIndex, setFlippingOfficerIndex] = useState<number | null>(null);
 
   const openBoardView = (boardId: string) => {
     setSelectedBoard(boardId);
@@ -1343,11 +1462,21 @@ function HistoryPage() {
     setSelectedBoard(null);
   };
 
-  const openOfficerModal = (officerId: string, role: string) => {
+  const openOfficerModal = (officerId: string, role: string, cardIndex: number) => {
     const profile = masterOfficerProfiles[officerId];
     if (profile) {
-      setSelectedOfficer({ ...profile, currentRole: role });
-      setIsOfficerModalOpen(true);
+      setFlippingOfficerIndex(cardIndex);
+      
+      // Start the flip animation
+      setTimeout(() => {
+        setSelectedOfficer({ ...profile, currentRole: role });
+        setIsOfficerModalOpen(true);
+        
+        // Reset flip state after modal opens
+        setTimeout(() => {
+          setFlippingOfficerIndex(null);
+        }, 300);
+      }, 250); // Half of the flip animation duration
     }
   };
 
@@ -1442,42 +1571,45 @@ function HistoryPage() {
                 {semesterBoards.map((board, index) => (
                   <Card 
                     key={index} 
-                    className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2"
+                    className="group transition-all duration-500 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2"
                     onClick={() => openBoardView(board.id)}
+                    style={{ transformStyle: 'preserve-3d' }}
                   >
-                    <div className="relative h-48 overflow-hidden">
-                      <Image
-                        src={board.coverImage}
-                        alt={board.title}
-                        fill
-                        style={{ objectFit: 'cover' }}
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                        className="transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      
-                      {/* Officer count badge */}
-                      <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
-                        {board.totalOfficers} officers
-                      </div>
+                    <div className="transition-transform duration-500 group-hover:rotateY-6">
+                      <div className="relative h-48 overflow-hidden">
+                        <Image
+                          src={board.coverImage}
+                          alt={board.title}
+                          fill
+                          style={{ objectFit: 'cover' }}
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          className="transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        
+                        {/* Officer count badge */}
+                        <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                          {board.totalOfficers} officers
+                        </div>
 
-                      {/* Leadership icon overlay */}
-                      <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <Users className="h-5 w-5 text-white" />
+                        {/* Leadership icon overlay */}
+                        <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <Users className="h-5 w-5 text-white" />
+                        </div>
                       </div>
-                    </div>
-                    
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
-                        {board.title}
-                      </h3>
-                      <p className="text-primary font-medium text-sm mb-3">{board.period}</p>
-                      <p className="text-muted-foreground leading-relaxed text-sm">{board.description}</p>
                       
-                      <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <p className="text-sm text-primary font-medium">Click to view officers →</p>
-                      </div>
-                    </CardContent>
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
+                          {board.title}
+                        </h3>
+                        <p className="text-primary font-medium text-sm mb-3">{board.period}</p>
+                        <p className="text-muted-foreground leading-relaxed text-sm">{board.description}</p>
+                        
+                        <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <p className="text-sm text-primary font-medium">Click to view officers →</p>
+                        </div>
+                      </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>
@@ -1525,11 +1657,16 @@ function HistoryPage() {
               return (
                 <Card 
                   key={index} 
-                  className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card cursor-pointer hover:-translate-y-1"
-                  onClick={() => openOfficerModal(officer.id, officer.role)}
+                  className={`group transition-all duration-500 hover:shadow-card-elevated border-border bg-card cursor-pointer hover:-translate-y-1 ${
+                    flippingOfficerIndex === index ? 'animate-flip-to-modal' : ''
+                  }`}
+                  onClick={() => openOfficerModal(officer.id, officer.role, index)}
+                  style={{ transformStyle: 'preserve-3d' }}
                 >
                   <CardContent className="p-6">
-                    <div className="flex flex-col items-center text-center">
+                    <div className={`flex flex-col items-center text-center transition-transform duration-500 ${
+                      flippingOfficerIndex === index ? 'rotateY-180' : 'group-hover:rotateY-6'
+                    }`}>
                       {/* Photo */}
                       <div className="w-20 h-20 rounded-full border-2 border-primary/20 overflow-hidden mb-3">
                         {profile.hasPhoto && profile.image ? (
@@ -1579,11 +1716,11 @@ function HistoryPage() {
           {/* Full Bio Modal */}
           {isOfficerModalOpen && selectedOfficer && (
             <div 
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-modal-entrance"
               onClick={closeOfficerModal}
             >
               <div 
-                className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100"
+                className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-500 animate-modal-content-entrance"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header with close button */}
@@ -1727,42 +1864,45 @@ function GalleryPage() {
           {eventGalleries.map((event, index) => (
             <Card 
               key={index} 
-              className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2"
+              className="group transition-all duration-500 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2"
               onClick={() => openEventGallery(event.id)}
+              style={{ transformStyle: 'preserve-3d' }}
             >
-              <div className="relative h-64 overflow-hidden">
-                <Image
-                  src={event.coverImage}
-                  alt={event.title}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                {/* Folder icon overlay */}
-                <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                  <ImageIcon className="h-5 w-5 text-white" />
+              <div className="transition-transform duration-500 group-hover:rotateY-6">
+                <div className="relative h-64 overflow-hidden">
+                  <Image
+                    src={event.coverImage}
+                    alt={event.title}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* Folder icon overlay */}
+                  <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <ImageIcon className="h-5 w-5 text-white" />
+                  </div>
+                  
+                  {/* Image count badge */}
+                  <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                    {event.totalImages} photos
+                  </div>
                 </div>
                 
-                {/* Image count badge */}
-                <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
-                  {event.totalImages} photos
-                </div>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
+                    {event.title}
+                  </h3>
+                  <p className="text-primary font-medium text-sm mb-2">{event.date}</p>
+                  <p className="text-muted-foreground leading-relaxed">{event.description}</p>
+                  
+                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <p className="text-sm text-primary font-medium">Click to view gallery →</p>
+                  </div>
+                </CardContent>
               </div>
-              
-              <CardContent className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
-                  {event.title}
-                </h3>
-                <p className="text-primary font-medium text-sm mb-2">{event.date}</p>
-                <p className="text-muted-foreground leading-relaxed">{event.description}</p>
-                
-                <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <p className="text-sm text-primary font-medium">Click to view gallery →</p>
-                </div>
-              </CardContent>
             </Card>
           ))}
         </div>
@@ -1802,33 +1942,36 @@ function GalleryPage() {
           {currentEvent.images.map((image, index) => (
             <Card 
               key={index} 
-              className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-1"
+              className="group transition-all duration-500 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-1"
               onClick={() => openLightbox(image.url)}
+              style={{ transformStyle: 'preserve-3d' }}
             >
-              <div className="relative aspect-square overflow-hidden">
-                <Image
-                  src={image.url}
-                  alt={image.caption}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                  className="transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                {/* View icon */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
-                    <ImageIcon className="h-6 w-6 text-primary" />
+              <div className="transition-transform duration-500 group-hover:rotateY-6">
+                <div className="relative aspect-square overflow-hidden">
+                  <Image
+                    src={image.url}
+                    alt={image.caption}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                    className="transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* View icon */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
+                      <ImageIcon className="h-6 w-6 text-primary" />
+                    </div>
                   </div>
                 </div>
+                
+                {image.caption && (
+                  <CardContent className="p-4">
+                    <p className="text-sm text-muted-foreground leading-relaxed">{image.caption}</p>
+                  </CardContent>
+                )}
               </div>
-              
-              {image.caption && (
-                <CardContent className="p-4">
-                  <p className="text-sm text-muted-foreground leading-relaxed">{image.caption}</p>
-                </CardContent>
-              )}
             </Card>
           ))}
         </div>
