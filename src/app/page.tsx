@@ -299,9 +299,9 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Spring 2025", period: "Spring 2025", role: "Vice President" }
     ],
     overallContributions: [
-      "Served as Vice President through ISAB's entire growth trajectory from founding to present",
+      "Founding Vice president who has led ISAB for a long time and had many meaningful contributions when it comes to managing the organization",
+      "ISAB wouldn't be how it is today without her foundational leadership and continuous dedication",
       "Developed comprehensive event management strategies that established ISAB's signature programming approach",
-      "Mentored incoming leadership and created sustainable organizational practices",
       "Spearheaded cultural initiatives that significantly enhanced international student engagement"
     ],
     roleSpecificHighlights: {
@@ -355,6 +355,193 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       "Founding Treasurer": ["Secured initial funding sources", "Established financial protocols"],
       "Treasurer": ["Managed first major event budgets", "Developed financial sustainability plans"]
     }
+  },
+  "sai-kaushik": {
+    name: "Sai Kaushik Kollepalli",
+    major: "Business Analytics",
+    homeCountry: "India",
+    countryFlag: "🇮🇳",
+    image: "/assets/officers/Sai.jpg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Spring 2024", period: "Spring 2024", role: "Essential Needs Coordinator" },
+      { semester: "Fall 2024", period: "Fall 2024", role: "International Student Support Coordinator" }
+    ],
+    overallContributions: [
+      "Greatly contributed to ISAB's international student support efforts",
+      "Due to his job working as a student assistant in international affairs, he was familiar with a lot of things that were relevant to international students",
+      "Provided expertise on immigration processes and campus resources for international students",
+      "Served as vital bridge between international students and university administration"
+    ],
+    roleSpecificHighlights: {
+      "Essential Needs Coordinator": ["Conducted student needs assessments", "Developed resource databases"],
+      "International Student Support Coordinator": ["Provided immigration guidance", "Streamlined university processes"]
+    }
+  },
+  "laura-decesero": {
+    name: "Laura DeCesero",
+    major: "Biomedical Engineering",
+    homeCountry: "Italy",
+    countryFlag: "🇮🇹",
+    image: "/assets/officers/laura-decesero.jpeg",
+    hasPhoto: false,
+    roles: [
+      { semester: "Spring 2024", period: "Spring 2024", role: "International Student Support Coordinator" },
+      { semester: "Fall 2024", period: "Fall 2024", role: "Secretary" }
+    ],
+    overallContributions: [
+      "Created international student survey which was a comprehensive and well made survey which is still used by ISAB",
+      "Served as secretary and helped organize Rhythms of the World",
+      "Created systematic documentation processes that improved organizational continuity",
+      "Served dual coordination and administrative roles ensuring organizational efficiency"
+    ],
+    roleSpecificHighlights: {
+      "International Student Support Coordinator": ["Conducted comprehensive needs assessment survey", "Co-organized Rhythms of the World"],
+      "Secretary": ["Improved documentation systems", "Enhanced organizational continuity"]
+    }
+  },
+  "chaehyeon-kim": {
+    name: "Chaehyeon Kim", 
+    major: "Art",
+    homeCountry: "South Korea",
+    countryFlag: "🇰🇷",
+    image: "/assets/officers/chaehyeon.jpg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Spring 2024", period: "Spring 2024", role: "Communications Coordinator" }
+    ],
+    overallContributions: [
+      "Helped with ISAB's initial growth on social media",
+      "Made the first officer posts for the inaugural board team",
+      "Developed content creation standards and brand guidelines for professional digital image",
+      "Implemented strategic communication initiatives that increased student engagement during critical growth phase"
+    ],
+    roleSpecificHighlights: {
+      "Communications Coordinator": ["Established social media presence", "Created first officer introduction posts"]
+    }
+  },
+  "yong-pappunggon": {
+    name: "Yong Pappunggon",
+    major: "Accounting", 
+    homeCountry: "Thailand",
+    countryFlag: "🇹🇭",
+    image: "/assets/officers/Yong.jpg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Spring 2024", period: "Spring 2024", role: "Event Coordinator" },
+      { semester: "Fall 2024", period: "Fall 2024", role: "Event Coordinator" }
+    ],
+    overallContributions: [
+      "Organized first ever Songkran festival at UNT which was one of ISAB's biggest events that was foundational to its success today",
+      "Organized many other events that were key to ISAB's development",
+      "Developed innovative event planning frameworks that became template for future celebrations",
+      "Established strategic partnerships with campus organizations and local community groups"
+    ],
+    roleSpecificHighlights: {
+      "Event Coordinator": ["Organized inaugural Songkran Festival", "Developed event planning frameworks"]
+    }
+  },
+  "suma-geethika": {
+    name: "Suma Geethika",
+    major: "Data Science",
+    homeCountry: "India", 
+    countryFlag: "🇮🇳",
+    image: "/assets/officers/suma.jpg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Fall 2024", period: "Fall 2024", role: "International Student Support Coordinator" }
+    ],
+    overallContributions: [
+      "Helped with student support during fall semester",
+      "Helped with collecting data for town hall meetings, ensuring student voices were heard",
+      "Helped organize events that were essential to ISAB's continued growth",
+      "Supported the transition of new leadership during organizational growth phase"
+    ],
+    roleSpecificHighlights: {
+      "International Student Support Coordinator": ["Provided student support during fall semester", "Collected data for town hall meetings"]
+    }
+  },
+  "marina-menegusso": {
+    name: "Marina Cestari Menegusso",
+    major: "English",
+    homeCountry: "Brazil",
+    countryFlag: "🇧🇷",
+    image: "/assets/officers/marina.jpg", 
+    hasPhoto: true,
+    roles: [
+      { semester: "Fall 2024", period: "Fall 2024", role: "Outreach Coordinator" }
+    ],
+    overallContributions: [
+      "Posted every event on time, ensuring consistent and timely promotion across social media platforms",
+      "Took pictures during every event, helping document the history of ISAB and preserving organizational memory",
+      "Helped collect data for officer bios, contributing to organizational documentation",
+      "Helped grow the ISAB social media presence and engagement through strategic content creation"
+    ],
+    roleSpecificHighlights: {
+      "Outreach Coordinator": ["Posted every event on time", "Documented ISAB history through photography"]
+    }
+  },
+  "iman-mohammed": {
+    name: "Iman Mohammed",
+    major: "Business Analytics", 
+    homeCountry: "Ethiopia",
+    countryFlag: "🇪🇹",
+    image: "/assets/officers/iman.jpeg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Fall 2024", period: "Fall 2024", role: "Secretary" },
+      { semester: "Spring 2025", period: "Spring 2025", role: "Secretary" }
+    ],
+    overallContributions: [
+      "Maintains organizational documentation and communication standards",
+      "Supports current ISAB initiatives and member coordination",
+      "Contributes to ongoing policy advocacy and student support efforts"
+    ],
+    roleSpecificHighlights: {
+      "Secretary": ["Maintains documentation standards", "Supports member coordination"]
+    }
+  },
+  "shiori-hisaoka": {
+    name: "Shiori Hisaoka",
+    major: "Psychology",
+    homeCountry: "Japan",
+    countryFlag: "🇯🇵", 
+    image: "/assets/officers/shiori.jpeg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Fall 2024", period: "Fall 2024", role: "Event Coordinator" },
+      { semester: "Spring 2025", period: "Spring 2025", role: "Outreach Coordinator" }
+    ],
+    overallContributions: [
+      "Contributed to expanding ISAB's event programming and community outreach initiatives",
+      "Helped organize multiple cultural celebrations and student engagement activities",
+      "Transitioned from event coordination to outreach, expanding ISAB's campus presence"
+    ],
+    roleSpecificHighlights: {
+      "Event Coordinator": ["Organized cultural celebrations", "Enhanced event programming"],
+      "Outreach Coordinator": ["Expanded campus presence", "Increased student engagement"]
+    }
+  },
+  "mohammed-abubeker": {
+    name: "Mohammed Abubeker",
+    major: "Business Computer Information Systems",
+    homeCountry: "Ethiopia",
+    countryFlag: "🇪🇹",
+    image: "/assets/officers/mohammed.jpeg", 
+    hasPhoto: true,
+    roles: [
+      { semester: "Fall 2024", period: "Fall 2024", role: "Outreach Coordinator" },
+      { semester: "Spring 2025", period: "Spring 2025", role: "Event Coordinator" }
+    ],
+    overallContributions: [
+      "Continues ISAB's tradition of innovative cultural programming",
+      "Organizes current semester events and community building activities",
+      "Maintains high standards for event quality and student engagement"
+    ],
+    roleSpecificHighlights: {
+      "Outreach Coordinator": ["Expanded ISAB's campus outreach", "Built community partnerships"],
+      "Event Coordinator": ["Organizes cultural programming", "Maintains event quality standards"]
+    }
   }
 };
 
@@ -375,7 +562,7 @@ const semesterBoards: SemesterBoard[] = [
     title: 'Founding Board',
     period: 'December 2023',
     description: 'The pioneering leadership team that established ISAB and laid the foundation for its future growth',
-    coverImage: '/assets/officers/Boss.jpg',
+    coverImage: '/assets/boards/founding-2023/cover.jpg',
     totalOfficers: 4,
     officers: [
       { id: "adrian-tam", role: "Founding President" },
@@ -389,13 +576,35 @@ const semesterBoards: SemesterBoard[] = [
     title: 'Spring 2024 Board', 
     period: 'Spring 2024',
     description: 'The dynamic team that drove ISAB\'s major growth phase, organizing landmark events and establishing key traditions',
-    coverImage: '/assets/officers/amaris.jpeg',
-    totalOfficers: 4,
+    coverImage: '/assets/boards/spring-2024/cover.jpg',
+    totalOfficers: 8,
     officers: [
       { id: "adrian-tam", role: "President" },
       { id: "amaris-charles", role: "Vice President" },
       { id: "ibrahim-abubeker", role: "Secretary" },
-      { id: "bhavesh-gujula", role: "Treasurer" }
+      { id: "bhavesh-gujula", role: "Treasurer" },
+      { id: "sai-kaushik", role: "Essential Needs Coordinator" },
+      { id: "laura-decesero", role: "International Student Support Coordinator" },
+      { id: "chaehyeon-kim", role: "Communications Coordinator" },
+      { id: "yong-pappunggon", role: "Event Coordinator" }
+    ]
+  },
+  {
+    id: 'fall-2024-board',
+    title: 'Fall 2024 Board',
+    period: 'Fall 2024', 
+    description: 'The expanded leadership team that consolidated ISAB\'s growth and enhanced its campus presence',
+    coverImage: '/assets/boards/fall-2024/cover.jpg',
+    totalOfficers: 8,
+    officers: [
+      { id: "ibrahim-abubeker", role: "President" },
+      { id: "amaris-charles", role: "Vice President" },
+      { id: "laura-decesero", role: "Secretary" },
+      { id: "suma-geethika", role: "International Student Support Coordinator" },
+      { id: "sai-kaushik", role: "International Student Support Coordinator" },
+      { id: "yong-pappunggon", role: "Event Coordinator" },
+      { id: "shiori-hisaoka", role: "Event Coordinator" },
+      { id: "marina-menegusso", role: "Outreach Coordinator" }
     ]
   },
   {
@@ -403,7 +612,7 @@ const semesterBoards: SemesterBoard[] = [
     title: 'Spring 2025 Board',
     period: 'Spring 2025',
     description: 'The current leadership team continuing ISAB\'s mission and expanding its impact on campus',
-    coverImage: '/assets/officers/ibrahim.jpeg',
+    coverImage: '/assets/boards/spring-2025/cover.jpg',
     totalOfficers: 5,
     officers: [
       { id: "ibrahim-abubeker", role: "President" },
@@ -446,10 +655,52 @@ const eventGalleries = [
     ]
   },
   {
+    id: 'town-hall-2024',
+    title: 'International Student Town Hall',
+    date: 'March 26, 2024',
+    description: 'Open forum addressing international student concerns and needs',
+    coverImage: '/assets/gallery/gallery2.jpeg',
+    totalImages: 12,
+    images: [
+      { url: '/assets/gallery/gallery2.jpeg', caption: 'Town hall discussion panel' },
+      { url: '/assets/gallery/townhall/2.jpg', caption: 'Students voicing concerns' },
+      { url: '/assets/gallery/townhall/3.jpg', caption: 'University administration listening' },
+      { url: '/assets/gallery/townhall/4.jpg', caption: 'Community building session' }
+    ]
+  },
+  {
+    id: 'unt-field-day-2024',
+    title: 'UNT Student Alumni Field Day',
+    date: 'April 9, 2024',
+    description: 'ISAB participation in UNT Student Alumni Field Day activities',
+    coverImage: '/assets/gallery/fieldday/cover.jpg',
+    totalImages: 10,
+    images: [
+      { url: '/assets/gallery/fieldday/1.jpg', caption: 'ISAB team at field day activities' },
+      { url: '/assets/gallery/fieldday/2.jpg', caption: 'Students participating in games' },
+      { url: '/assets/gallery/fieldday/3.jpg', caption: 'Alumni networking session' },
+      { url: '/assets/gallery/fieldday/4.jpg', caption: 'Team building activities' }
+    ]
+  },
+  {
+    id: 'eve-nations-2024',
+    title: 'Eve of Nations OU Trip',
+    date: 'April 12, 2024',
+    description: 'First annual trip to University of Oklahoma\'s cultural celebration',
+    coverImage: '/assets/gallery/evenations/cover.jpg',
+    totalImages: 16,
+    images: [
+      { url: '/assets/gallery/evenations/1.jpg', caption: 'Travel to University of Oklahoma' },
+      { url: '/assets/gallery/evenations/2.jpg', caption: 'Cultural performances at OU' },
+      { url: '/assets/gallery/evenations/3.jpg', caption: 'International food festival' },
+      { url: '/assets/gallery/evenations/4.jpg', caption: 'ISAB group at OU campus' }
+    ]
+  },
+  {
     id: 'songkran-2024',
     title: 'Songkran Water Festival',
     date: 'April 17, 2024',
-    description: 'UNT\'s first-ever Songkran Festival celebration organized by ISAB',
+    description: 'UNT\'s first-ever Songkran Festival celebration organized by Yong Pappunggon',
     coverImage: '/assets/gallery/songkran/cover.jpg',
     totalImages: 25,
     images: [
@@ -459,6 +710,273 @@ const eventGalleries = [
       { url: '/assets/gallery/songkran/4.jpg', caption: 'Traditional Thai decorations' },
       { url: '/assets/gallery/songkran/5.jpg', caption: 'Community gathering and celebration' },
       { url: '/assets/gallery/songkran/6.jpg', caption: 'Students participating in water blessing' }
+    ]
+  },
+  {
+    id: 'unt-etiquette-dinner-2024',
+    title: 'UNT Etiquette Dinner',
+    date: 'April 22, 2024',
+    description: 'Professional etiquette dinner event for international students',
+    coverImage: '/assets/gallery/etiquette/cover.jpg',
+    totalImages: 12,
+    images: [
+      { url: '/assets/gallery/etiquette/1.jpg', caption: 'Formal dinner setting' },
+      { url: '/assets/gallery/etiquette/2.jpg', caption: 'Students learning dining etiquette' },
+      { url: '/assets/gallery/etiquette/3.jpg', caption: 'Professional presentation' },
+      { url: '/assets/gallery/etiquette/4.jpg', caption: 'Group photo at dinner' }
+    ]
+  },
+  {
+    id: 'sash-ceremony-2024',
+    title: 'International Sash Ceremony',
+    date: 'April 29, 2024',
+    description: 'Honoring international students with traditional sash ceremony',
+    coverImage: '/assets/gallery/sash/cover.jpg',
+    totalImages: 18,
+    images: [
+      { url: '/assets/gallery/sash/1.jpg', caption: 'Sash ceremony preparation' },
+      { url: '/assets/gallery/sash/2.jpg', caption: 'Students receiving honor sashes' },
+      { url: '/assets/gallery/sash/3.jpg', caption: 'Cultural significance explained' },
+      { url: '/assets/gallery/sash/4.jpg', caption: 'Group photo with sashes' }
+    ]
+  },
+  {
+    id: 'vice-provost-luncheon-2024',
+    title: 'International Affairs Vice Provost Luncheon',
+    date: 'May 6, 2024',
+    description: 'Luncheon meeting with International Affairs Vice Provost',
+    coverImage: '/assets/gallery/luncheon/cover.jpg',
+    totalImages: 8,
+    images: [
+      { url: '/assets/gallery/luncheon/1.jpg', caption: 'Meeting with Vice Provost' },
+      { url: '/assets/gallery/luncheon/2.jpg', caption: 'Policy discussion session' },
+      { url: '/assets/gallery/luncheon/3.jpg', caption: 'ISAB officers presenting initiatives' },
+      { url: '/assets/gallery/luncheon/4.jpg', caption: 'Networking with administration' }
+    ]
+  },
+  {
+    id: 'football-101-2024',
+    title: 'Football 101',
+    date: 'August 23, 2024',
+    description: 'Educational event introducing international students to American football',
+    coverImage: '/assets/gallery/football101/cover.jpg',
+    totalImages: 14,
+    images: [
+      { url: '/assets/gallery/football101/1.jpg', caption: 'Learning football basics' },
+      { url: '/assets/gallery/football101/2.jpg', caption: 'Rules explanation session' },
+      { url: '/assets/gallery/football101/3.jpg', caption: 'Interactive demonstration' },
+      { url: '/assets/gallery/football101/4.jpg', caption: 'Students trying on gear' }
+    ]
+  },
+  {
+    id: 'fall-meeting-2024',
+    title: 'First General Meeting Fall 24',
+    date: 'August 26, 2024',
+    description: 'Fall semester kickoff meeting with new and returning members',
+    coverImage: '/assets/gallery/fallmeeting/cover.jpg',
+    totalImages: 14,
+    images: [
+      { url: '/assets/gallery/fallmeeting/1.jpg', caption: 'Fall semester opening meeting' },
+      { url: '/assets/gallery/fallmeeting/2.jpg', caption: 'New member welcomes' },
+      { url: '/assets/gallery/fallmeeting/3.jpg', caption: 'Fall agenda presentation' },
+      { url: '/assets/gallery/fallmeeting/4.jpg', caption: 'Student engagement activities' }
+    ]
+  },
+  {
+    id: 'general-member-meeting-2024',
+    title: 'General Member Meeting',
+    date: 'September 10, 2024',
+    description: 'September general body meeting for ongoing initiatives',
+    coverImage: '/assets/gallery/septmeeting/cover.jpg',
+    totalImages: 10,
+    images: [
+      { url: '/assets/gallery/septmeeting/1.jpg', caption: 'September member meeting' },
+      { url: '/assets/gallery/septmeeting/2.jpg', caption: 'Initiative updates presentation' },
+      { url: '/assets/gallery/septmeeting/3.jpg', caption: 'Member discussions and feedback' },
+      { url: '/assets/gallery/septmeeting/4.jpg', caption: 'Planning upcoming events' }
+    ]
+  },
+  {
+    id: 'employment-opportunities-2024',
+    title: 'Employment Opportunities Meeting with ISA',
+    date: 'September 24, 2024',
+    description: 'Collaborative meeting with ISA focusing on employment opportunities for international students',
+    coverImage: '/assets/gallery/employment/cover.jpg',
+    totalImages: 12,
+    images: [
+      { url: '/assets/gallery/employment/1.jpg', caption: 'Employment workshop session' },
+      { url: '/assets/gallery/employment/2.jpg', caption: 'Resume building guidance' },
+      { url: '/assets/gallery/employment/3.jpg', caption: 'Career networking tips' },
+      { url: '/assets/gallery/employment/4.jpg', caption: 'Q&A with career advisors' }
+    ]
+  },
+  {
+    id: 'trivia-night-2024',
+    title: 'International Trivia Night',
+    date: 'October 8, 2024',
+    description: 'Fun trivia competition celebrating global knowledge and cultures',
+    coverImage: '/assets/gallery/trivia/cover.jpg',
+    totalImages: 16,
+    images: [
+      { url: '/assets/gallery/trivia/1.jpg', caption: 'Teams competing in trivia' },
+      { url: '/assets/gallery/trivia/2.jpg', caption: 'Cultural questions round' },
+      { url: '/assets/gallery/trivia/3.jpg', caption: 'Winning team celebration' },
+      { url: '/assets/gallery/trivia/4.jpg', caption: 'Prize distribution' }
+    ]
+  },
+  {
+    id: 'homecoming-week-2024',
+    title: 'Homecoming Week',
+    date: 'October 28, 2024',
+    description: 'ISAB participation in UNT Homecoming Week festivities',
+    coverImage: '/assets/gallery/homecoming/cover.jpg',
+    totalImages: 18,
+    images: [
+      { url: '/assets/gallery/homecoming/1.jpg', caption: 'ISAB homecoming booth' },
+      { url: '/assets/gallery/homecoming/2.jpg', caption: 'Parade participation' },
+      { url: '/assets/gallery/homecoming/3.jpg', caption: 'Spirit week activities' },
+      { url: '/assets/gallery/homecoming/4.jpg', caption: 'Alumni engagement events' }
+    ]
+  },
+  {
+    id: 'game-night-1-2024',
+    title: 'International Game Night',
+    date: 'November 12, 2024',
+    description: 'First international game night bringing cultures together through games',
+    coverImage: '/assets/gallery/gamenight1/cover.jpg',
+    totalImages: 15,
+    images: [
+      { url: '/assets/gallery/gamenight1/1.jpg', caption: 'International board games' },
+      { url: '/assets/gallery/gamenight1/2.jpg', caption: 'Students learning new games' },
+      { url: '/assets/gallery/gamenight1/3.jpg', caption: 'Cultural game exchanges' },
+      { url: '/assets/gallery/gamenight1/4.jpg', caption: 'Friendly competition and fun' }
+    ]
+  },
+  {
+    id: 'rhythms-world-2024',
+    title: 'Rhythms of the World',
+    date: 'November 14, 2024',
+    description: 'Cultural celebration showcasing global traditions, co-organized by Laura DeCesero',
+    coverImage: '/assets/gallery/rhythms/cover.jpg',
+    totalImages: 22,
+    images: [
+      { url: '/assets/gallery/rhythms/1.jpg', caption: 'Opening ceremony with international flags' },
+      { url: '/assets/gallery/rhythms/2.jpg', caption: 'Traditional dance performances' },
+      { url: '/assets/gallery/rhythms/3.jpg', caption: 'Cultural food showcase' },
+      { url: '/assets/gallery/rhythms/4.jpg', caption: 'Students in traditional attire' },
+      { url: '/assets/gallery/rhythms/5.jpg', caption: 'Interactive cultural booths' }
+    ]
+  },
+  {
+    id: 'thanksgiving-picnic-2024',
+    title: 'Thanksgiving Picnic',
+    date: 'November 19, 2024',
+    description: 'Thanksgiving celebration picnic for international students',
+    coverImage: '/assets/gallery/thanksgiving/cover.jpg',
+    totalImages: 20,
+    images: [
+      { url: '/assets/gallery/thanksgiving/1.jpg', caption: 'Thanksgiving feast setup' },
+      { url: '/assets/gallery/thanksgiving/2.jpg', caption: 'International Thanksgiving dishes' },
+      { url: '/assets/gallery/thanksgiving/3.jpg', caption: 'Gratitude sharing circle' },
+      { url: '/assets/gallery/thanksgiving/4.jpg', caption: 'Community celebration' }
+    ]
+  },
+  {
+    id: 'spring-meeting-2025',
+    title: 'First General Meeting Spring 25',
+    date: 'January 28, 2025',
+    description: 'Spring semester opening meeting with new goals and initiatives',
+    coverImage: '/assets/gallery/springmeeting2025/cover.jpg',
+    totalImages: 12,
+    images: [
+      { url: '/assets/gallery/springmeeting2025/1.jpg', caption: 'Spring 2025 kickoff meeting' },
+      { url: '/assets/gallery/springmeeting2025/2.jpg', caption: 'New semester goals presentation' },
+      { url: '/assets/gallery/springmeeting2025/3.jpg', caption: 'Member engagement activities' },
+      { url: '/assets/gallery/springmeeting2025/4.jpg', caption: 'Planning spring events' }
+    ]
+  },
+  {
+    id: 'valentines-art-2025',
+    title: 'Valentine\'s Day Art Night',
+    date: 'February 11, 2025',
+    description: 'Creative art workshop celebrating love and friendship across cultures',
+    coverImage: '/assets/gallery/valentines/cover.jpg',
+    totalImages: 12,
+    images: [
+      { url: '/assets/gallery/valentines/1.jpg', caption: 'Art supplies setup' },
+      { url: '/assets/gallery/valentines/2.jpg', caption: 'Students creating artwork' },
+      { url: '/assets/gallery/valentines/3.jpg', caption: 'Cultural art traditions shared' },
+      { url: '/assets/gallery/valentines/4.jpg', caption: 'Finished artwork display' }
+    ]
+  },
+  {
+    id: 'game-night-2-2025',
+    title: 'International Game Night 2',
+    date: 'March 5, 2025',
+    description: 'Second iteration of popular international game night bringing cultures together',
+    coverImage: '/assets/gallery/gallery3.jpeg',
+    totalImages: 14,
+    images: [
+      { url: '/assets/gallery/gallery3.jpeg', caption: 'Students playing traditional games' },
+      { url: '/assets/gallery/gamenight2/2.jpg', caption: 'Board games from different countries' },
+      { url: '/assets/gallery/gamenight2/3.jpg', caption: 'Cultural game demonstrations' },
+      { url: '/assets/gallery/gamenight2/4.jpg', caption: 'Friendly competition and laughter' }
+    ]
+  },
+  {
+    id: 'town-hall-2-2025',
+    title: 'International Town Hall 2',
+    date: 'March 19, 2025',
+    description: 'Second annual international student town hall addressing ongoing concerns',
+    coverImage: '/assets/gallery/townhall2/cover.jpg',
+    totalImages: 14,
+    images: [
+      { url: '/assets/gallery/townhall2/1.jpg', caption: 'Second town hall session' },
+      { url: '/assets/gallery/townhall2/2.jpg', caption: 'Student concerns discussion' },
+      { url: '/assets/gallery/townhall2/3.jpg', caption: 'Administrative responses' },
+      { url: '/assets/gallery/townhall2/4.jpg', caption: 'Community feedback session' }
+    ]
+  },
+  {
+    id: 'eid-gala-2025',
+    title: 'Eid Gala with ISA',
+    date: 'April 6, 2025',
+    description: 'Collaborative Eid celebration with International Student Association',
+    coverImage: '/assets/gallery/eidgala/cover.jpg',
+    totalImages: 22,
+    images: [
+      { url: '/assets/gallery/eidgala/1.jpg', caption: 'Eid celebration decorations' },
+      { url: '/assets/gallery/eidgala/2.jpg', caption: 'Traditional Eid festivities' },
+      { url: '/assets/gallery/eidgala/3.jpg', caption: 'Cultural performances' },
+      { url: '/assets/gallery/eidgala/4.jpg', caption: 'Community celebration' }
+    ]
+  },
+  {
+    id: 'eve-nations-2025',
+    title: 'Eve of Nations OU Trip 2',
+    date: 'April 11, 2025',
+    description: 'Second annual trip to University of Oklahoma\'s cultural celebration',
+    coverImage: '/assets/gallery/evenations2/cover.jpg',
+    totalImages: 18,
+    images: [
+      { url: '/assets/gallery/evenations2/1.jpg', caption: 'Second annual OU trip' },
+      { url: '/assets/gallery/evenations2/2.jpg', caption: 'Expanded cultural participation' },
+      { url: '/assets/gallery/evenations2/3.jpg', caption: 'Inter-university collaboration' },
+      { url: '/assets/gallery/evenations2/4.jpg', caption: 'Growing ISAB presence' }
+    ]
+  },
+  {
+    id: 'songkran-2025',
+    title: 'Songkran Water Festival 2',
+    date: 'April 14, 2025',
+    description: 'Second annual Thai New Year celebration with expanded programming',
+    coverImage: '/assets/gallery/songkran2025/cover.jpg',
+    totalImages: 25,
+    images: [
+      { url: '/assets/gallery/songkran2025/1.jpg', caption: 'Second annual Songkran festival' },
+      { url: '/assets/gallery/songkran2025/2.jpg', caption: 'Expanded water blessing ceremonies' },
+      { url: '/assets/gallery/songkran2025/3.jpg', caption: 'Traditional Thai performances' },
+      { url: '/assets/gallery/songkran2025/4.jpg', caption: 'Growing community participation' }
     ]
   }
 ];
@@ -488,13 +1006,16 @@ function Navigation({ currentPage, onPageChange }: NavigationProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 sm:space-x-6">
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <Image
-                src="/assets/logo/ISAB Logo (Cropped).PNG"
-                alt="ISAB Logo"
-                width={60}
-                height={60}
-                className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl transition-transform duration-300 hover:scale-110 shadow-sm"
-              />
+              <div className="relative w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20">
+                <Image
+                  src="/assets/logo/ISAB Logo (Cropped).PNG"
+                  alt="ISAB Logo"
+                  fill
+                  style={{ objectFit: 'contain' }}
+                  sizes="(max-width: 640px) 48px, (max-width: 768px) 64px, 80px"
+                  className="rounded-xl transition-transform duration-300 hover:scale-110 shadow-sm"
+                />
+              </div>
               <div className="hidden sm:block">
                 <h1 className="text-lg sm:text-xl font-bold text-foreground">ISAB</h1>
                 <p className="text-xs sm:text-sm text-muted-foreground">University of North Texas</p>
@@ -1605,48 +2126,6 @@ function EventsPageDynamic({ date, onDateSelect }: EventsPageProps) {
   );
 }
 
-// Footer component for mobile-friendly layout
-function Footer() {
-  return (
-    <footer className="bg-primary-gradient text-primary-foreground py-6 sm:py-8 mt-auto w-full">
-      <div className="container mx-auto px-4 sm:px-6 w-full">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-          <div className="text-center md:text-left">
-            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">ISAB at UNT</h3>
-            <p className="text-primary-foreground/90 text-sm sm:text-base">
-              Supporting international students and fostering cultural exchange at 
-              the University of North Texas.
-            </p>
-          </div>
-          <div className="text-center md:text-left">
-            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Contact Us</h3>
-            <p className="text-primary-foreground/90 text-sm sm:text-base">Email: isab@unt.edu</p>
-            <p className="text-primary-foreground/90 text-sm sm:text-base">Office: UNT Union, Room 345</p>
-            <p className="text-primary-foreground/90 text-sm sm:text-base">Phone: (940) 123-4567</p>
-          </div>
-          <div className="text-center md:text-left">
-            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Follow Us</h3>
-            <div className="flex justify-center md:justify-start space-x-3 sm:space-x-4">
-              <a href="#" className="text-primary-foreground hover:text-primary-foreground/80 flex items-center text-sm sm:text-base">
-                <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> Instagram
-              </a>
-              <a href="#" className="text-primary-foreground hover:text-primary-foreground/80 flex items-center text-sm sm:text-base">
-                <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> Twitter
-              </a>
-              <a href="#" className="text-primary-foreground hover:text-primary-foreground/80 flex items-center text-sm sm:text-base">
-                <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> Facebook
-              </a>
-            </div>
-          </div>
-        </div>
-        <div className="border-t border-primary-foreground/20 mt-6 sm:mt-8 pt-4 sm:pt-6 text-center text-primary-foreground/80">
-          <p className="text-xs sm:text-sm">&copy; {new Date().getFullYear()} International Student Advisory Board. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 export default function ISABWebsite() {
   const [currentPage, setCurrentPage] = useState('home');
   const [date, setDate] = useState<Date>(new Date());
@@ -1669,10 +2148,10 @@ export default function ISABWebsite() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col w-full">
+    <div className="min-h-screen bg-background w-full">
       <Navigation currentPage={currentPage} onPageChange={handlePageChange} />
       <div 
-        className={`transition-all duration-200 flex-grow ${
+        className={`transition-all duration-200 ${
           isPageTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
         }`}
       >
@@ -1681,7 +2160,6 @@ export default function ISABWebsite() {
         {currentPage === 'gallery' && <GalleryPage />}
         {currentPage === 'events' && <EventsPageDynamic date={date} onDateSelect={handleDateSelect} />}
       </div>
-      <Footer />
     </div>
   );
 }
