@@ -1026,33 +1026,33 @@ function Navigation({ currentPage, onPageChange }: NavigationProps) {
               <Button 
                 variant={currentPage === 'home' ? "default" : "ghost"}
                 onClick={() => onPageChange('home')}
-                className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm md:text-base px-2 sm:px-3 py-1 sm:py-2"
+                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-3 py-2 sm:px-3 sm:py-2 h-10 sm:h-10"
               >
-                <Home className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                <Home className="h-4 w-4 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                 <span className="hidden sm:inline">Home</span>
               </Button>
               <Button 
                 variant={currentPage === 'history' ? "default" : "ghost"}
                 onClick={() => onPageChange('history')}
-                className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm md:text-base px-2 sm:px-3 py-1 sm:py-2"
+                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-3 py-2 sm:px-3 sm:py-2 h-10 sm:h-10"
               >
-                <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                <BookOpen className="h-4 w-4 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                 <span className="hidden sm:inline">History</span>
               </Button>
               <Button 
                 variant={currentPage === 'gallery' ? "default" : "ghost"}
                 onClick={() => onPageChange('gallery')}
-                className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm md:text-base px-2 sm:px-3 py-1 sm:py-2"
+                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-3 py-2 sm:px-3 sm:py-2 h-10 sm:h-10"
               >
-                <ImageIcon className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                <ImageIcon className="h-4 w-4 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                 <span className="hidden sm:inline">Gallery</span>
               </Button>
               <Button 
                 variant={currentPage === 'events' ? "default" : "ghost"}
                 onClick={() => onPageChange('events')}
-                className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm md:text-base px-2 sm:px-3 py-1 sm:py-2"
+                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-3 py-2 sm:px-3 sm:py-2 h-10 sm:h-10"
               >
-                <CalendarIcon className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                <CalendarIcon className="h-4 w-4 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                 <span className="hidden sm:inline">Events</span>
               </Button>
             </div>
@@ -1371,7 +1371,7 @@ function HistoryPage() {
     return (
       <div className="w-full">
         {/* History Banner */}
-        <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden">
+        <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 overflow-hidden">
           <Image
             src="/assets/banners/history-banner.jpg"
             alt="ISAB History"
@@ -2158,6 +2158,8 @@ export default function ISABWebsite() {
     setTimeout(() => {
       setCurrentPage(page);
       setIsPageTransitioning(false);
+      // Scroll to top when page changes
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 200);
   };
 
