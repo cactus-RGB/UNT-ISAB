@@ -1005,7 +1005,10 @@ function Navigation({ currentPage, onPageChange }: NavigationProps) {
       <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 w-full">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 sm:space-x-6">
-            <div className="flex items-center space-x-2 sm:space-x-3">
+            <div 
+              className="flex items-center space-x-2 sm:space-x-3 cursor-pointer"
+              onClick={() => onPageChange('home')}
+            >
               <div className="relative w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20">
                 <Image
                   src="/assets/logo/ISAB Logo (Cropped).PNG"
@@ -1026,33 +1029,33 @@ function Navigation({ currentPage, onPageChange }: NavigationProps) {
               <Button 
                 variant={currentPage === 'home' ? "default" : "ghost"}
                 onClick={() => onPageChange('home')}
-                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-3 py-2 sm:px-3 sm:py-2 h-10 sm:h-10"
+                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-4 py-3 sm:px-3 sm:py-2 h-12 sm:h-10"
               >
-                <Home className="h-4 w-4 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                <Home className="h-5 w-5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                 <span className="hidden sm:inline">Home</span>
               </Button>
               <Button 
                 variant={currentPage === 'history' ? "default" : "ghost"}
                 onClick={() => onPageChange('history')}
-                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-3 py-2 sm:px-3 sm:py-2 h-10 sm:h-10"
+                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-4 py-3 sm:px-3 sm:py-2 h-12 sm:h-10"
               >
-                <BookOpen className="h-4 w-4 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                <BookOpen className="h-5 w-5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                 <span className="hidden sm:inline">History</span>
               </Button>
               <Button 
                 variant={currentPage === 'gallery' ? "default" : "ghost"}
                 onClick={() => onPageChange('gallery')}
-                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-3 py-2 sm:px-3 sm:py-2 h-10 sm:h-10"
+                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-4 py-3 sm:px-3 sm:py-2 h-12 sm:h-10"
               >
-                <ImageIcon className="h-4 w-4 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                <ImageIcon className="h-5 w-5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                 <span className="hidden sm:inline">Gallery</span>
               </Button>
               <Button 
                 variant={currentPage === 'events' ? "default" : "ghost"}
                 onClick={() => onPageChange('events')}
-                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-3 py-2 sm:px-3 sm:py-2 h-10 sm:h-10"
+                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-4 py-3 sm:px-3 sm:py-2 h-12 sm:h-10"
               >
-                <CalendarIcon className="h-4 w-4 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                <CalendarIcon className="h-5 w-5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                 <span className="hidden sm:inline">Events</span>
               </Button>
             </div>
@@ -1330,6 +1333,10 @@ function HistoryPage() {
 
   const openBoardView = (boardId: string) => {
     setSelectedBoard(boardId);
+    // Prevent scrolling to bottom
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   };
 
   const closeBoardView = () => {
@@ -1371,7 +1378,7 @@ function HistoryPage() {
     return (
       <div className="w-full">
         {/* History Banner */}
-        <div className="relative h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 overflow-hidden">
+        <div className="relative h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[32rem] overflow-hidden">
           <Image
             src="/assets/banners/history-banner.jpg"
             alt="ISAB History"
@@ -1417,27 +1424,6 @@ function HistoryPage() {
                     Our mission is to serve as the voice for international students at UNT, advocating 
                     for their needs and fostering a welcoming community that celebrates diversity.
                   </p>
-
-                  <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
-                    <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
-                    Key Accomplishments
-                  </h2>
-                  <div className="space-y-6">
-                    {[
-                      { title: "Growth & Impact", desc: "Since inauguration, ISAB has hosted over 25 major events including the inaugural Songkran Festival, Rhythms of the World, and multiple town halls, becoming a vital part of campus life." },
-                      { title: "Policy Advocacy", desc: "ISAB has successfully influenced university policies through dedicated town halls and direct engagement with administration to better support international students." },
-                      { title: "Cultural Celebrations", desc: "Organized landmark events like UNT's first Songkran Water Festival, International Sash Ceremony, and collaborative celebrations that have become annual traditions." },
-                      { title: "Community Building", desc: "Established comprehensive support through events like Football 101, International Game Nights, and Employment Opportunities meetings to help international students integrate and succeed." }
-                    ].map((item, index) => (
-                      <div key={index} className="flex items-start space-x-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors duration-200">
-                        <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
-                        <div>
-                          <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
-                          <p className="text-muted-foreground">{item.desc}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </CardContent>
             </Card>
