@@ -1384,7 +1384,7 @@ function HistoryPage() {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-white">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">Our Legacy</h1>
-              <p className="text-lg sm:text-xl md:text-2xl opacity-90">Celebrating ISAB's Journey of Growth and Impact</p>
+              <p className="text-lg sm:text-xl md:text-2xl opacity-90">Celebrating ISAB&apos;s Journey of Growth and Impact</p>
             </div>
           </div>
         </div>
@@ -2071,7 +2071,7 @@ function EventsPageDynamic({ date, onDateSelect }: EventsPageProps) {
                 <div className="text-center py-12">
                   <CalendarIcon className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
                   <p className="text-muted-foreground text-lg">No events scheduled for this date.</p>
-                  <p className="text-muted-foreground/70">Check out our upcoming events below!</p>
+                  <p className="text-muted-foreground">Check out our upcoming events below!</p>
                 </div>
               )}
             </CardContent>
