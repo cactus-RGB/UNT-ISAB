@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { ExternalLink, ChevronRight, Users, CalendarIcon, BookOpen, Image as ImageIcon, Home, Clock, MapPin, X, GraduationCap, Globe, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
 
-// Current officers data (Spring 2025 Board) - FIXED
+// Current officers data (Spring 2025 Board)
 const officers = [
   { 
     name: "Ibrahim Abubeker", 
@@ -58,68 +58,6 @@ const officers = [
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
     quote: "Football is life"
-  }
-];
-
-// Event galleries based on actual ISAB timeline - MOVED TO SEPARATE ARRAY
-const eventGalleries = [
-  {
-    id: 'football-101-2024',
-    title: 'Football 101',
-    date: 'August 23, 2024',
-    description: 'Educational event introducing international students to American football',
-    coverImage: '/assets/gallery/football101/cover.jpg',
-    totalImages: 14,
-    images: [
-      { url: '/assets/gallery/football101/1.jpg', caption: 'Learning football basics' },
-      { url: '/assets/gallery/football101/2.jpg', caption: 'Rules explanation session' },
-      { url: '/assets/gallery/football101/3.jpg', caption: 'Interactive demonstration' },
-      { url: '/assets/gallery/football101/4.jpg', caption: 'Students trying on gear' }
-    ]
-  },
-  {
-    id: 'unt-etiquette-dinner-2024',
-    title: 'UNT Etiquette Dinner',
-    date: 'April 22, 2024',
-    description: 'Professional etiquette dinner event for international students',
-    coverImage: '/assets/gallery/etiquette/cover.jpg',
-    totalImages: 12,
-    images: [
-      { url: '/assets/gallery/etiquette/1.jpg', caption: 'Formal dinner setting' },
-      { url: '/assets/gallery/etiquette/2.jpg', caption: 'Students learning dining etiquette' },
-      { url: '/assets/gallery/etiquette/3.jpg', caption: 'Professional presentation' },
-      { url: '/assets/gallery/etiquette/4.jpg', caption: 'Group photo at dinner' }
-    ]
-  },
-  {
-    id: 'songkran-2024',
-    title: 'Songkran Water Festival',
-    date: 'April 17, 2024',
-    description: 'UNT\'s first-ever Songkran Festival celebration organized by Yong Papunggon',
-    coverImage: '/assets/gallery/songkran/cover.jpg',
-    totalImages: 25,
-    images: [
-      { url: '/assets/gallery/songkran/1.jpg', caption: 'Traditional water blessing ceremony setup' },
-      { url: '/assets/gallery/songkran/2.jpg', caption: 'Students enjoying water activities' },
-      { url: '/assets/gallery/songkran/3.jpg', caption: 'Cultural performance during the festival' },
-      { url: '/assets/gallery/songkran/4.jpg', caption: 'Traditional Thai decorations' },
-      { url: '/assets/gallery/songkran/5.jpg', caption: 'Community gathering and celebration' },
-      { url: '/assets/gallery/songkran/6.jpg', caption: 'Students participating in water blessing' }
-    ]
-  },
-  {
-    id: 'thanksgiving-picnic-2024',
-    title: 'Thanksgiving Picnic',
-    date: 'November 19, 2024',
-    description: 'Thanksgiving celebration picnic for international students',
-    coverImage: '/assets/gallery/thanksgiving/cover.jpg',
-    totalImages: 20,
-    images: [
-      { url: '/assets/gallery/thanksgiving/1.jpg', caption: 'Thanksgiving feast setup' },
-      { url: '/assets/gallery/thanksgiving/2.jpg', caption: 'International Thanksgiving dishes' },
-      { url: '/assets/gallery/thanksgiving/3.jpg', caption: 'Gratitude sharing circle' },
-      { url: '/assets/gallery/thanksgiving/4.jpg', caption: 'Community celebration' }
-    ]
   }
 ];
 
@@ -207,17 +145,7 @@ const useISABEvents = () => {
       const data = await response.json();
       console.log(`Found ${data.items?.length || 0} events`);
       
-      const parsedEvents: ISABEvent[] = (data.items || []).map((event: {
-        id: string;
-        summary?: string;
-        description?: string;
-        start: { dateTime?: string; date?: string };
-        end: { dateTime?: string; date?: string };
-        location?: string;
-        status: 'confirmed' | 'tentative' | 'cancelled';
-        htmlLink: string;
-        creator?: { email?: string; displayName?: string };
-      }) => {
+      const parsedEvents: ISABEvent[] = (data.items || []).map((event: any) => {
         // Handle both all-day and timed events
         const startDate = event.start.dateTime 
           ? new Date(event.start.dateTime)
@@ -304,7 +232,219 @@ const convertToDisplayFormat = (googleEvent: ISABEvent): DisplayEvent => ({
   isAllDay: googleEvent.start.getHours() === 9 && googleEvent.start.getMinutes() === 0 // Detect all-day events
 });
 
-// Note: Additional officer profiles and semester board data can be added here when needed
+// Master officer profiles with complete bios and role progression
+interface OfficerProfile {
+  name: string;
+  major: string;
+  homeCountry: string;
+  countryFlag: string;
+  image: string;
+  hasPhoto: boolean;
+  roles: Array<{ semester: string; period: string; role: string }>;
+  overallContributions: string[];
+  roleSpecificHighlights: { [key: string]: string[] };
+}
+
+const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
+  "adrian-tam": {
+    name: "Adrian \"Boss\" Tam",
+    major: "Master's in Communication",
+    homeCountry: "Malaysia",
+    countryFlag: "🇲🇾",
+    image: "/assets/officers/Boss.jpg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Founding Board", period: "December 2023", role: "Founding President" },
+      { semester: "Spring 2024", period: "Spring 2024", role: "President" }
+    ],
+    overallContributions: [
+      "Established the International Student Advisory Board and recruited founding members",
+      "Provided foundational leadership that enabled ISAB's rapid growth and development", 
+      "Created the organizational framework that continues to guide ISAB's mission today",
+      "Led ISAB through its inaugural events and early recognition by university administration"
+    ],
+    roleSpecificHighlights: {
+      "Founding President": ["Established ISAB as recognized student organization", "Recruited founding board members"],
+      "President": ["Oversaw first major event implementations", "Established university partnerships"]
+    }
+  },
+  "amaris-charles": {
+    name: "Amaris Charles",
+    major: "Anthropology", 
+    homeCountry: "Puerto Rico",
+    countryFlag: "🇵🇷",
+    image: "/assets/officers/amaris.jpeg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Founding Board", period: "December 2023", role: "Founding Vice President" },
+      { semester: "Spring 2024", period: "Spring 2024", role: "Vice President" },
+      { semester: "Fall 2024", period: "Fall 2024", role: "Vice President" },
+      { semester: "Spring 2025", period: "Spring 2025", role: "Vice President" }
+    ],
+    overallContributions: [
+      "Served as Vice President through ISAB's entire growth trajectory from founding to present",
+      "Developed comprehensive event management strategies that established ISAB's signature programming approach",
+      "Mentored incoming leadership and created sustainable organizational practices",
+      "Spearheaded cultural initiatives that significantly enhanced international student engagement"
+    ],
+    roleSpecificHighlights: {
+      "Founding Vice President": ["Co-established organizational structure", "Developed initial event frameworks"],
+      "Vice President": ["Led major cultural celebrations", "Mentored new officer transitions"]
+    }
+  },
+  "ibrahim-abubeker": {
+    name: "Ibrahim Abubeker",
+    major: "Computer Science",
+    homeCountry: "Ethiopia", 
+    countryFlag: "🇪🇹",
+    image: "/assets/officers/ibrahim.jpeg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Founding Board", period: "December 2023", role: "Founding Secretary" },
+      { semester: "Spring 2024", period: "Spring 2024", role: "Secretary" },
+      { semester: "Fall 2024", period: "Fall 2024", role: "President" },
+      { semester: "Spring 2025", period: "Spring 2025", role: "President" }
+    ],
+    overallContributions: [
+      "Rose from Founding Secretary to President, demonstrating exceptional leadership growth",
+      "Maintained organizational continuity through detailed documentation and record-keeping",
+      "Led ISAB's expansion phase as President with innovative programming and increased membership",
+      "Strengthened university relationships and policy advocacy initiatives"
+    ],
+    roleSpecificHighlights: {
+      "Founding Secretary": ["Established documentation protocols", "Maintained founding meeting records"],
+      "Secretary": ["Streamlined organizational processes", "Improved member communication"],
+      "President": ["Expanded event programming", "Increased membership engagement"]
+    }
+  },
+  "bhavesh-gujula": {
+    name: "Bhavesh Gujula",
+    major: "Master's in Data Analytics",
+    homeCountry: "India",
+    countryFlag: "🇮🇳", 
+    image: "/assets/officers/Bhavesh.jpg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Founding Board", period: "December 2023", role: "Founding Treasurer" },
+      { semester: "Spring 2024", period: "Spring 2024", role: "Treasurer" }
+    ],
+    overallContributions: [
+      "Secured initial funding and financial resources essential for ISAB's early operations",
+      "Managed fiscal responsibilities for inaugural events that established ISAB's presence on campus", 
+      "Developed financial protocols and procedures that laid the groundwork for sustainable operations",
+      "Created budget frameworks that supported ISAB's rapid expansion of programming"
+    ],
+    roleSpecificHighlights: {
+      "Founding Treasurer": ["Secured initial funding sources", "Established financial protocols"],
+      "Treasurer": ["Managed first major event budgets", "Developed financial sustainability plans"]
+    }
+  }
+};
+
+// Semester boards with updated officer information
+interface SemesterBoard {
+  id: string;
+  title: string;
+  period: string;
+  description: string;
+  coverImage: string;
+  totalOfficers: number;
+  officers: Array<{ id: string; role: string }>;
+}
+
+const semesterBoards: SemesterBoard[] = [
+  {
+    id: 'founding-board-2023',
+    title: 'Founding Board',
+    period: 'December 2023',
+    description: 'The pioneering leadership team that established ISAB and laid the foundation for its future growth',
+    coverImage: '/assets/officers/Boss.jpg',
+    totalOfficers: 4,
+    officers: [
+      { id: "adrian-tam", role: "Founding President" },
+      { id: "amaris-charles", role: "Founding Vice President" },
+      { id: "ibrahim-abubeker", role: "Founding Secretary" },
+      { id: "bhavesh-gujula", role: "Founding Treasurer" }
+    ]
+  },
+  {
+    id: 'spring-2024-board',
+    title: 'Spring 2024 Board', 
+    period: 'Spring 2024',
+    description: 'The dynamic team that drove ISAB\'s major growth phase, organizing landmark events and establishing key traditions',
+    coverImage: '/assets/officers/amaris.jpeg',
+    totalOfficers: 4,
+    officers: [
+      { id: "adrian-tam", role: "President" },
+      { id: "amaris-charles", role: "Vice President" },
+      { id: "ibrahim-abubeker", role: "Secretary" },
+      { id: "bhavesh-gujula", role: "Treasurer" }
+    ]
+  },
+  {
+    id: 'spring-2025-board',
+    title: 'Spring 2025 Board',
+    period: 'Spring 2025',
+    description: 'The current leadership team continuing ISAB\'s mission and expanding its impact on campus',
+    coverImage: '/assets/officers/ibrahim.jpeg',
+    totalOfficers: 5,
+    officers: [
+      { id: "ibrahim-abubeker", role: "President" },
+      { id: "amaris-charles", role: "Vice President" },
+      { id: "iman-mohammed", role: "Secretary" },
+      { id: "shiori-hisaoka", role: "Outreach Coordinator" },
+      { id: "mohammed-abubeker", role: "Event Coordinator" }
+    ]
+  }
+];
+
+// Event galleries based on actual ISAB timeline
+const eventGalleries = [
+  {
+    id: 'inauguration-2024',
+    title: 'ISAB Inauguration Ceremony',
+    date: 'January 30, 2024',
+    description: 'Official inauguration ceremony marking the beginning of ISAB as a recognized student organization',
+    coverImage: '/assets/gallery/inauguration/cover.jpg',
+    totalImages: 20,
+    images: [
+      { url: '/assets/gallery/inauguration/1.jpg', caption: 'Official inauguration ceremony' },
+      { url: '/assets/gallery/inauguration/2.jpg', caption: 'Founding officers taking oath' },
+      { url: '/assets/gallery/inauguration/3.jpg', caption: 'University officials present' },
+      { url: '/assets/gallery/inauguration/4.jpg', caption: 'International student community gathering' }
+    ]
+  },
+  {
+    id: 'first-general-meeting-2024',
+    title: '1st General Member Initiation',
+    date: 'February 26, 2024',
+    description: 'First general meeting welcoming new members to ISAB',
+    coverImage: '/assets/gallery/gallery1.jpeg',
+    totalImages: 15,
+    images: [
+      { url: '/assets/gallery/gallery1.jpeg', caption: 'First general member meeting' },
+      { url: '/assets/gallery/first-meeting/2.jpg', caption: 'New member orientations' },
+      { url: '/assets/gallery/first-meeting/3.jpg', caption: 'Officer introductions' },
+      { url: '/assets/gallery/first-meeting/4.jpg', caption: 'Setting organizational goals' }
+    ]
+  },
+  {
+    id: 'songkran-2024',
+    title: 'Songkran Water Festival',
+    date: 'April 17, 2024',
+    description: 'UNT\'s first-ever Songkran Festival celebration organized by ISAB',
+    coverImage: '/assets/gallery/songkran/cover.jpg',
+    totalImages: 25,
+    images: [
+      { url: '/assets/gallery/songkran/1.jpg', caption: 'Traditional water blessing ceremony setup' },
+      { url: '/assets/gallery/songkran/2.jpg', caption: 'Students enjoying water activities' },
+      { url: '/assets/gallery/songkran/3.jpg', caption: 'Cultural performance during the festival' },
+      { url: '/assets/gallery/songkran/4.jpg', caption: 'Traditional Thai decorations' },
+      { url: '/assets/gallery/songkran/5.jpg', caption: 'Community gathering and celebration' },
+      { url: '/assets/gallery/songkran/6.jpg', caption: 'Students participating in water blessing' }
+    ]
+  }
+];
 
 // Get events for a specific date
 const getEventsForDate = (date: Date, events: DisplayEvent[]) => {
@@ -392,6 +532,19 @@ interface OfficerModalProps {
 }
 
 function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      return () => document.removeEventListener('keydown', handleEscape);
+    }
+  }, [isOpen, onClose]);
+
   if (!isOpen || !officer) return null;
 
   return (
@@ -412,23 +565,17 @@ function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
             <X className="h-5 w-5 text-muted-foreground" />
           </button>
           
-          {/* Profile image - FIXED TYPE ISSUES */}
+          {/* Profile image */}
           <div className="p-8 pb-4 text-center">
             <div className="relative w-32 h-32 mx-auto mb-6">
               <div className="rounded-full overflow-hidden w-32 h-32 relative">
-                {officer.image ? (
-                  <Image
-                    src={officer.image}
-                    alt={`${officer.name} - ${officer.role}`}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    sizes="128px"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-muted/50 flex items-center justify-center">
-                    <Users className="h-12 w-12 text-primary/60" />
-                  </div>
-                )}
+                <Image
+                  src={officer.image}
+                  alt={`${officer.name} - ${officer.role}`}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="128px"
+                />
               </div>
             </div>
           </div>
@@ -563,27 +710,21 @@ function HomePage({ onPageChange }: HomePageProps) {
                 <div className="p-8 text-center">
                   <div className="relative w-32 h-32 mx-auto mb-6">
                     <div className="rounded-full overflow-hidden w-32 h-32 relative transition-all duration-300">
-                      {/* FIXED IMAGE COMPONENT TYPE ISSUES */}
-                      {officer.image ? (
-                        <Image
-                          src={officer.image}
-                          alt={`${officer.name} - ${officer.role}`}
-                          fill
-                          style={{ objectFit: 'cover' }}
-                          sizes="128px"
-                          className="transition-transform duration-500 group-hover:scale-110"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-muted/50 flex items-center justify-center">
-                          <Users className="h-12 w-12 text-primary/60" />
-                        </div>
-                      )}
+                      <Image
+                        src={officer.image}
+                        alt={`${officer.name} - ${officer.role}`}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                        sizes="128px"
+                        className="transition-transform duration-500 group-hover:scale-110"
+                      />
                     </div>
                   </div>
                   <h3 className="text-xl font-bold text-white mb-2">{officer.name}</h3>
                   <p className="text-white/90 font-medium mb-1">{officer.role}</p>
                   <p className="text-white/70 text-sm mb-4">{officer.year}</p>
                   
+                  {/* Visual hint that the card is clickable */}
                   <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <p className="text-sm text-white font-medium">Click to view bio →</p>
                   </div>
@@ -632,7 +773,7 @@ function HomePage({ onPageChange }: HomePageProps) {
         </div>
       </section>
 
-      {/* Conditionally render the modal */}
+      {/* Officer Modal */}
       {isModalOpen && selectedOfficer && (
         <OfficerModal 
           officer={selectedOfficer}
@@ -645,117 +786,356 @@ function HomePage({ onPageChange }: HomePageProps) {
 }
 
 function HistoryPage() {
-  return (
-    <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 sm:mb-12 text-foreground">Our History</h1>
-        
-        <Card className="shadow-card-hover border-border bg-card mb-16">
-          <CardContent className="p-12">
-            <div className="prose prose-lg max-w-none">
-              <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
-                <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
-                Foundation
-              </h2>
-              <p className="text-muted-foreground mb-8 leading-relaxed">
-                The International Student Advisory Board (ISAB) at UNT was founded to amplify the voices 
-                of international students, ensuring their concerns and needs are heard and addressed by 
-                the university administration. Officially inaugurated on January 30, 2024, ISAB started as a small 
-                initiative but quickly grew into a recognized student organization.
-              </p>
-              
-              <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
-                <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
-                Mission
-              </h2>
-              <p className="text-muted-foreground mb-8 leading-relaxed">
-                Our mission is to serve as the voice for international students at UNT, advocating 
-                for their needs and fostering a welcoming community that celebrates diversity.
-              </p>
+  const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
+  const [selectedOfficer, setSelectedOfficer] = useState<(OfficerProfile & { currentRole?: string }) | null>(null);
+  const [isOfficerModalOpen, setIsOfficerModalOpen] = useState(false);
 
-              <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
-                <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
-                Key Accomplishments
-              </h2>
-              <div className="space-y-6">
-                {[
-                  { title: "Growth & Impact", desc: "Since inauguration, ISAB has hosted over 25 major events becoming a vital part of campus life." },
-                  { title: "Policy Advocacy", desc: "ISAB has successfully influenced university policies through dedicated town halls and direct engagement with administration." },
-                  { title: "Cultural Celebrations", desc: "Organized landmark events like UNT's first Songkran Water Festival and International Sash Ceremony." },
-                  { title: "Community Building", desc: "Established comprehensive support through events like Football 101 and International Game Nights." }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-start space-x-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors duration-200">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
-                    <div>
-                      <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
-                      <p className="text-muted-foreground">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+  const openBoardView = (boardId: string) => {
+    setSelectedBoard(boardId);
+  };
 
-        {/* Current Leadership */}
-        <div className="mb-16">
-          <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center">
-            <div className="w-2 h-10 bg-primary rounded-full mr-4"></div>
-            Current Leadership Team
-          </h2>
-          <p className="text-muted-foreground mb-8 text-lg">
-            Meet our current officers who are leading ISAB into its next chapter of growth and impact.
-          </p>
+  const closeBoardView = () => {
+    setSelectedBoard(null);
+  };
+
+  const openOfficerModal = (officerId: string, role: string) => {
+    const profile = masterOfficerProfiles[officerId];
+    if (profile) {
+      setSelectedOfficer({ ...profile, currentRole: role });
+      setIsOfficerModalOpen(true);
+    }
+  };
+
+  const closeOfficerModal = () => {
+    setIsOfficerModalOpen(false);
+    setSelectedOfficer(null);
+  };
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (isOfficerModalOpen) {
+          closeOfficerModal();
+        } else if (selectedBoard) {
+          closeBoardView();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOfficerModalOpen, selectedBoard]);
+
+  const currentBoard = selectedBoard ? semesterBoards.find(board => board.id === selectedBoard) : null;
+
+  // Main history view
+  if (!selectedBoard) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 sm:mb-12 text-foreground">Our History</h1>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {officers.map((officer, index) => (
-              <Card key={index} className="shadow-card-hover border-border bg-card hover:shadow-card-elevated transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-20 h-20 rounded-full border-2 border-primary/20 overflow-hidden mb-4">
-                      {officer.image ? (
-                        <Image
-                          src={officer.image}
-                          alt={`${officer.name} - ${officer.role}`}
-                          width={80}
-                          height={80}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-muted/50 flex items-center justify-center">
-                          <Users className="h-6 w-6 text-primary/60" />
-                        </div>
-                      )}
+          {/* Main History Content */}
+          <Card className="shadow-card-hover border-border bg-card mb-16">
+            <CardContent className="p-12">
+              <div className="prose prose-lg max-w-none">
+                <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
+                  <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
+                  Foundation
+                </h2>
+                <p className="text-muted-foreground mb-8 leading-relaxed">
+                  The International Student Advisory Board (ISAB) at UNT was founded to amplify the voices 
+                  of international students, ensuring their concerns and needs are heard and addressed by 
+                  the university administration. Officially inaugurated on January 30, 2024, ISAB started as a small 
+                  initiative but quickly grew into a recognized student organization. The board was created 
+                  to foster a welcoming environment for international students, advocating for their interests 
+                  and enhancing their experience at UNT.
+                </p>
+                
+                <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
+                  <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
+                  Mission
+                </h2>
+                <p className="text-muted-foreground mb-8 leading-relaxed">
+                  Our mission is to serve as the voice for international students at UNT, advocating 
+                  for their needs and fostering a welcoming community that celebrates diversity.
+                </p>
+
+                <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
+                  <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
+                  Key Accomplishments
+                </h2>
+                <div className="space-y-6">
+                  {[
+                    { title: "Growth & Impact", desc: "Since inauguration, ISAB has hosted over 25 major events including the inaugural Songkran Festival, Rhythms of the World, and multiple town halls, becoming a vital part of campus life." },
+                    { title: "Policy Advocacy", desc: "ISAB has successfully influenced university policies through dedicated town halls and direct engagement with administration to better support international students." },
+                    { title: "Cultural Celebrations", desc: "Organized landmark events like UNT's first Songkran Water Festival, International Sash Ceremony, and collaborative celebrations that have become annual traditions." },
+                    { title: "Community Building", desc: "Established comprehensive support through events like Football 101, International Game Nights, and Employment Opportunities meetings to help international students integrate and succeed." }
+                  ].map((item, index) => (
+                    <div key={index} className="flex items-start space-x-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors duration-200">
+                      <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                      <div>
+                        <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
+                        <p className="text-muted-foreground">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Legacy of Leadership Section - Folder View */}
+          <div className="mb-16">
+            <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center">
+              <div className="w-2 h-10 bg-primary rounded-full mr-4"></div>
+              Legacy of Leadership
+            </h2>
+            <p className="text-muted-foreground mb-12 text-lg">
+              Click on any semester board to view the officers who served during that period
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+              {semesterBoards.map((board, index) => (
+                <Card 
+                  key={index} 
+                  className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2"
+                  onClick={() => openBoardView(board.id)}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={board.coverImage}
+                      alt={board.title}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    {/* Officer count badge */}
+                    <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                      {board.totalOfficers} officers
                     </div>
 
-                    <h3 className="text-lg font-bold text-foreground mb-1">{officer.name}</h3>
-                    <div className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary rounded-full font-medium text-xs mb-2">
-                      {officer.role}
-                    </div>
-                    
-                    <div className="space-y-1 text-xs text-muted-foreground">
-                      <div className="flex items-center justify-center">
-                        <GraduationCap className="h-3 w-3 mr-1 text-primary" />
-                        <span className="truncate">{officer.major}</span>
-                      </div>
-                      <div className="flex items-center justify-center">
-                        <Globe className="h-3 w-3 mr-1 text-primary" />
-                        <span>{officer.countryFlag} {officer.homeCountry}</span>
-                      </div>
+                    {/* Leadership icon overlay */}
+                    <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <Users className="h-5 w-5 text-white" />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                  
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
+                      {board.title}
+                    </h3>
+                    <p className="text-primary font-medium text-sm mb-2">{board.period}</p>
+                    <p className="text-muted-foreground leading-relaxed">{board.description}</p>
+                    
+                    <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <p className="text-sm text-primary font-medium">Click to view officers →</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // Individual semester board view
+  if (currentBoard) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
+        <div className="max-w-6xl mx-auto">
+          {/* Header with back button */}
+          <div className="flex flex-col sm:flex-row sm:items-center mb-6 sm:mb-8">
+            <Button 
+              variant="ghost" 
+              onClick={closeBoardView}
+              className="mb-4 sm:mb-0 sm:mr-4 hover:bg-primary/10 self-start"
+            >
+              <ChevronRight className="h-4 sm:h-5 w-4 sm:w-5 mr-2 rotate-180" />
+              Back to History
+            </Button>
+            <div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">{currentBoard.title}</h1>
+              <p className="text-muted-foreground text-sm sm:text-base md:text-lg mt-2">{currentBoard.period} • {currentBoard.totalOfficers} officers</p>
+            </div>
+          </div>
+
+          {/* Board description */}
+          <Card className="mb-8 shadow-card-hover border-border bg-card">
+            <CardContent className="p-6">
+              <p className="text-muted-foreground leading-relaxed">{currentBoard.description}</p>
+            </CardContent>
+          </Card>
+
+          {/* Officers grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {currentBoard.officers.map((officer, index) => {
+              const profile = masterOfficerProfiles[officer.id];
+              if (!profile) return null;
+              
+              return (
+                <Card 
+                  key={index} 
+                  className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card cursor-pointer hover:-translate-y-1"
+                  onClick={() => openOfficerModal(officer.id, officer.role)}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex flex-col items-center text-center">
+                      {/* Photo */}
+                      <div className="w-20 h-20 rounded-full border-2 border-primary/20 overflow-hidden mb-3">
+                        {profile.hasPhoto && profile.image ? (
+                          <Image
+                            src={profile.image}
+                            alt={`${profile.name} - ${officer.role}`}
+                            width={80}
+                            height={80}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-muted/50 flex items-center justify-center">
+                            <Users className="h-6 w-6 text-primary/60" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Name and role */}
+                      <h3 className="text-lg font-bold text-foreground mb-1">{profile.name}</h3>
+                      <div className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary rounded-full font-medium text-xs mb-2">
+                        {officer.role}
+                      </div>
+                      
+                      {/* Basic info */}
+                      <div className="space-y-1 text-xs text-muted-foreground">
+                        <div className="flex items-center justify-center">
+                          <GraduationCap className="h-3 w-3 mr-1 text-primary" />
+                          <span className="truncate">{profile.major}</span>
+                        </div>
+                        <div className="flex items-center justify-center">
+                          <Globe className="h-3 w-3 mr-1 text-primary" />
+                          <span>{profile.countryFlag} {profile.homeCountry}</span>
+                        </div>
+                      </div>
+
+                      {/* Click hint */}
+                      <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <p className="text-xs text-primary">Click for full bio →</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Full Bio Modal */}
+          {isOfficerModalOpen && selectedOfficer && (
+            <div 
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              onClick={closeOfficerModal}
+            >
+              <div 
+                className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header with close button */}
+                <div className="relative">
+                  <button
+                    onClick={closeOfficerModal}
+                    className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/80 hover:bg-background transition-colors duration-200"
+                  >
+                    <X className="h-5 w-5 text-muted-foreground" />
+                  </button>
+                  
+                  {/* Profile image */}
+                  <div className="p-8 pb-4 text-center">
+                    <div className="relative w-32 h-32 mx-auto mb-6">
+                      <div className="rounded-full overflow-hidden w-32 h-32 relative">
+                        {selectedOfficer.hasPhoto && selectedOfficer.image ? (
+                          <Image
+                            src={selectedOfficer.image}
+                            alt={`${selectedOfficer.name}`}
+                            fill
+                            style={{ objectFit: 'cover' }}
+                            sizes="128px"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-muted/50 flex items-center justify-center">
+                            <Users className="h-12 w-12 text-primary/60" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="px-8 pb-8">
+                  {/* Name and basic info */}
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-bold text-foreground mb-2">{selectedOfficer.name}</h2>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-center space-x-3">
+                        <GraduationCap className="h-4 w-4 text-primary" />
+                        <span className="text-muted-foreground">{selectedOfficer.major}</span>
+                      </div>
+                      <div className="flex items-center justify-center space-x-3">
+                        <Globe className="h-4 w-4 text-primary" />
+                        <span className="text-muted-foreground">{selectedOfficer.countryFlag} {selectedOfficer.homeCountry}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Role progression timeline */}
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-foreground mb-3">ISAB Journey</h3>
+                    <div className="space-y-2">
+                      {selectedOfficer.roles.map((roleInfo, idx) => (
+                        <div key={idx} className="flex items-center space-x-3 p-2 rounded-lg bg-muted/30">
+                          <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                          <div className="flex-grow">
+                            <span className="font-medium text-foreground">{roleInfo.role}</span>
+                            <span className="text-muted-foreground text-sm ml-2">({roleInfo.period})</span>
+                          </div>
+                          {roleInfo.role === selectedOfficer.currentRole && (
+                            <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">Current View</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Overall contributions */}
+                  <div className="p-4 rounded-lg bg-primary/5 border-l-4 border-primary">
+                    <h4 className="font-semibold text-foreground mb-3">Overall Contributions to ISAB</h4>
+                    <ul className="space-y-2">
+                      {selectedOfficer.overallContributions.map((contribution, idx) => (
+                        <li key={idx} className="flex items-start">
+                          <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                          <span className="text-muted-foreground leading-relaxed text-sm">{contribution}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
 
 function GalleryPage() {
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const openEventGallery = (eventId: string) => {
     setSelectedEvent(eventId);
@@ -765,12 +1145,39 @@ function GalleryPage() {
     setSelectedEvent(null);
   };
 
+  const openLightbox = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+  };
+
+  const closeLightbox = () => {
+    setSelectedImage(null);
+  };
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (selectedImage) {
+          closeLightbox();
+        } else if (selectedEvent) {
+          closeEventGallery();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [selectedImage, selectedEvent]);
+
   const currentEvent = selectedEvent ? eventGalleries.find(event => event.id === selectedEvent) : null;
 
+  // Main gallery view
   if (!selectedEvent) {
     return (
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8 sm:mb-12 text-foreground">Event Gallery</h1>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-foreground">Event Gallery</h1>
+        <p className="text-muted-foreground mb-8 sm:mb-12 text-sm sm:text-base md:text-lg">
+          Click on any event folder to view photos from that event
+        </p>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {eventGalleries.map((event, index) => (
@@ -780,27 +1187,22 @@ function GalleryPage() {
               onClick={() => openEventGallery(event.id)}
             >
               <div className="relative h-64 overflow-hidden">
-                {/* FIXED IMAGE COMPONENT TYPE ISSUES */}
-                {event.coverImage ? (
-                  <Image
-                    src={event.coverImage}
-                    alt={event.title}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="transition-transform duration-500 group-hover:scale-110"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-muted/50 flex items-center justify-center">
-                    <ImageIcon className="h-16 w-16 text-primary/60" />
-                  </div>
-                )}
+                <Image
+                  src={event.coverImage}
+                  alt={event.title}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="transition-transform duration-500 group-hover:scale-110"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 
+                {/* Folder icon overlay */}
                 <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
                   <ImageIcon className="h-5 w-5 text-white" />
                 </div>
                 
+                {/* Image count badge */}
                 <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
                   {event.totalImages} photos
                 </div>
@@ -812,6 +1214,10 @@ function GalleryPage() {
                 </h3>
                 <p className="text-primary font-medium text-sm mb-2">{event.date}</p>
                 <p className="text-muted-foreground leading-relaxed">{event.description}</p>
+                
+                <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <p className="text-sm text-primary font-medium">Click to view gallery →</p>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -820,26 +1226,102 @@ function GalleryPage() {
     );
   }
 
-  return (
-    <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
-      <div className="flex flex-col sm:flex-row sm:items-center mb-6 sm:mb-8">
-        <Button 
-          variant="ghost" 
-          onClick={closeEventGallery}
-          className="mb-4 sm:mb-0 sm:mr-4 hover:bg-primary/10 self-start"
-        >
-          <ChevronRight className="h-4 sm:h-5 w-4 sm:w-5 mr-2 rotate-180" />
-          Back to Gallery
-        </Button>
-        {currentEvent && (
+  // Individual event gallery view
+  if (currentEvent) {
+    return (
+      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
+        {/* Header with back button */}
+        <div className="flex flex-col sm:flex-row sm:items-center mb-6 sm:mb-8">
+          <Button 
+            variant="ghost" 
+            onClick={closeEventGallery}
+            className="mb-4 sm:mb-0 sm:mr-4 hover:bg-primary/10 self-start"
+          >
+            <ChevronRight className="h-4 sm:h-5 w-4 sm:w-5 mr-2 rotate-180" />
+            Back to Gallery
+          </Button>
           <div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">{currentEvent.title}</h1>
-            <p className="text-muted-foreground text-sm sm:text-base md:text-lg mt-2">{currentEvent.date}</p>
+            <p className="text-muted-foreground text-sm sm:text-base md:text-lg mt-2">{currentEvent.date} • {currentEvent.totalImages} photos</p>
+          </div>
+        </div>
+
+        {/* Event description */}
+        <Card className="mb-8 shadow-card-hover border-border bg-card">
+          <CardContent className="p-6">
+            <p className="text-muted-foreground leading-relaxed">{currentEvent.description}</p>
+          </CardContent>
+        </Card>
+
+        {/* Image grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          {currentEvent.images.map((image, index) => (
+            <Card 
+              key={index} 
+              className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-1"
+              onClick={() => openLightbox(image.url)}
+            >
+              <div className="relative aspect-square overflow-hidden">
+                <Image
+                  src={image.url}
+                  alt={image.caption}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                  className="transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
+                {/* View icon */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
+                    <ImageIcon className="h-6 w-6 text-primary" />
+                  </div>
+                </div>
+              </div>
+              
+              {image.caption && (
+                <CardContent className="p-4">
+                  <p className="text-sm text-muted-foreground leading-relaxed">{image.caption}</p>
+                </CardContent>
+              )}
+            </Card>
+          ))}
+        </div>
+
+        {/* Lightbox for full-size image viewing */}
+        {selectedImage && (
+          <div 
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={closeLightbox}
+          >
+            <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center">
+              <button
+                onClick={closeLightbox}
+                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200"
+              >
+                <X className="h-6 w-6 text-white" />
+              </button>
+              
+              <div className="relative w-full h-full">
+                <Image
+                  src={selectedImage}
+                  alt="Gallery image"
+                  fill
+                  style={{ objectFit: 'contain' }}
+                  sizes="100vw"
+                  className="cursor-pointer"
+                  onClick={closeLightbox}
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>
-    </div>
-  );
+    );
+  }
+
+  return null;
 }
 
 interface EventsPageProps {
@@ -850,15 +1332,22 @@ interface EventsPageProps {
 function EventsPageDynamic({ date, onDateSelect }: EventsPageProps) {
   const { events: googleEvents, loading, error, lastUpdated, refresh } = useISABEvents();
   
+  // Convert to display format
   const events = googleEvents.map(convertToDisplayFormat);
+  
   const selectedDateEvents = getEventsForDate(date, events);
+  const upcomingEvents = events
+    .filter(event => event.date >= new Date())
+    .slice(0, 3);
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
+      {/* Header with sync controls */}
       <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center justify-between mb-8 sm:mb-12">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">ISAB Events</h1>
         
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          {/* Sync Status */}
           <div className="flex items-center space-x-2 text-sm">
             {loading ? (
               <>
@@ -880,18 +1369,53 @@ function EventsPageDynamic({ date, onDateSelect }: EventsPageProps) {
             )}
           </div>
           
-          <Button 
-            variant="outline" 
-            onClick={refresh}
-            disabled={loading}
-            className="flex items-center space-x-2 h-8 px-3 py-1 text-xs"
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            <span>Sync</span>
-          </Button>
+          {/* Control buttons */}
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="outline" 
+              onClick={refresh}
+              disabled={loading}
+              className="flex items-center space-x-2 h-8 px-3 py-1 text-xs"
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              <span>Sync</span>
+            </Button>
+            
+            <Button 
+              variant="default"
+              onClick={() => window.open(`https://calendar.google.com/calendar/u/0?cid=${ISAB_CALENDAR_ID}`, '_blank')}
+              className="flex items-center space-x-2 h-8 px-3 py-1 text-xs"
+            >
+              <ExternalLink className="h-4 w-4" />
+              <span>Manage Events</span>
+            </Button>
+          </div>
         </div>
       </div>
 
+      {/* Error Display */}
+      {error && (
+        <Card className="mb-8 border-destructive bg-destructive/5">
+          <CardContent className="p-6">
+            <div className="flex items-start space-x-3">
+              <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
+              <div>
+                <h3 className="font-medium text-destructive mb-1">Calendar Sync Error</h3>
+                <p className="text-sm text-muted-foreground">{error}</p>
+                <Button 
+                  variant="outline" 
+                  onClick={refresh}
+                  className="mt-3 h-8 px-3 py-1 text-xs"
+                >
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Main Calendar and Events Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
         <div className="lg:col-span-1">
           <Card className="shadow-card-hover border-border bg-card">
@@ -928,12 +1452,26 @@ function EventsPageDynamic({ date, onDateSelect }: EventsPageProps) {
                   {selectedDateEvents.map((event, index) => (
                     <Card key={index} className="border border-border bg-muted/20 hover:bg-muted/40 transition-all duration-200">
                       <CardContent className="p-6">
-                        <h3 className="text-xl font-bold mb-3 text-foreground">{event.title}</h3>
+                        <div className="flex items-start justify-between mb-3">
+                          <h3 className="text-xl font-bold text-foreground">{event.title}</h3>
+                          
+                          {/* Google Calendar link */}
+                          <Button 
+                            variant="ghost" 
+                            onClick={() => window.open(event.googleCalendarLink, '_blank')}
+                            className="flex items-center space-x-1 h-8 px-3 py-1 text-xs"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
                         <div className="space-y-2">
                           <div className="flex items-center text-muted-foreground">
                             <Clock className="h-4 w-4 mr-2 text-primary" />
                             <span className="font-medium">Time:</span>
-                            <span className="ml-2">{event.isAllDay ? 'All Day' : event.time}</span>
+                            <span className="ml-2">
+                              {event.isAllDay ? 'All Day' : event.time}
+                            </span>
                           </div>
                           {event.location && (
                             <div className="flex items-center text-muted-foreground">
@@ -942,9 +1480,30 @@ function EventsPageDynamic({ date, onDateSelect }: EventsPageProps) {
                               <span className="ml-2">{event.location}</span>
                             </div>
                           )}
+                          {event.organizer && (
+                            <div className="flex items-center text-muted-foreground">
+                              <Users className="h-4 w-4 mr-2 text-primary" />
+                              <span className="font-medium">Organizer:</span>
+                              <span className="ml-2">{event.organizer}</span>
+                            </div>
+                          )}
                         </div>
+                        
                         {event.description && (
                           <p className="mt-4 text-muted-foreground leading-relaxed">{event.description}</p>
+                        )}
+                        
+                        {/* Status badge */}
+                        {event.status && event.status !== 'confirmed' && (
+                          <div className="mt-3">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              event.status === 'tentative' ? 'bg-yellow-100 text-yellow-800' :
+                              event.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {event.status}
+                            </span>
+                          </div>
                         )}
                       </CardContent>
                     </Card>
@@ -954,16 +1513,82 @@ function EventsPageDynamic({ date, onDateSelect }: EventsPageProps) {
                 <div className="text-center py-12">
                   <CalendarIcon className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
                   <p className="text-muted-foreground text-lg">No events scheduled for this date.</p>
+                  <p className="text-muted-foreground/70">Check out our upcoming events below!</p>
                 </div>
               )}
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {/* Upcoming Events */}
+      <Card className="shadow-card-hover border-border bg-card">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-foreground">
+            Upcoming Events ({events.length} total)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <RefreshCw className="h-6 w-6 animate-spin text-primary mr-2" />
+              <span className="text-muted-foreground">Loading events...</span>
+            </div>
+          ) : upcomingEvents.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {upcomingEvents.map((event, index) => (
+                <Card key={index} className="border border-border bg-muted/20 hover:bg-muted/40 transition-all duration-200 hover:shadow-md">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                        {event.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-muted-foreground">
+                          {event.isAllDay ? 'All Day' : event.time}
+                        </span>
+                        <Button 
+                          variant="ghost" 
+                          onClick={() => window.open(event.googleCalendarLink, '_blank')}
+                          className="h-8 px-3 py-1 text-xs"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                    <h3 className="text-lg font-bold mb-2 text-foreground">{event.title}</h3>
+                    {event.location && (
+                      <p className="text-sm text-muted-foreground mb-3">{event.location}</p>
+                    )}
+                    {event.description && (
+                      <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                        {event.description}
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <CalendarIcon className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
+              <p className="text-muted-foreground">No upcoming events found.</p>
+              <Button 
+                variant="outline" 
+                onClick={() => window.open(`https://calendar.google.com/calendar/u/0?cid=${ISAB_CALENDAR_ID}`, '_blank')}
+                className="mt-4"
+              >
+                Add First Event
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
 
+// Footer component for mobile-friendly layout
 function Footer() {
   return (
     <footer className="bg-primary-gradient text-primary-foreground py-6 sm:py-8 mt-auto w-full">
@@ -979,6 +1604,8 @@ function Footer() {
           <div className="text-center md:text-left">
             <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Contact Us</h3>
             <p className="text-primary-foreground/90 text-sm sm:text-base">Email: isab@unt.edu</p>
+            <p className="text-primary-foreground/90 text-sm sm:text-base">Office: UNT Union, Room 345</p>
+            <p className="text-primary-foreground/90 text-sm sm:text-base">Phone: (940) 123-4567</p>
           </div>
           <div className="text-center md:text-left">
             <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Follow Us</h3>
@@ -986,8 +1613,17 @@ function Footer() {
               <a href="#" className="text-primary-foreground hover:text-primary-foreground/80 flex items-center text-sm sm:text-base">
                 <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> Instagram
               </a>
+              <a href="#" className="text-primary-foreground hover:text-primary-foreground/80 flex items-center text-sm sm:text-base">
+                <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> Twitter
+              </a>
+              <a href="#" className="text-primary-foreground hover:text-primary-foreground/80 flex items-center text-sm sm:text-base">
+                <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> Facebook
+              </a>
             </div>
           </div>
+        </div>
+        <div className="border-t border-primary-foreground/20 mt-6 sm:mt-8 pt-4 sm:pt-6 text-center text-primary-foreground/80">
+          <p className="text-xs sm:text-sm">&copy; {new Date().getFullYear()} International Student Advisory Board. All rights reserved.</p>
         </div>
       </div>
     </footer>
