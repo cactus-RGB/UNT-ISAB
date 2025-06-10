@@ -87,6 +87,23 @@ const importantLinks = [
 const GOOGLE_CALENDAR_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_CALENDAR_API_KEY;
 const ISAB_CALENDAR_ID = process.env.NEXT_PUBLIC_ISAB_CALENDAR_ID;
 
+// Google Calendar API response types
+interface GoogleCalendarEvent {
+  id: string;
+  summary?: string;
+  description?: string;
+  start: { dateTime?: string; date?: string };
+  end: { dateTime?: string; date?: string };
+  location?: string;
+  status: 'confirmed' | 'tentative' | 'cancelled';
+  htmlLink: string;
+  creator?: { email?: string; displayName?: string };
+}
+
+interface GoogleCalendarApiResponse {
+  items?: GoogleCalendarEvent[];
+}
+
 interface ISABEvent {
   id: string;
   title: string;
@@ -142,18 +159,18 @@ const useISABEvents = () => {
         }
       }
 
-      const data = await response.json();
+      const data: GoogleCalendarApiResponse = await response.json();
       console.log(`Found ${data.items?.length || 0} events`);
       
-      const parsedEvents: ISABEvent[] = (data.items || []).map((event: any) => {
+      const parsedEvents: ISABEvent[] = (data.items || []).map((event: GoogleCalendarEvent) => {
         // Handle both all-day and timed events
         const startDate = event.start.dateTime 
           ? new Date(event.start.dateTime)
-          : new Date(event.start.date + 'T09:00:00'); // Default time for all-day events
+          : new Date((event.start.date || new Date().toISOString().split('T')[0]) + 'T09:00:00'); // Default time for all-day events
           
         const endDate = event.end.dateTime 
           ? new Date(event.end.dateTime)
-          : new Date(event.end.date + 'T17:00:00'); // Default end time for all-day events
+          : new Date((event.end.date || new Date().toISOString().split('T')[0]) + 'T17:00:00'); // Default end time for all-day events
 
         return {
           id: event.id,
@@ -162,7 +179,7 @@ const useISABEvents = () => {
           start: startDate,
           end: endDate,
           location: event.location || '',
-          status: event.status as 'confirmed' | 'tentative' | 'cancelled',
+          status: event.status,
           htmlLink: event.htmlLink,
           creator: {
             email: event.creator?.email || '',
