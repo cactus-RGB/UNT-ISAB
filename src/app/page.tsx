@@ -145,7 +145,17 @@ const useISABEvents = () => {
       const data = await response.json();
       console.log(`Found ${data.items?.length || 0} events`);
       
-      const parsedEvents: ISABEvent[] = (data.items || []).map((event: any) => {
+      const parsedEvents: ISABEvent[] = (data.items || []).map((event: {
+        id: string;
+        summary?: string;
+        description?: string;
+        start: { dateTime?: string; date?: string };
+        end: { dateTime?: string; date?: string };
+        location?: string;
+        status: 'confirmed' | 'tentative' | 'cancelled';
+        htmlLink: string;
+        creator?: { email?: string; displayName?: string };
+      }) => {
         // Handle both all-day and timed events
         const startDate = event.start.dateTime 
           ? new Date(event.start.dateTime)
@@ -200,8 +210,22 @@ const useISABEvents = () => {
   };
 };
 
+// Type for converted display events
+interface DisplayEvent {
+  date: Date;
+  title: string;
+  time: string;
+  location: string;
+  description: string;
+  id: string;
+  googleCalendarLink: string;
+  status: 'confirmed' | 'tentative' | 'cancelled';
+  organizer: string;
+  isAllDay: boolean;
+}
+
 // Convert Google Calendar events to display format
-const convertToDisplayFormat = (googleEvent: ISABEvent) => ({
+const convertToDisplayFormat = (googleEvent: ISABEvent): DisplayEvent => ({
   date: googleEvent.start,
   title: googleEvent.title,
   time: googleEvent.start.toLocaleTimeString('en-US', { 
@@ -738,7 +762,7 @@ const eventGalleries = [
 ];
 
 // Get events for a specific date
-const getEventsForDate = (date: Date, events: any[]) => {
+const getEventsForDate = (date: Date, events: DisplayEvent[]) => {
   return events.filter(event => 
     event.date.getDate() === date.getDate() &&
     event.date.getMonth() === date.getMonth() &&
