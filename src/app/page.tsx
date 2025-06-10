@@ -304,95 +304,7 @@ const convertToDisplayFormat = (googleEvent: ISABEvent): DisplayEvent => ({
   isAllDay: googleEvent.start.getHours() === 9 && googleEvent.start.getMinutes() === 0 // Detect all-day events
 });
 
-// Master officer profiles with complete bios and role progression
-interface OfficerProfile {
-  name: string;
-  major: string;
-  homeCountry: string;
-  countryFlag: string;
-  image: string;
-  hasPhoto: boolean;
-  roles: Array<{ semester: string; period: string; role: string }>;
-  overallContributions: string[];
-  roleSpecificHighlights: { [key: string]: string[] };
-}
-
-const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
-  "adrian-tam": {
-    name: "Adrian \"Boss\" Tam",
-    major: "Master's in Communication",
-    homeCountry: "Malaysia",
-    countryFlag: "🇲🇾",
-    image: "/assets/officers/Boss.jpg",
-    hasPhoto: true,
-    roles: [
-      { semester: "Founding Board", period: "December 2023", role: "Founding President" },
-      { semester: "Spring 2024", period: "Spring 2024", role: "President" }
-    ],
-    overallContributions: [
-      "Established the International Student Advisory Board and recruited founding members",
-      "Provided foundational leadership that enabled ISAB's rapid growth and development", 
-      "Created the organizational framework that continues to guide ISAB's mission today",
-      "Led ISAB through its inaugural events and early recognition by university administration"
-    ],
-    roleSpecificHighlights: {
-      "Founding President": ["Established ISAB as recognized student organization", "Recruited founding board members"],
-      "President": ["Oversaw first major event implementations", "Established university partnerships"]
-    }
-  },
-  "ibrahim-abubeker": {
-    name: "Ibrahim Abubeker",
-    major: "Computer Science",
-    homeCountry: "Ethiopia", 
-    countryFlag: "🇪🇹",
-    image: "/assets/officers/ibrahim.jpeg",
-    hasPhoto: true,
-    roles: [
-      { semester: "Founding Board", period: "December 2023", role: "Founding Secretary" },
-      { semester: "Spring 2024", period: "Spring 2024", role: "Secretary" },
-      { semester: "Fall 2024", period: "Fall 2024", role: "President" },
-      { semester: "Spring 2025", period: "Spring 2025", role: "President" }
-    ],
-    overallContributions: [
-      "Rose from Founding Secretary to President, demonstrating exceptional leadership growth",
-      "Maintained organizational continuity through detailed documentation and record-keeping",
-      "Led ISAB's expansion phase as President with innovative programming and increased membership",
-      "Strengthened university relationships and policy advocacy initiatives"
-    ],
-    roleSpecificHighlights: {
-      "Founding Secretary": ["Established documentation protocols", "Maintained founding meeting records"],
-      "Secretary": ["Streamlined organizational processes", "Improved member communication"],
-      "President": ["Expanded event programming", "Increased membership engagement"]
-    }
-  }
-  // Add other officer profiles as needed...
-};
-
-// Semester boards with updated officer information
-interface SemesterBoard {
-  id: string;
-  title: string;
-  period: string;
-  description: string;
-  coverImage: string;
-  totalOfficers: number;
-  officers: Array<{ id: string; role: string }>;
-}
-
-const semesterBoards: SemesterBoard[] = [
-  {
-    id: 'founding-board-2023',
-    title: 'Founding Board',
-    period: 'December 2023',
-    description: 'The pioneering leadership team that established ISAB and laid the foundation for its future growth',
-    coverImage: '/assets/officers/Boss.jpg',
-    totalOfficers: 4,
-    officers: [
-      { id: "adrian-tam", role: "Founding President" },
-      { id: "ibrahim-abubeker", role: "Founding Secretary" }
-    ]
-  }
-];
+// Note: Additional officer profiles and semester board data can be added here when needed
 
 // Get events for a specific date
 const getEventsForDate = (date: Date, events: DisplayEvent[]) => {
@@ -760,9 +672,83 @@ function HistoryPage() {
                 Our mission is to serve as the voice for international students at UNT, advocating 
                 for their needs and fostering a welcoming community that celebrates diversity.
               </p>
+
+              <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
+                <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
+                Key Accomplishments
+              </h2>
+              <div className="space-y-6">
+                {[
+                  { title: "Growth & Impact", desc: "Since inauguration, ISAB has hosted over 25 major events becoming a vital part of campus life." },
+                  { title: "Policy Advocacy", desc: "ISAB has successfully influenced university policies through dedicated town halls and direct engagement with administration." },
+                  { title: "Cultural Celebrations", desc: "Organized landmark events like UNT's first Songkran Water Festival and International Sash Ceremony." },
+                  { title: "Community Building", desc: "Established comprehensive support through events like Football 101 and International Game Nights." }
+                ].map((item, index) => (
+                  <div key={index} className="flex items-start space-x-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors duration-200">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-3 flex-shrink-0"></div>
+                    <div>
+                      <h3 className="font-bold text-foreground mb-2">{item.title}</h3>
+                      <p className="text-muted-foreground">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>
+
+        {/* Current Leadership */}
+        <div className="mb-16">
+          <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center">
+            <div className="w-2 h-10 bg-primary rounded-full mr-4"></div>
+            Current Leadership Team
+          </h2>
+          <p className="text-muted-foreground mb-8 text-lg">
+            Meet our current officers who are leading ISAB into its next chapter of growth and impact.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {officers.map((officer, index) => (
+              <Card key={index} className="shadow-card-hover border-border bg-card hover:shadow-card-elevated transition-all duration-300">
+                <CardContent className="p-6">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-20 h-20 rounded-full border-2 border-primary/20 overflow-hidden mb-4">
+                      {officer.image ? (
+                        <Image
+                          src={officer.image}
+                          alt={`${officer.name} - ${officer.role}`}
+                          width={80}
+                          height={80}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted/50 flex items-center justify-center">
+                          <Users className="h-6 w-6 text-primary/60" />
+                        </div>
+                      )}
+                    </div>
+
+                    <h3 className="text-lg font-bold text-foreground mb-1">{officer.name}</h3>
+                    <div className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary rounded-full font-medium text-xs mb-2">
+                      {officer.role}
+                    </div>
+                    
+                    <div className="space-y-1 text-xs text-muted-foreground">
+                      <div className="flex items-center justify-center">
+                        <GraduationCap className="h-3 w-3 mr-1 text-primary" />
+                        <span className="truncate">{officer.major}</span>
+                      </div>
+                      <div className="flex items-center justify-center">
+                        <Globe className="h-3 w-3 mr-1 text-primary" />
+                        <span>{officer.countryFlag} {officer.homeCountry}</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
