@@ -21,35 +21,34 @@ const customStyles = `
     transform: rotateY(12deg);
   }
   
-  .rotateY-180 {
-    transform: rotateY(180deg);
-  }
-  
   .preserve-3d {
     transform-style: preserve-3d;
   }
   
   .animate-flip-to-modal {
-    animation: flipToModal 0.5s ease-in-out;
+    animation: flipToModal 0.5s ease-in-out forwards;
   }
   
   .animate-modal-entrance {
-    animation: modalEntrance 0.3s ease-out;
+    animation: modalEntrance 0.3s ease-out forwards;
   }
   
   .animate-modal-content-entrance {
-    animation: modalContentEntrance 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: modalContentEntrance 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   }
   
   @keyframes flipToModal {
     0% {
       transform: rotateY(0deg) scale(1);
+      opacity: 1;
     }
     50% {
-      transform: rotateY(90deg) scale(0.8);
+      transform: rotateY(90deg) scale(0.9);
+      opacity: 0.7;
     }
     100% {
-      transform: rotateY(180deg) scale(1.1);
+      transform: rotateY(180deg) scale(1);
+      opacity: 0.3;
     }
   }
   
@@ -69,9 +68,17 @@ const customStyles = `
       transform: rotateY(180deg) scale(1.1);
       opacity: 0;
     }
+    25% {
+      transform: rotateY(135deg) scale(0.95);
+      opacity: 0.3;
+    }
     50% {
       transform: rotateY(90deg) scale(0.9);
-      opacity: 0.5;
+      opacity: 0.6;
+    }
+    75% {
+      transform: rotateY(45deg) scale(0.95);
+      opacity: 0.9;
     }
     100% {
       transform: rotateY(0deg) scale(1);
@@ -1151,20 +1158,10 @@ interface OfficerModalProps {
   officer: typeof officers[0] | null;
   isOpen: boolean;
   onClose: () => void;
+  position?: { x: number; y: number } | null;
 }
 
-function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      setIsAnimating(true);
-      // Reset animation state after entrance
-      const timer = setTimeout(() => setIsAnimating(false), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
-
+function OfficerModal({ officer, isOpen, onClose, position }: OfficerModalProps) {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -1180,17 +1177,47 @@ function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
 
   if (!isOpen || !officer) return null;
 
+  // Calculate modal position
+  const getModalStyle = () => {
+    if (!position) return {};
+    
+    const modalWidth = 400; // approximate modal width
+    const modalHeight = 600; // approximate modal height
+    const offset = 50; // offset from card center
+    
+    // Calculate position with boundary checks
+    let left = position.x - modalWidth / 2;
+    let top = position.y - modalHeight / 2 + offset;
+    
+    // Keep modal within viewport bounds
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const scrollY = window.scrollY || window.pageYOffset;
+    
+    left = Math.max(20, Math.min(left, viewportWidth - modalWidth - 20));
+    top = Math.max(scrollY + 20, Math.min(top, scrollY + viewportHeight - modalHeight - 20));
+    
+    return {
+      position: 'absolute' as const,
+      left: `${left}px`,
+      top: `${top}px`,
+      transform: 'none'
+    };
+  };
+
   return (
     <div 
-      className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300 ${
-        isAnimating ? 'animate-modal-entrance' : ''
-      }`}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 animate-modal-entrance"
       onClick={onClose}
     >
       <div 
-        className={`bg-card rounded-2xl shadow-card-elevated max-w-md w-full max-h-[90vh] overflow-y-auto transform transition-all duration-500 ${
-          isAnimating ? 'animate-modal-content-entrance' : 'scale-100'
-        }`}
+        className="bg-card rounded-2xl shadow-card-elevated max-w-md w-full max-h-[90vh] overflow-y-auto animate-modal-content-entrance"
+        style={position ? getModalStyle() : { 
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)'
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with close button */}
@@ -1270,25 +1297,38 @@ function HomePage({ onPageChange }: HomePageProps) {
   const [selectedOfficer, setSelectedOfficer] = useState<typeof officers[0] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [flippingCardIndex, setFlippingCardIndex] = useState<number | null>(null);
+  const [modalPosition, setModalPosition] = useState<{ x: number; y: number } | null>(null);
 
-  const openOfficerModal = (officer: typeof officers[0], cardIndex: number) => {
+  const openOfficerModal = (officer: typeof officers[0], cardIndex: number, event: React.MouseEvent) => {
+    // Prevent multiple clicks during animation
+    if (flippingCardIndex !== null) return;
+    
+    // Get card position for modal placement
+    const cardElement = event.currentTarget as HTMLElement;
+    const rect = cardElement.getBoundingClientRect();
+    const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
+    
+    setModalPosition({
+      x: rect.left + scrollX + rect.width / 2,
+      y: rect.top + scrollY + rect.height / 2
+    });
+    
     setFlippingCardIndex(cardIndex);
     
-    // Start the flip animation
+    // Start the flip animation and open modal
     setTimeout(() => {
       setSelectedOfficer(officer);
       setIsModalOpen(true);
-      
-      // Reset flip state after modal opens
-      setTimeout(() => {
-        setFlippingCardIndex(null);
-      }, 300);
     }, 250); // Half of the flip animation duration
   };
 
   const closeOfficerModal = () => {
     setIsModalOpen(false);
     setSelectedOfficer(null);
+    // Reset flip state and position when modal closes
+    setFlippingCardIndex(null);
+    setModalPosition(null);
   };
 
   useEffect(() => {
@@ -1352,14 +1392,16 @@ function HomePage({ onPageChange }: HomePageProps) {
             {officers.map((officer, index) => (
               <div
                 key={index}
-                onClick={() => openOfficerModal(officer, index)}
-                className={`group transition-all duration-500 hover:shadow-card-elevated border border-border bg-primary-gradient hover:-translate-y-2 cursor-pointer rounded-lg overflow-hidden perspective-1000 ${
-                  flippingCardIndex === index ? 'animate-flip-to-modal' : ''
+                onClick={(e) => openOfficerModal(officer, index, e)}
+                className={`group transition-all duration-500 hover:shadow-card-elevated border border-border bg-primary-gradient cursor-pointer rounded-lg overflow-hidden perspective-1000 ${
+                  flippingCardIndex === index 
+                    ? 'animate-flip-to-modal pointer-events-none' 
+                    : 'hover:-translate-y-2'
                 }`}
                 style={{ transformStyle: 'preserve-3d' }}
               >
                 <div className={`p-8 text-center transition-transform duration-500 ${
-                  flippingCardIndex === index ? 'rotateY-180' : 'group-hover:rotateY-12'
+                  flippingCardIndex === index ? '' : 'group-hover:rotateY-12'
                 }`}>
                   <div className="relative w-32 h-32 mx-auto mb-6">
                     <div className="rounded-full overflow-hidden w-32 h-32 relative transition-all duration-300">
@@ -1438,6 +1480,7 @@ function HomePage({ onPageChange }: HomePageProps) {
           officer={selectedOfficer}
           isOpen={isModalOpen}
           onClose={closeOfficerModal}
+          position={modalPosition}
         />
       )}
     </>
@@ -1449,6 +1492,7 @@ function HistoryPage() {
   const [selectedOfficer, setSelectedOfficer] = useState<(OfficerProfile & { currentRole?: string }) | null>(null);
   const [isOfficerModalOpen, setIsOfficerModalOpen] = useState(false);
   const [flippingOfficerIndex, setFlippingOfficerIndex] = useState<number | null>(null);
+  const [modalPosition, setModalPosition] = useState<{ x: number; y: number } | null>(null);
 
   const openBoardView = (boardId: string) => {
     setSelectedBoard(boardId);
@@ -1462,20 +1506,29 @@ function HistoryPage() {
     setSelectedBoard(null);
   };
 
-  const openOfficerModal = (officerId: string, role: string, cardIndex: number) => {
+  const openOfficerModal = (officerId: string, role: string, cardIndex: number, event: React.MouseEvent) => {
+    // Prevent multiple clicks during animation
+    if (flippingOfficerIndex !== null) return;
+    
     const profile = masterOfficerProfiles[officerId];
     if (profile) {
+      // Get card position for modal placement
+      const cardElement = event.currentTarget as HTMLElement;
+      const rect = cardElement.getBoundingClientRect();
+      const scrollX = window.scrollX || window.pageXOffset;
+      const scrollY = window.scrollY || window.pageYOffset;
+      
+      setModalPosition({
+        x: rect.left + scrollX + rect.width / 2,
+        y: rect.top + scrollY + rect.height / 2
+      });
+      
       setFlippingOfficerIndex(cardIndex);
       
-      // Start the flip animation
+      // Start the flip animation and open modal
       setTimeout(() => {
         setSelectedOfficer({ ...profile, currentRole: role });
         setIsOfficerModalOpen(true);
-        
-        // Reset flip state after modal opens
-        setTimeout(() => {
-          setFlippingOfficerIndex(null);
-        }, 300);
       }, 250); // Half of the flip animation duration
     }
   };
@@ -1483,6 +1536,9 @@ function HistoryPage() {
   const closeOfficerModal = () => {
     setIsOfficerModalOpen(false);
     setSelectedOfficer(null);
+    // Reset flip state and position when modal closes
+    setFlippingOfficerIndex(null);
+    setModalPosition(null);
   };
 
   useEffect(() => {
@@ -1657,15 +1713,17 @@ function HistoryPage() {
               return (
                 <Card 
                   key={index} 
-                  className={`group transition-all duration-500 hover:shadow-card-elevated border-border bg-card cursor-pointer hover:-translate-y-1 ${
-                    flippingOfficerIndex === index ? 'animate-flip-to-modal' : ''
+                  className={`group transition-all duration-500 hover:shadow-card-elevated border-border bg-card cursor-pointer ${
+                    flippingOfficerIndex === index 
+                      ? 'animate-flip-to-modal pointer-events-none' 
+                      : 'hover:-translate-y-1'
                   }`}
-                  onClick={() => openOfficerModal(officer.id, officer.role, index)}
+                  onClick={(e) => openOfficerModal(officer.id, officer.role, index, e)}
                   style={{ transformStyle: 'preserve-3d' }}
                 >
                   <CardContent className="p-6">
                     <div className={`flex flex-col items-center text-center transition-transform duration-500 ${
-                      flippingOfficerIndex === index ? 'rotateY-180' : 'group-hover:rotateY-6'
+                      flippingOfficerIndex === index ? '' : 'group-hover:rotateY-6'
                     }`}>
                       {/* Photo */}
                       <div className="w-20 h-20 rounded-full border-2 border-primary/20 overflow-hidden mb-3">
@@ -1720,7 +1778,7 @@ function HistoryPage() {
               onClick={closeOfficerModal}
             >
               <div 
-                className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-500 animate-modal-content-entrance"
+                className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full max-h-[90vh] overflow-y-auto transform animate-modal-content-entrance"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header with close button */}
