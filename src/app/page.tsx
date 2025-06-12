@@ -634,11 +634,25 @@ const eventGalleries = [
     coverImage: '/assets/gallery/inauguration/cover.jpg',
     totalImages: 20,
     images: [
-      { url: '/assets/gallery/inauguration/1.jpg', caption: 'Official inauguration ceremony' },
-      { url: '/assets/gallery/inauguration/2.jpg', caption: 'Founding officers taking oath' },
-      { url: '/assets/gallery/inauguration/3.jpg', caption: 'University officials present' },
-      { url: '/assets/gallery/inauguration/4.jpg', caption: 'International student community gathering' }
-    ]
+  { url: '/assets/gallery/inauguration/1.jpg', caption: 'Official inauguration ceremony' },
+  { url: '/assets/gallery/inauguration/2.jpg', caption: 'Founding officers taking oath' },
+  { url: '/assets/gallery/inauguration/3.jpg', caption: 'University officials present' },
+  { url: '/assets/gallery/inauguration/4.jpg', caption: 'International student community gathering' },
+  { url: '/assets/gallery/inauguration/5.jpg', caption: 'Students attentively listening during the welcome speech' },
+  { url: '/assets/gallery/inauguration/6.jpg', caption: 'Formal presentation marking the start of the event' },
+  { url: '/assets/gallery/inauguration/7.jpg', caption: 'Speaker addressing the audience on stage' },
+  { url: '/assets/gallery/inauguration/8.jpg', caption: 'Overview of the room filled with attendees and international flags' },
+  { url: '/assets/gallery/inauguration/9.jpg', caption: 'Audience applause after an announcement' },
+  { url: '/assets/gallery/inauguration/10.jpg', caption: 'Group photo of the ISAB team with UNT staff and certificate' },
+  { url: '/assets/gallery/inauguration/11.jpg', caption: 'Celebratory group photo with the broader international student community' },
+  { url: '/assets/gallery/inauguration/12.jpg', caption: 'Keynote speaker delivering remarks under ISAB logo' },
+  { url: '/assets/gallery/inauguration/13.jpg', caption: 'Opening speech setting the tone for the ceremony' },
+  { url: '/assets/gallery/inauguration/14.jpg', caption: 'Students listening to speeches during the event' },
+  { url: '/assets/gallery/inauguration/15.jpg', caption: 'Another angle of the speaker’s presentation' },
+  { url: '/assets/gallery/inauguration/16.jpg', caption: 'Guests paying close attention to the event program' },
+  { url: '/assets/gallery/inauguration/17.jpg', caption: 'Students clapping during an award presentation' },
+  { url: '/assets/gallery/inauguration/18.jpg', caption: 'Leadership team celebrating with plaque of recognition' },
+]
   },
   {
     id: 'first-general-meeting-2024',
