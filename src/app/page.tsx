@@ -265,7 +265,7 @@ interface OfficerProfile {
 const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   "adrian-tam": {
     name: "Adrian \"Boss\" Tam",
-    major: "Master's in Communication",
+    major: "M.A. in Communication",
     homeCountry: "Malaysia",
     countryFlag: "🇲🇾",
     image: "/assets/officers/Boss.jpg",
@@ -275,10 +275,10 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Spring 2024", period: "Spring 2024", role: "President" }
     ],
     overallContributions: [
-      "Established the International Student Advisory Board and recruited founding members",
-      "Provided foundational leadership that enabled ISAB's rapid growth and development", 
-      "Created the organizational framework that continues to guide ISAB's mission today",
-      "Led ISAB through its inaugural events and early recognition by university administration"
+      "Founded the International Student Advisory Board and recruited its inaugural members",
+      "Provided visionary leadership during ISAB's formative phase, enabling early recognition by university administration", 
+      "Developed the core organizational framework and governance structure still in use today",
+      "Spearheaded ISAB's first events, establishing credibility and campus presence"
     ],
     roleSpecificHighlights: {
       "Founding President": ["Established ISAB as recognized student organization", "Recruited founding board members"],
@@ -287,7 +287,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "amaris-charles": {
     name: "Amaris Charles",
-    major: "Anthropology", 
+    major: "B.A. in Anthropology", 
     homeCountry: "Puerto Rico",
     countryFlag: "🇵🇷",
     image: "/assets/officers/Amaris.jpg",
@@ -299,10 +299,10 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Spring 2025", period: "Spring 2025", role: "Vice President" }
     ],
     overallContributions: [
-      "Founding Vice president who has led ISAB for a long time and had many meaningful contributions when it comes to managing the organization",
-      "ISAB wouldn't be how it is today without her foundational leadership and continuous dedication",
-      "Developed comprehensive event management strategies that established ISAB's signature programming approach",
-      "Spearheaded cultural initiatives that significantly enhanced international student engagement"
+      "Co-founded ISAB and played a critical role in shaping its mission and operational structure",
+      "Provided continuous leadership across multiple boards, helping ensure stability and growth",
+      "Developed signature event planning strategies that defined ISAB's programming model",
+      "Led inclusive cultural initiatives that increased international student participation and engagement"
     ],
     roleSpecificHighlights: {
       "Founding Vice President": ["Co-established organizational structure", "Developed initial event frameworks"],
@@ -311,7 +311,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "ibrahim-abubeker": {
     name: "Ibrahim Abubeker",
-    major: "Computer Science",
+    major: "B.S. in Computer Science",
     homeCountry: "Ethiopia", 
     countryFlag: "🇪🇹",
     image: "/assets/officers/Ibrahim.jpg",
@@ -323,11 +323,10 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Spring 2025", period: "Spring 2025", role: "President" }
     ],
     overallContributions: [
-      "Rose from Founding Secretary to President, demonstrating exceptional leadership growth",
-      "Maintained organizational continuity through detailed documentation and record-keeping",
-      "Led ISAB's expansion phase as President with innovative programming and increased membership",
-      "Strengthened university relationships and policy advocacy initiatives",
-      "Created the ISAB website, detailing the org's history and officer achievements as a solo developer"
+      "Advanced from Founding Secretary to President, demonstrating strong leadership and organizational growth",
+      "Maintained institutional memory through detailed record-keeping and documentation",
+      "As President, led ISAB's expansion with innovative programs and increased membership",
+      "Strengthened ISAB's visibility through university advocacy and technical innovation, including developing the official ISAB website"
     ],
     roleSpecificHighlights: {
       "Founding Secretary": ["Established documentation protocols", "Maintained founding meeting records"],
@@ -337,7 +336,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "bhavesh-gujula": {
     name: "Bhavesh Gujula",
-    major: "Master's in Data Analytics",
+    major: "M.S. in Data Analytics",
     homeCountry: "India",
     countryFlag: "🇮🇳", 
     image: "/assets/officers/Bhavesh.jpg",
@@ -347,10 +346,10 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Spring 2024", period: "Spring 2024", role: "Treasurer" }
     ],
     overallContributions: [
-      "Secured initial funding and financial resources essential for ISAB's early operations",
-      "Managed fiscal responsibilities for inaugural events that established ISAB's presence on campus", 
-      "Developed financial protocols and procedures that laid the groundwork for sustainable operations",
-      "Created budget frameworks that supported ISAB's rapid expansion of programming"
+      "Secured ISAB's initial funding and managed budgeting for its earliest events",
+      "Established financial protocols that ensured transparent and sustainable operations", 
+      "Designed budget frameworks to support programming scalability",
+      "Played a key role in building the infrastructure for long-term financial management"
     ],
     roleSpecificHighlights: {
       "Founding Treasurer": ["Secured initial funding sources", "Established financial protocols"],
@@ -359,7 +358,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "sai-kaushik": {
     name: "Sai Kaushik Kollepalli",
-    major: "Master's in Business Analytics",
+    major: "M.S. in Business Analytics",
     homeCountry: "India",
     countryFlag: "🇮🇳",
     image: "/assets/officers/Sai.jpg",
@@ -369,10 +368,10 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Fall 2024", period: "Fall 2024", role: "International Student Support Coordinator" }
     ],
     overallContributions: [
-      "Greatly contributed to ISAB's international student support efforts",
-      "Due to his job working as a student assistant in international affairs, he was familiar with a lot of things that were relevant to international students",
-      "Provided expertise on immigration processes and campus resources for international students",
-      "Served as vital bridge between international students and university administration"
+      "Provided expert insight into international student needs through his role in UNT's International Affairs office",
+      "Acted as a critical liaison between international students and administrative resources",
+      "Offered consistent support in areas related to immigration, housing, and campus navigation",
+      "Strengthened ISAB's role in student support and advocacy"
     ],
     roleSpecificHighlights: {
       "Essential Needs Coordinator": ["Conducted student needs assessments", "Developed resource databases"],
@@ -381,7 +380,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "laura-decesero": {
     name: "Laura DeCesero",
-    major: "Biomedical Engineering",
+    major: "B.S. in Biomedical Engineering",
     homeCountry: "Italy",
     countryFlag: "🇮🇹",
     image: "/assets/officers/Laura.jpg",
@@ -391,10 +390,10 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Fall 2024", period: "Fall 2024", role: "Secretary" }
     ],
     overallContributions: [
-      "Created international student survey which was a comprehensive and well made survey which is still used by ISAB",
-      "Served as secretary and helped organize Rhythms of the World",
-      "Created systematic documentation processes that improved organizational continuity",
-      "Served dual coordination and administrative roles ensuring organizational efficiency"
+      "Designed a comprehensive international student survey still used by ISAB today",
+      "Served as Secretary, ensuring smooth communication and coordination",
+      "Helped plan and execute Rhythms of the World, one of ISAB's most impactful events",
+      "Improved organizational consistency through structured documentation practices"
     ],
     roleSpecificHighlights: {
       "International Student Support Coordinator": ["Conducted comprehensive needs assessment survey", "Co-organized Rhythms of the World"],
@@ -403,7 +402,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "chaehyeon-kim": {
     name: "Chaehyeon Kim", 
-    major: "Art",
+    major: "B.A. in Art",
     homeCountry: "South Korea",
     countryFlag: "🇰🇷",
     image: "/assets/officers/Chaehyeon.jpg",
@@ -412,10 +411,10 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Spring 2024", period: "Spring 2024", role: "Communications Coordinator" }
     ],
     overallContributions: [
-      "Helped with ISAB's initial growth on social media",
-      "Made the first officer posts for the inaugural board team",
-      "Developed content creation standards and brand guidelines for professional digital image",
-      "Implemented strategic communication initiatives that increased student engagement during critical growth phase"
+      "Led ISAB's initial growth on social media, improving visibility and branding",
+      "Designed the first official officer announcement posts and set tone for future content",
+      "Created content guidelines that shaped ISAB's public image",
+      "Initiated early-stage marketing strategies that drove student engagement"
     ],
     roleSpecificHighlights: {
       "Communications Coordinator": ["Established social media presence", "Created first officer introduction posts"]
@@ -423,7 +422,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "yong-pappunggon": {
     name: "Yong Pappunggon",
-    major: "Accounting", 
+    major: "B.B.A. in Accounting", 
     homeCountry: "Thailand",
     countryFlag: "🇹🇭",
     image: "/assets/officers/Yong.jpg",
@@ -433,10 +432,10 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Fall 2024", period: "Fall 2024", role: "Event Coordinator" }
     ],
     overallContributions: [
-      "Organized first ever Songkran festival at UNT which was one of ISAB's biggest events that was foundational to its success today",
-      "Organized many other events that were key to ISAB's development",
-      "Developed innovative event planning frameworks that became template for future celebrations",
-      "Established strategic partnerships with campus organizations and local community groups"
+      "Organized the first Songkran Festival at UNT, setting a new standard for international cultural events",
+      "Coordinated numerous foundational events that elevated ISAB's presence",
+      "Developed scalable event planning processes adopted by future boards",
+      "Built relationships with student orgs and community partners to expand impact"
     ],
     roleSpecificHighlights: {
       "Event Coordinator": ["Organized inaugural Songkran Festival", "Developed event planning frameworks"]
@@ -444,7 +443,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "suma-geethika": {
     name: "Suma Geethika",
-    major: "Data Science",
+    major: "M.S. in Data Science",
     homeCountry: "India", 
     countryFlag: "🇮🇳",
     image: "/assets/officers/Suma.jpg",
@@ -453,10 +452,10 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Fall 2024", period: "Fall 2024", role: "International Student Support Coordinator" }
     ],
     overallContributions: [
-      "Helped with student support during fall semester",
-      "Helped with collecting data for town hall meetings, ensuring student voices were heard",
-      "Helped organize events that were essential to ISAB's continued growth",
-      "Supported the transition of new leadership during organizational growth phase"
+      "Supported ISAB's student support initiatives during the Fall semester",
+      "Played a key role in data collection for town hall advocacy",
+      "Helped organize events crucial to maintaining ISAB's momentum and visibility",
+      "Facilitated leadership transition during a period of rapid organizational growth"
     ],
     roleSpecificHighlights: {
       "International Student Support Coordinator": ["Provided student support during fall semester", "Collected data for town hall meetings"]
@@ -464,7 +463,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "marina-menegusso": {
     name: "Marina Cestari Menegusso",
-    major: "English",
+    major: "B.A. in English",
     homeCountry: "Brazil",
     countryFlag: "🇧🇷",
     image: "/assets/officers/Marina.jpg", 
@@ -473,10 +472,10 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Fall 2024", period: "Fall 2024", role: "Outreach Coordinator" }
     ],
     overallContributions: [
-      "Posted every event on time, ensuring consistent and timely promotion across social media platforms",
-      "Took pictures during every event, helping document the history of ISAB and preserving organizational memory",
-      "Helped collect data for officer bios, contributing to organizational documentation",
-      "Helped grow the ISAB social media presence and engagement through strategic content creation"
+      "Ensured timely event promotion and consistent social media engagement",
+      "Served as ISAB's event photographer, preserving organizational history",
+      "Collected and organized officer biography content for internal documentation",
+      "Contributed to increased visibility and student connection through outreach"
     ],
     roleSpecificHighlights: {
       "Outreach Coordinator": ["Posted every event on time", "Documented ISAB history through photography"]
@@ -484,7 +483,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "iman-mohammed": {
     name: "Iman Mohammed",
-    major: "Business Analytics", 
+    major: "B.S. in Business Analytics", 
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
     image: "/assets/officers/Iman.jpg",
@@ -494,9 +493,9 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Spring 2025", period: "Spring 2025", role: "Secretary" }
     ],
     overallContributions: [
-      "Maintains organizational documentation and communication standards",
-      "Supports current ISAB initiatives and member coordination",
-      "Contributes to ongoing policy advocacy and student support efforts"
+      "Manages meeting notes, internal communication, and documentation standards",
+      "Assists in coordination of current initiatives and officer collaboration",
+      "Supports ISAB's mission through consistent advocacy and student outreach"
     ],
     roleSpecificHighlights: {
       "Secretary": ["Maintains documentation standards", "Supports member coordination"]
@@ -504,7 +503,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "shiori-hisaoka": {
     name: "Shiori Hisaoka",
-    major: "Psychology",
+    major: "B.A. in Psychology",
     homeCountry: "Japan",
     countryFlag: "🇯🇵", 
     image: "/assets/officers/Shiori.jpg",
@@ -514,9 +513,10 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Spring 2025", period: "Spring 2025", role: "Outreach Coordinator" }
     ],
     overallContributions: [
-      "Contributed to expanding ISAB's event programming and community outreach initiatives",
-      "Helped organize multiple cultural celebrations and student engagement activities",
-      "Transitioned from event coordination to outreach, expanding ISAB's campus presence"
+      "Played a key role in organizing cultural events that promote student inclusion",
+      "Transitioned from event coordination to outreach to broaden ISAB's reach",
+      "Strengthens partnerships with student organizations through collaborative planning",
+      "Enhances engagement through social media, tabling, and awareness campaigns"
     ],
     roleSpecificHighlights: {
       "Event Coordinator": ["Organized cultural celebrations", "Enhanced event programming"],
@@ -525,7 +525,7 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
   },
   "mohammed-abubeker": {
     name: "Mohammed Abubeker",
-    major: "Business Computer Information Systems",
+    major: "B.B.A. in Business Computer Information Systems",
     homeCountry: "Ethiopia",
     countryFlag: "🇪🇹",
     image: "/assets/officers/Mohammed.jpg", 
@@ -534,12 +534,12 @@ const masterOfficerProfiles: { [key: string]: OfficerProfile } = {
       { semester: "Spring 2025", period: "Spring 2025", role: "Event Coordinator" }
     ],
     overallContributions: [
-      "Continues ISAB's tradition of innovative cultural programming",
-      "Organizes current semester events and community building activities",
-      "Maintains high standards for event quality and student engagement"
+      "Leads the planning and execution of current ISAB events with a focus on cultural enrichment",
+      "Builds community through engaging and accessible programming",
+      "Ensures event quality through detailed planning, logistics, and feedback integration",
+      "Continues ISAB's legacy of innovative and inclusive campus events"
     ],
     roleSpecificHighlights: {
-      "Outreach Coordinator": ["Expanded ISAB's campus outreach", "Built community partnerships"],
       "Event Coordinator": ["Organizes cultural programming", "Maintains event quality standards"]
     }
   }
@@ -561,7 +561,7 @@ const semesterBoards: SemesterBoard[] = [
     id: 'founding-board-2023',
     title: 'Founding Board',
     period: 'December 2023',
-    description: 'The pioneering leadership team that established ISAB from the ground up. This foundational board created the organizational framework, secured initial university recognition, and laid the groundwork for all future growth. Key achievements: Official ISAB establishment, initial member recruitment, and organizational charter development.',
+    description: 'The inaugural leadership team that established ISAB from the ground up. This foundational group built the organizational framework, secured university recognition, and laid the groundwork for long-term success. Key achievements: Official founding of ISAB, initial recruitment of members, creation of ISAB\'s constitution and charter.',
     coverImage: '/assets/boards/founding-2023/cover.jpeg',
     totalOfficers: 4,
     officers: [
@@ -575,7 +575,7 @@ const semesterBoards: SemesterBoard[] = [
     id: 'spring-2024-board',
     title: 'Spring 2024 Board', 
     period: 'Spring 2024',
-    description: 'The expansion era that transformed ISAB into a campus powerhouse. This dynamic 8-member team organized ISAB&apos;s first major events and established key traditions that continue today. Key achievements: Inaugural Songkran Festival, first Town Hall meeting, International Sash Ceremony, Vice Provost Luncheon, and UNT&apos;s first International Student Advisory Board recognition.',
+    description: 'A transformative team of eight that expanded ISAB\'s reach and campus presence. This group organized key events, strengthened internal structure, and enhanced student engagement through active outreach. Key achievements: Hosted the first Songkran Festival, organized ISAB\'s first Town Hall, expanded general membership and officer team, strengthened ISAB\'s standing as a recognized student organization through visible and consistent programming.',
     coverImage: '/assets/boards/spring-2024/cover.jpg',
     totalOfficers: 8,
     officers: [
@@ -593,7 +593,7 @@ const semesterBoards: SemesterBoard[] = [
     id: 'fall-2024-board',
     title: 'Fall 2024 Board',
     period: 'Fall 2024', 
-    description: 'The consolidation period that strengthened ISAB&apos;s campus presence and enhanced student engagement. This experienced team focused on sustainable growth and community building. Key achievements: Football 101 cultural bridge event, Homecoming Week participation, Rhythms of the World celebration, comprehensive international student survey, and expanded social media presence.',
+    description: 'A period of consolidation and expanded campus engagement. This experienced team focused on building lasting infrastructure, strengthening partnerships, and deepening ISAB\'s impact on international student life. Key achievements: Organized and co-led Rhythms of the World, one of UNT\'s largest multicultural celebrations, in collaboration with multiple student organizations; increased ISAB visibility through Homecoming Week participation; designed and distributed a comprehensive international student experience survey, now a recurring tool for feedback and advocacy; expanded ISAB\'s digital presence through strategic social media growth and branding consistency.',
     coverImage: '/assets/boards/fall-2024/cover.jpeg',
     totalOfficers: 8,
     officers: [
@@ -611,7 +611,7 @@ const semesterBoards: SemesterBoard[] = [
     id: 'spring-2025-board',
     title: 'Spring 2025 Board',
     period: 'Spring 2025',
-    description: 'The current innovation-focused leadership driving ISAB toward new heights of impact and engagement. This streamlined 5-member team emphasizes quality programming and strategic growth. Ongoing initiatives: Second annual Songkran Festival, expanded town hall format, Valentine&apos;s Art Night, enhanced Google Calendar integration, and strengthened university partnerships.',
+    description: 'An innovation-driven team focused on refining ISAB\'s identity and maximizing its campus impact. This smaller, agile board emphasized strategic engagement and meaningful partnerships, leading to some of ISAB\'s most effective outreach efforts to date. Key achievements: Improved the Town Hall format to encourage more open discussion and participation; strengthened intercollegiate ties with the University of Oklahoma\'s International Advisory Committee (OU IAC); achieved significantly higher engagement and attendance at events compared to previous semesters; continued annual traditions with the second Songkran Festival; enhanced outreach through improved branding and Google Calendar integration.',
     coverImage: '/assets/boards/spring-2025/cover.jpeg',
     totalOfficers: 5,
     officers: [
