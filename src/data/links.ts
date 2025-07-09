@@ -1,10 +1,10 @@
-import { Users, CalendarIcon, BookOpen } from 'lucide-react';
+import { Users, CalendarIcon, BookOpen, LucideIcon } from 'lucide-react';
 
 export interface ImportantLink {
   title: string;
   url: string;
   description: string;
-  icon: any;
+  icon: LucideIcon; // Changed from 'any' to 'LucideIcon'
 }
 
 export const importantLinks: ImportantLink[] = [

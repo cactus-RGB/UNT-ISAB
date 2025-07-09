@@ -1,4 +1,3 @@
-// File: src/components/pages/EventsPage.tsx
 "use client"
 
 import React from 'react';
@@ -6,7 +5,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { ExternalLink, CalendarIcon, Clock, MapPin, Users, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
-import { useISABEvents } from '@/hooks/useISABEvents';
+// Use relative import instead of @/hooks/useISABEvents
+import { useISABEvents } from '../../hooks/useISABEvents';
+
+interface ISABEvent {
+  id: string;
+  title: string;
+  description: string;
+  start: Date;
+  end: Date;
+  location: string;
+  status: 'confirmed' | 'tentative' | 'cancelled';
+  htmlLink: string;
+  creator: {
+    email: string;
+    displayName: string;
+  };
+}
 
 interface DisplayEvent {
   date: Date;
@@ -26,8 +41,8 @@ interface EventsPageProps {
   onDateSelect: (date: Date | undefined) => void;
 }
 
-// Convert Google Calendar events to display format
-const convertToDisplayFormat = (googleEvent: any): DisplayEvent => ({
+// Convert Google Calendar events to display format - Fixed type annotation
+const convertToDisplayFormat = (googleEvent: ISABEvent): DisplayEvent => ({
   date: googleEvent.start,
   title: googleEvent.title,
   time: googleEvent.start.toLocaleTimeString('en-US', { 
@@ -41,7 +56,7 @@ const convertToDisplayFormat = (googleEvent: any): DisplayEvent => ({
   googleCalendarLink: googleEvent.htmlLink,
   status: googleEvent.status,
   organizer: googleEvent.creator.displayName,
-  isAllDay: googleEvent.start.getHours() === 9 && googleEvent.start.getMinutes() === 0 // Detect all-day events
+  isAllDay: googleEvent.start.getHours() === 9 && googleEvent.start.getMinutes() === 0
 });
 
 // Get events for a specific date
@@ -179,7 +194,6 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
                         <div className="flex items-start justify-between mb-3">
                           <h3 className="text-xl font-bold text-foreground">{event.title}</h3>
                           
-                          {/* Google Calendar link */}
                           <Button 
                             variant="ghost" 
                             onClick={() => window.open(event.googleCalendarLink, '_blank')}
@@ -217,7 +231,6 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
                           <p className="mt-4 text-muted-foreground leading-relaxed">{event.description}</p>
                         )}
                         
-                        {/* Status badge */}
                         {event.status && event.status !== 'confirmed' && (
                           <div className="mt-3">
                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
