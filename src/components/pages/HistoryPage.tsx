@@ -5,12 +5,132 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Users, GraduationCap, Globe } from 'lucide-react';
-import { semesterBoards, masterOfficerProfiles } from '@/data/history';
-import type { OfficerProfile } from '@/data/history';
+import { ChevronRight, Users, GraduationCap, Globe, RefreshCw, AlertCircle } from 'lucide-react';
+import { useGoogleDriveCMS } from '@/hooks/useGoogleDriveCMS';
+import type { OfficerProfile, SemesterBoard } from '@/hooks/useGoogleDriveCMS';
 import HistoryOfficerModal from '@/components/history/HistoryOfficerModal';
 
+// Fallback data for when Google Drive isn't set up
+const fallbackSemesterBoards: SemesterBoard[] = [
+  {
+    id: 'spring-2025-board',
+    title: 'Spring 2025 Board',
+    period: 'Spring 2025',
+    description: 'The current leadership team focused on innovation and maximizing campus impact.',
+    coverImage: '/assets/boards/spring-2025/cover.jpeg',
+    totalOfficers: 5,
+    officers: [
+      { id: "ibrahim-abubeker", role: "President" },
+      { id: "amaris-charles", role: "Vice President" },
+      { id: "iman-mohammed", role: "Secretary" },
+      { id: "shiori-hisaoka", role: "Outreach Coordinator" },
+      { id: "mohammed-abubeker", role: "Event Coordinator" }
+    ]
+  }
+];
+
+const fallbackMasterOfficerProfiles: { [key: string]: OfficerProfile } = {
+  "ibrahim-abubeker": {
+    name: "Ibrahim Abubeker",
+    major: "Computer Science",
+    homeCountry: "Ethiopia",
+    countryFlag: "🇪🇹",
+    image: "/assets/officers/Ibrahim.jpg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Spring 2025", period: "Spring 2025", role: "President" }
+    ],
+    overallContributions: [
+      "Current President leading ISAB's continued growth and innovation"
+    ],
+    roleSpecificHighlights: {
+      "President": ["Leading current initiatives", "Expanding campus presence"]
+    }
+  },
+  "amaris-charles": {
+    name: "Amaris Charles",
+    major: "Anthropology",
+    homeCountry: "Puerto Rico",
+    countryFlag: "🇵🇷",
+    image: "/assets/officers/Amaris.jpg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Spring 2025", period: "Spring 2025", role: "Vice President" }
+    ],
+    overallContributions: [
+      "Current Vice President supporting organizational leadership"
+    ],
+    roleSpecificHighlights: {
+      "Vice President": ["Supporting presidential initiatives", "Event coordination"]
+    }
+  },
+  "iman-mohammed": {
+    name: "Iman Mohammed",
+    major: "Business Analytics",
+    homeCountry: "Ethiopia",
+    countryFlag: "🇪🇹",
+    image: "/assets/officers/Iman.jpg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Spring 2025", period: "Spring 2025", role: "Secretary" }
+    ],
+    overallContributions: [
+      "Current Secretary managing documentation and communication"
+    ],
+    roleSpecificHighlights: {
+      "Secretary": ["Meeting documentation", "Member communication"]
+    }
+  },
+  "shiori-hisaoka": {
+    name: "Shiori Hisaoka",
+    major: "Psychology",
+    homeCountry: "Japan",
+    countryFlag: "🇯🇵",
+    image: "/assets/officers/Shiori.jpg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Spring 2025", period: "Spring 2025", role: "Outreach Coordinator" }
+    ],
+    overallContributions: [
+      "Current Outreach Coordinator expanding ISAB's campus presence"
+    ],
+    roleSpecificHighlights: {
+      "Outreach Coordinator": ["Campus engagement", "Social media management"]
+    }
+  },
+  "mohammed-abubeker": {
+    name: "Mohammed Abubeker",
+    major: "Business Computer Information Systems",
+    homeCountry: "Ethiopia",
+    countryFlag: "🇪🇹",
+    image: "/assets/officers/Mohammed.jpg",
+    hasPhoto: true,
+    roles: [
+      { semester: "Spring 2025", period: "Spring 2025", role: "Event Coordinator" }
+    ],
+    overallContributions: [
+      "Current Event Coordinator organizing cultural programming"
+    ],
+    roleSpecificHighlights: {
+      "Event Coordinator": ["Cultural events", "Community building"]
+    }
+  }
+};
+
 export default function HistoryPage() {
+  const { 
+    masterOfficerProfiles: cmsProfiles, 
+    semesterBoards: cmsBoards, 
+    loading, 
+    error, 
+    lastUpdated, 
+    refresh 
+  } = useGoogleDriveCMS();
+
+  // Use CMS data if available, fallback to hardcoded data
+  const semesterBoards = cmsBoards.length > 0 ? cmsBoards : fallbackSemesterBoards;
+  const masterOfficerProfiles = Object.keys(cmsProfiles).length > 0 ? cmsProfiles : fallbackMasterOfficerProfiles;
+
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
   const [selectedOfficer, setSelectedOfficer] = useState<(OfficerProfile & { currentRole?: string }) | null>(null);
   const [isOfficerModalOpen, setIsOfficerModalOpen] = useState(false);
@@ -27,14 +147,14 @@ export default function HistoryPage() {
   };
 
   const openOfficerModal = (officerId: string, role: string) => {
-    console.log('Opening modal for:', officerId, role); // Debug log
+    console.log('Opening modal for:', officerId, role);
     const profile = masterOfficerProfiles[officerId];
     if (profile) {
-      console.log('Found profile:', profile); // Debug log
+      console.log('Found profile:', profile);
       setSelectedOfficer({ ...profile, currentRole: role });
       setIsOfficerModalOpen(true);
     } else {
-      console.log('No profile found for:', officerId); // Debug log
+      console.log('No profile found for:', officerId);
     }
   };
 
@@ -84,6 +204,41 @@ export default function HistoryPage() {
 
         <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
           <div className="max-w-4xl mx-auto">
+            {/* CMS Status */}
+            {error && (
+              <Card className="mb-8 border-destructive bg-destructive/5">
+                <CardContent className="p-6">
+                  <div className="flex items-start space-x-3">
+                    <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
+                    <div>
+                      <h3 className="font-medium text-destructive mb-1">History Content Error</h3>
+                      <p className="text-sm text-muted-foreground mb-3">{error}</p>
+                      <p className="text-sm text-muted-foreground mb-3">Using fallback data.</p>
+                      <Button 
+                        variant="outline" 
+                        onClick={refresh}
+                        className="h-8 px-3 py-1 text-xs"
+                      >
+                        <RefreshCw className="h-4 w-4 mr-1" />
+                        Retry
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {loading && (
+              <Card className="mb-8 border-primary bg-primary/5">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3">
+                    <RefreshCw className="h-5 w-5 animate-spin text-primary" />
+                    <p className="text-primary">Loading history content from Google Drive...</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card className="shadow-card-hover border-border bg-card mb-16">
               <CardContent className="p-12">
                 <div className="prose prose-lg max-w-none">
@@ -113,10 +268,23 @@ export default function HistoryPage() {
             </Card>
 
             <div className="mb-16">
-              <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center">
-                <div className="w-2 h-10 bg-primary rounded-full mr-4"></div>
-                Legacy of Leadership
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-4xl font-bold flex items-center text-foreground">
+                  <div className="w-2 h-10 bg-primary rounded-full mr-4"></div>
+                  Legacy of Leadership
+                </h2>
+                {lastUpdated && (
+                  <Button 
+                    variant="outline" 
+                    onClick={refresh}
+                    disabled={loading}
+                    className="h-8 px-3 py-1 text-xs"
+                  >
+                    <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+                    Sync
+                  </Button>
+                )}
+              </div>
               <p className="text-muted-foreground mb-12 text-lg">
                 Click on any semester board to view the officers who served during that period
               </p>
@@ -199,7 +367,7 @@ export default function HistoryPage() {
             {currentBoard.officers.map((officer, index) => {
               const profile = masterOfficerProfiles[officer.id];
               if (!profile) {
-                console.log('Missing profile for:', officer.id); // Debug log
+                console.log('Missing profile for:', officer.id);
                 return null;
               }
               
