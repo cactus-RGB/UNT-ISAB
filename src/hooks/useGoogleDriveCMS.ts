@@ -608,7 +608,7 @@ export const useGoogleDriveCMS = () => {
     setOfficers(cached.officers);
     setImportantLinks(cached.importantLinks.map(link => ({
       ...link,
-      icon: getIconComponent((link.icon as any)?.name || 'users')
+      icon: getIconComponent((link.icon as { name?: string })?.name || 'users')
     })));
     setEventGalleries(cached.eventGalleries);
     setSiteContent(cached.siteContent);
@@ -727,6 +727,7 @@ export const useGoogleDriveCMS = () => {
     } finally {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Force refresh function
