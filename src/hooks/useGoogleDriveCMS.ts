@@ -103,6 +103,18 @@ interface DocumentContent {
   type: 'officers' | 'links' | 'about' | 'history' | 'general';
 }
 
+// Helper function to get proper Google Drive image URL
+const getGoogleDriveImageUrl = (fileId: string): string => {
+  // Use the direct view URL that works better for images in React
+  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+};
+
+// Helper function to get a fallback image URL
+const getFallbackImageUrl = (name: string): string => {
+  const firstName = name.split(' ')[0];
+  return `/assets/officers/${firstName}.jpg`;
+};
+
 export const useGoogleDriveCMS = () => {
   // Start with empty arrays - content will be loaded from cache or Google Drive
   const [officers, setOfficers] = useState<Officer[]>([]);
@@ -375,8 +387,8 @@ export const useGoogleDriveCMS = () => {
       }
       
       if (officer.name && officer.role) {
-        const firstName = officer.name.split(' ')[0];
-        officer.image = `/assets/officers/${firstName}.jpg`;
+        // Set fallback image initially - will be updated if found in Drive
+        officer.image = getFallbackImageUrl(officer.name);
         officers.push(officer as Officer);
       }
     }
@@ -463,32 +475,60 @@ export const useGoogleDriveCMS = () => {
     return siteData;
   };
 
-  // Load officer photos from Google Drive
+  // Load officer photos from Google Drive with improved matching
   const loadOfficerPhotos = async (officers: Officer[]): Promise<Officer[]> => {
     if (!OFFICER_PHOTOS_FOLDER_ID) {
+      console.log('[CMS]: No officer photos folder ID configured');
       return officers;
     }
 
     try {
+      console.log('[CMS]: Loading officer photos from Google Drive...');
       const photoFiles = await getFolderContents(OFFICER_PHOTOS_FOLDER_ID);
       const imageFiles = photoFiles.filter(file => 
         file.mimeType.startsWith('image/') ||
         /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(file.name)
       );
       
+      console.log(`[CMS]: Found ${imageFiles.length} image files in officer photos folder`);
+      console.log('[CMS]: Image files:', imageFiles.map(f => f.name));
+      
       return officers.map(officer => {
         const firstName = officer.name.split(' ')[0].toLowerCase();
+        const fullName = officer.name.toLowerCase().replace(/\s+/g, '');
+        
+        // Try multiple matching strategies
         const photoFile = imageFiles.find(file => {
           const fileName = file.name.toLowerCase();
-          return fileName.includes(firstName) || fileName.startsWith(firstName);
+          const fileNameNoExt = fileName.replace(/\.[^/.]+$/, '');
+          
+          return (
+            // Exact first name match
+            fileNameNoExt === firstName ||
+            // File name starts with first name
+            fileNameNoExt.startsWith(firstName) ||
+            // File name contains first name
+            fileName.includes(firstName) ||
+            // Full name match (no spaces)
+            fileNameNoExt === fullName ||
+            // File name contains full name
+            fileName.includes(fullName)
+          );
         });
         
-        return {
-          ...officer,
-          image: photoFile ? 
-            `https://drive.google.com/uc?export=view&id=${photoFile.id}` : 
-            `/assets/officers/${officer.name.split(' ')[0]}.jpg`
-        };
+        if (photoFile) {
+          console.log(`[CMS]: Found photo for ${officer.name}: ${photoFile.name}`);
+          return {
+            ...officer,
+            image: getGoogleDriveImageUrl(photoFile.id)
+          };
+        } else {
+          console.log(`[CMS]: No photo found for ${officer.name}, using fallback`);
+          return {
+            ...officer,
+            image: getFallbackImageUrl(officer.name)
+          };
+        }
       });
     } catch (error) {
       console.error('Error loading officer photos:', error);
@@ -496,26 +536,34 @@ export const useGoogleDriveCMS = () => {
     }
   };
 
-  // Load event galleries from Google Drive
+  // Load event galleries from Google Drive with improved error handling
   const loadEventGalleries = async (): Promise<EventGallery[]> => {
     if (!EVENT_PHOTOS_FOLDER_ID) {
+      console.log('[CMS]: No event photos folder ID configured');
       return [];
     }
 
     try {
+      console.log('[CMS]: Loading event galleries from Google Drive...');
       const eventFolders = await getFolderContents(EVENT_PHOTOS_FOLDER_ID);
       const galleries: EventGallery[] = [];
       
       for (const folder of eventFolders) {
         if (folder.mimeType === 'application/vnd.google-apps.folder') {
           try {
+            console.log(`[CMS]: Processing event folder: ${folder.name}`);
             const images = await getFolderContents(folder.id);
             const imageFiles = images.filter(file => 
               file.mimeType.startsWith('image/') ||
               /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(file.name)
             );
             
-            if (imageFiles.length === 0) continue;
+            if (imageFiles.length === 0) {
+              console.log(`[CMS]: No images found in folder: ${folder.name}`);
+              continue;
+            }
+            
+            console.log(`[CMS]: Found ${imageFiles.length} images in ${folder.name}`);
             
             const galleryId = folder.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
             
@@ -528,10 +576,10 @@ export const useGoogleDriveCMS = () => {
                 day: 'numeric' 
               }),
               description: `Photos from ${folder.name}`,
-              coverImage: `https://drive.google.com/uc?export=view&id=${imageFiles[0].id}`,
+              coverImage: getGoogleDriveImageUrl(imageFiles[0].id),
               totalImages: imageFiles.length,
               images: imageFiles.map(img => ({
-                url: `https://drive.google.com/uc?export=view&id=${img.id}`,
+                url: getGoogleDriveImageUrl(img.id),
                 caption: img.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' ')
               }))
             });
@@ -541,6 +589,7 @@ export const useGoogleDriveCMS = () => {
         }
       }
       
+      console.log(`[CMS]: Loaded ${galleries.length} event galleries`);
       return galleries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     } catch (error) {
       console.error('Error loading event galleries:', error);
@@ -551,20 +600,25 @@ export const useGoogleDriveCMS = () => {
   // Load documents from Google Drive
   const loadDocuments = async (): Promise<DocumentContent[]> => {
     if (!DOCUMENTS_FOLDER_ID) {
+      console.log('[CMS]: No documents folder ID configured');
       return [];
     }
 
     try {
+      console.log('[CMS]: Loading documents from Google Drive...');
       const files = await getFolderContents(DOCUMENTS_FOLDER_ID);
       const docFiles = files.filter(file => 
         file.mimeType === 'application/vnd.google-apps.document' ||
         file.mimeType === 'text/plain'
       );
       
+      console.log(`[CMS]: Found ${docFiles.length} document files`);
+      
       const documents: DocumentContent[] = [];
       
       for (const file of docFiles) {
         try {
+          console.log(`[CMS]: Processing document: ${file.name}`);
           const content = await getDocumentContent(file.id, file.mimeType);
           
           let type: DocumentContent['type'] = 'general';
@@ -592,6 +646,7 @@ export const useGoogleDriveCMS = () => {
         }
       }
       
+      console.log(`[CMS]: Successfully processed ${documents.length} documents`);
       return documents;
     } catch (error) {
       console.error('Error loading documents:', error);
@@ -671,19 +726,24 @@ export const useGoogleDriveCMS = () => {
       for (const doc of docs) {
         switch (doc.type) {
           case 'officers':
+            console.log('[CMS]: Processing officers document...');
             let officerData = parseOfficerDocument(doc.content);
+            console.log(`[CMS]: Parsed ${officerData.length} officers from document`);
             officerData = await loadOfficerPhotos(officerData);
             newOfficers = officerData;
             setOfficers(officerData);
             break;
             
           case 'links':
+            console.log('[CMS]: Processing links document...');
             const links = parseLinksDocument(doc.content);
+            console.log(`[CMS]: Parsed ${links.length} links from document`);
             newLinks = links;
             setImportantLinks(links);
             break;
             
           case 'about':
+            console.log('[CMS]: Processing about document...');
             const aboutData = parseSiteContent(doc.content);
             newSiteContent = { ...newSiteContent, ...aboutData };
             setSiteContent(newSiteContent);

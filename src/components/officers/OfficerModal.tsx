@@ -1,9 +1,9 @@
 "use client"
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { X, GraduationCap, Globe } from 'lucide-react';
-import { Officer } from '@/data/officers';
+import { X, GraduationCap, Globe, Users } from 'lucide-react';
+import type { Officer } from '@/hooks/useGoogleDriveCMS';
 
 interface OfficerModalProps {
   officer: Officer | null;
@@ -12,6 +12,8 @@ interface OfficerModalProps {
 }
 
 export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
+  const [imageError, setImageError] = useState(false);
+
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -29,7 +31,28 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
     }
   }, [isOpen, onClose]);
 
-  if (!isOpen || !officer) return null;
+  // Reset image error state when officer changes
+  useEffect(() => {
+    setImageError(false);
+  }, [officer]);
+
+  const handleImageError = () => {
+    if (officer) {
+      console.error(`Failed to load modal image for ${officer.name}: ${officer.image}`);
+    }
+    setImageError(true);
+  };
+
+  const handleImageLoad = () => {
+    if (officer) {
+      console.log(`Successfully loaded modal image for ${officer.name}`);
+    }
+    setImageError(false);
+  };
+
+  if (!isOpen || !officer) {
+    return null;
+  }
 
   return (
     <div 
@@ -44,6 +67,7 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/80 hover:bg-background transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary"
+            aria-label="Close modal"
           >
             <X className="h-5 w-5 text-muted-foreground" />
           </button>
@@ -52,14 +76,22 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
             <div className="flex justify-center items-center">
               <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6">
                 <div className="rounded-full overflow-hidden w-full h-full relative ring-4 ring-primary/20">
-                  <Image
-                    src={officer.image}
-                    alt={`${officer.name} - ${officer.role}`}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    sizes="(max-width: 640px) 112px, 128px"
-                    priority
-                  />
+                  {!imageError ? (
+                    <Image
+                      src={officer.image}
+                      alt={`${officer.name} - ${officer.role}`}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      sizes="(max-width: 640px) 112px, 128px"
+                      priority
+                      onError={handleImageError}
+                      onLoad={handleImageLoad}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-muted/50 flex items-center justify-center">
+                      <Users className="h-12 w-12 text-primary/60" />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -1,8 +1,9 @@
 "use client"
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
-import { Officer } from '@/data/officers';
+import type { Officer } from '@/hooks/useGoogleDriveCMS';
+import { Users } from 'lucide-react';
 
 interface OfficerCardProps {
   officer: Officer;
@@ -10,22 +11,56 @@ interface OfficerCardProps {
 }
 
 export default function OfficerCard({ officer, onClick }: OfficerCardProps) {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  const handleImageError = () => {
+    console.error(`Failed to load image for ${officer.name}: ${officer.image}`);
+    setImageError(true);
+    setImageLoading(false);
+  };
+
+  const handleImageLoad = () => {
+    console.log(`Successfully loaded image for ${officer.name}`);
+    setImageError(false);
+    setImageLoading(false);
+  };
+
+  const handleClick = () => {
+    onClick(officer);
+  };
+
   return (
     <div
-      onClick={() => onClick(officer)}
+      onClick={handleClick}
       className="group transition-all duration-300 hover:shadow-card-elevated border border-border bg-primary-gradient hover:-translate-y-2 cursor-pointer rounded-lg overflow-hidden w-full"
     >
       <div className="p-6 sm:p-8 text-center flex flex-col items-center justify-center h-full">
         <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 mx-auto mb-4 sm:mb-6 flex-shrink-0">
           <div className="rounded-full overflow-hidden w-full h-full relative transition-all duration-300 ring-2 ring-white/20 group-hover:ring-white/40">
-            <Image
-              src={officer.image}
-              alt={`${officer.name} - ${officer.role}`}
-              fill
-              style={{ objectFit: 'cover' }}
-              sizes="(max-width: 640px) 96px, (max-width: 768px) 112px, 128px"
-              className="transition-transform duration-500 group-hover:scale-110"
-            />
+            {!imageError ? (
+              <Image
+                src={officer.image}
+                alt={`${officer.name} - ${officer.role}`}
+                fill
+                style={{ objectFit: 'cover' }}
+                sizes="(max-width: 640px) 96px, (max-width: 768px) 112px, 128px"
+                className="transition-transform duration-500 group-hover:scale-110"
+                onError={handleImageError}
+                onLoad={handleImageLoad}
+                priority={false}
+              />
+            ) : (
+              <div className="w-full h-full bg-white/10 flex items-center justify-center">
+                <Users className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white/60" />
+              </div>
+            )}
+            
+            {imageLoading && !imageError && (
+              <div className="absolute inset-0 bg-white/20 flex items-center justify-center">
+                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -46,6 +81,19 @@ export default function OfficerCard({ officer, onClick }: OfficerCardProps) {
             Click to view bio →
           </p>
         </div>
+
+        {process.env.NODE_ENV === 'development' && (
+          <div className="absolute top-2 right-2 z-10">
+            <div 
+              className={`w-3 h-3 rounded-full ${
+                imageError ? 'bg-red-500' : imageLoading ? 'bg-yellow-500' : 'bg-green-500'
+              }`} 
+              title={
+                imageError ? 'Image failed to load' : imageLoading ? 'Image loading' : 'Image loaded successfully'
+              } 
+            />
+          </div>
+        )}
       </div>
     </div>
   );
