@@ -1,4 +1,3 @@
-// File: src/components/pages/HistoryPage.tsx
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -8,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronRight, Users, GraduationCap, Globe, RefreshCw, AlertCircle } from 'lucide-react';
 import { useGoogleDriveCMS } from '@/hooks/useGoogleDriveCMS';
 import { semesterBoards, masterOfficerProfiles } from '@/data/history';
-import type { OfficerProfile, SemesterBoard } from '@/data/history';
+import type { OfficerProfile } from '@/data/history';
 import HistoryOfficerModal from '@/components/history/HistoryOfficerModal';
 
 export default function HistoryPage() {
@@ -313,7 +312,6 @@ export default function HistoryPage() {
             })}
           </div>
 
-          {/* History Officer Modal */}
           <HistoryOfficerModal
             officer={selectedOfficer}
             isOpen={isOfficerModalOpen}
