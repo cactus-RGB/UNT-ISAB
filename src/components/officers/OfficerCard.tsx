@@ -72,7 +72,7 @@ function SmartImage({ src, alt, onLoad, onError }: {
   };
 
   // Reset when src changes
-  React.useEffect(() => {
+  useEffect(() => {
     setImageError(false);
     setImageLoading(true);
     setCurrentSrc(src);
@@ -110,19 +110,6 @@ function SmartImage({ src, alt, onLoad, onError }: {
 }
 
 export default function OfficerCard({ officer, onClick }: OfficerCardProps) {
-  const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-
-  const handleImageError = () => {
-    setImageError(true);
-    setImageLoading(false);
-  };
-
-  const handleImageLoad = () => {
-    setImageError(false);
-    setImageLoading(false);
-  };
-
   const handleClick = () => {
     onClick(officer);
   };
@@ -138,8 +125,6 @@ export default function OfficerCard({ officer, onClick }: OfficerCardProps) {
             <SmartImage
               src={officer.image}
               alt={`${officer.name} - ${officer.role}`}
-              onError={handleImageError}
-              onLoad={handleImageLoad}
             />
           </div>
         </div>
@@ -165,12 +150,8 @@ export default function OfficerCard({ officer, onClick }: OfficerCardProps) {
         {process.env.NODE_ENV === 'development' && (
           <div className="absolute top-2 right-2 z-10">
             <div 
-              className={`w-3 h-3 rounded-full ${
-                imageError ? 'bg-red-500' : imageLoading ? 'bg-yellow-500' : 'bg-green-500'
-              }`} 
-              title={
-                imageError ? 'Image failed to load' : imageLoading ? 'Image loading' : 'Image loaded successfully'
-              } 
+              className="w-3 h-3 rounded-full bg-blue-500"
+              title="Google Drive image"
             />
           </div>
         )}

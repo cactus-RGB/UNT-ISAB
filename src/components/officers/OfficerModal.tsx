@@ -110,8 +110,6 @@ function ModalSmartImage({ src, alt, onLoad, onError }: {
 }
 
 export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
-  const [imageError, setImageError] = useState(false);
-
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -128,19 +126,6 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
       };
     }
   }, [isOpen, onClose]);
-
-  // Reset image error state when officer changes
-  useEffect(() => {
-    setImageError(false);
-  }, [officer]);
-
-  const handleImageError = () => {
-    setImageError(true);
-  };
-
-  const handleImageLoad = () => {
-    setImageError(false);
-  };
 
   if (!isOpen || !officer) {
     return null;
@@ -171,8 +156,6 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
                   <ModalSmartImage
                     src={officer.image}
                     alt={`${officer.name} - ${officer.role}`}
-                    onError={handleImageError}
-                    onLoad={handleImageLoad}
                   />
                 </div>
               </div>
