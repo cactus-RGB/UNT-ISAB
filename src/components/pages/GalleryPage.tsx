@@ -136,7 +136,7 @@ export default function GalleryPage() {
               <ImageIcon className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
               <h3 className="text-xl font-medium text-foreground mb-2">No Event Galleries Found</h3>
               <p className="text-muted-foreground mb-4">
-                Create event folders in your "Event Photos" Google Drive folder to see galleries here.
+                Create event folders in your &ldquo;Event Photos&rdquo; Google Drive folder to see galleries here.
               </p>
               <Button 
                 variant="outline" 

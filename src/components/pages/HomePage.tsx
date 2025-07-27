@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Users, ExternalLink, ChevronRight, CalendarIcon, RefreshCw, AlertCircle, CheckCircle } from 'lucide-react';
+import { BookOpen, Users, ExternalLink, ChevronRight, RefreshCw, AlertCircle, CheckCircle } from 'lucide-react';
 import { useGoogleDriveCMS } from '@/hooks/useGoogleDriveCMS';
 import OfficerCard from '@/components/officers/OfficerCard';
 import OfficerModal from '@/components/officers/OfficerModal';
@@ -22,8 +22,7 @@ export default function HomePage({ onPageChange }: HomePageProps) {
     loading, 
     error, 
     lastUpdated, 
-    refresh,
-    getDocument 
+    refresh
   } = useGoogleDriveCMS();
   
   const [selectedOfficer, setSelectedOfficer] = useState<Officer | null>(null);
@@ -169,7 +168,7 @@ export default function HomePage({ onPageChange }: HomePageProps) {
               <Users className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
               <p className="text-muted-foreground mb-2">No officers found in Google Drive.</p>
               <p className="text-sm text-muted-foreground mb-4">
-                Create a "Current Officers" document in your Documents folder or check your setup.
+                Create a &ldquo;Current Officers&rdquo; document in your Documents folder or check your setup.
               </p>
               <Button 
                 variant="outline" 
@@ -224,7 +223,7 @@ export default function HomePage({ onPageChange }: HomePageProps) {
               <ExternalLink className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
               <p className="text-muted-foreground mb-2">No links found in Google Drive.</p>
               <p className="text-sm text-muted-foreground mb-4">
-                Create an "Important Links" document in your Documents folder or check your setup.
+                Create an &ldquo;Important Links&rdquo; document in your Documents folder or check your setup.
               </p>
               <Button 
                 variant="outline" 
@@ -284,8 +283,8 @@ export default function HomePage({ onPageChange }: HomePageProps) {
               <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1 ml-4">
                 <li>• Add NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY to environment variables</li>
                 <li>• Add NEXT_PUBLIC_ISAB_DRIVE_FOLDER_ID to environment variables</li>
-                <li>• Create "Documents" folder in your ISAB Google Drive folder</li>
-                <li>• Add "Current Officers" and "Important Links" documents</li>
+                <li>• Create &ldquo;Documents&rdquo; folder in your ISAB Google Drive folder</li>
+                <li>• Add &ldquo;Current Officers&rdquo; and &ldquo;Important Links&rdquo; documents</li>
               </ul>
             </CardContent>
           </Card>

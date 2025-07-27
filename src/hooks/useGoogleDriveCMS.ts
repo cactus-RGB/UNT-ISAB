@@ -76,8 +76,8 @@ export const useGoogleDriveCMS = () => {
   const [officers, setOfficers] = useState<Officer[]>([]);
   const [importantLinks, setImportantLinks] = useState<ImportantLink[]>([]);
   const [eventGalleries, setEventGalleries] = useState<EventGallery[]>([]);
-  const [masterOfficerProfiles, setMasterOfficerProfiles] = useState<{ [key: string]: any }>({});
-  const [semesterBoards, setSemesterBoards] = useState<any[]>([]);
+  const [masterOfficerProfiles] = useState<{ [key: string]: unknown }>({});
+  const [semesterBoards] = useState<unknown[]>([]);
   const [siteContent, setSiteContent] = useState<SiteContent>({
     aboutText: "The International Student Advisory Board (ISAB) at UNT is dedicated to advocating for international students, fostering cultural exchange, and enhancing student life through leadership, support, and community engagement.",
     missionStatement: "Our mission is to serve as the voice for international students at UNT, advocating for their needs and fostering a welcoming community that celebrates diversity.",
@@ -509,6 +509,7 @@ export const useGoogleDriveCMS = () => {
     } finally {
       setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load content once on mount, no automatic refresh
