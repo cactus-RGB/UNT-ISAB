@@ -11,7 +11,7 @@ const EVENT_PHOTOS_FOLDER_ID = process.env.NEXT_PUBLIC_EVENT_PHOTOS_FOLDER_ID;
 
 // Cache configuration
 const CACHE_KEY = 'isab-cms-data';
-const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+const METADATA_CACHE_KEY = 'isab-cms-metadata';
 
 // Keep your existing interfaces exactly as they are
 export interface Officer {
@@ -65,6 +65,24 @@ interface CachedData {
   timestamp: number;
 }
 
+interface FolderMetadata {
+  folderId: string;
+  lastModified: string;
+  fileCount: number;
+  files: Array<{
+    id: string;
+    name: string;
+    modifiedTime: string;
+  }>;
+}
+
+interface CachedMetadata {
+  documents: FolderMetadata;
+  officerPhotos: FolderMetadata;
+  eventPhotos: FolderMetadata;
+  timestamp: number;
+}
+
 interface GoogleDriveFile {
   id: string;
   name: string;
@@ -104,26 +122,29 @@ export const useGoogleDriveCMS = () => {
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isFromCache, setIsFromCache] = useState(false);
+  const [changeDetected, setChangeDetected] = useState<string[]>([]);
 
   // Cache management functions
   const getCachedData = (): CachedData | null => {
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if (!cached) return null;
-      
-      const data = JSON.parse(cached) as CachedData;
-      const now = Date.now();
-      
-      // Check if cache is still valid
-      if (now - data.timestamp > CACHE_DURATION) {
-        localStorage.removeItem(CACHE_KEY);
-        return null;
-      }
-      
-      return data;
+      return JSON.parse(cached) as CachedData;
     } catch (error) {
       console.error('Error reading cache:', error);
       localStorage.removeItem(CACHE_KEY);
+      return null;
+    }
+  };
+
+  const getCachedMetadata = (): CachedMetadata | null => {
+    try {
+      const cached = localStorage.getItem(METADATA_CACHE_KEY);
+      if (!cached) return null;
+      return JSON.parse(cached) as CachedMetadata;
+    } catch (error) {
+      console.error('Error reading metadata cache:', error);
+      localStorage.removeItem(METADATA_CACHE_KEY);
       return null;
     }
   };
@@ -140,29 +161,21 @@ export const useGoogleDriveCMS = () => {
     }
   };
 
-  const clearCache = () => {
-    localStorage.removeItem(CACHE_KEY);
+  const setCachedMetadata = (metadata: Omit<CachedMetadata, 'timestamp'>) => {
+    try {
+      const cacheMetadata: CachedMetadata = {
+        ...metadata,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(METADATA_CACHE_KEY, JSON.stringify(cacheMetadata));
+    } catch (error) {
+      console.error('Error setting metadata cache:', error);
+    }
   };
 
-  // Load data from cache
-  const loadFromCache = (): boolean => {
-    const cached = getCachedData();
-    if (!cached) return false;
-
-    console.log('[CMS]: Loading from cache');
-    setOfficers(cached.officers);
-    setImportantLinks(cached.importantLinks.map(link => ({
-      ...link,
-      icon: getIconComponent(link.icon.name || 'users') // Reconstruct icon
-    })));
-    setEventGalleries(cached.eventGalleries);
-    setSiteContent(cached.siteContent);
-    setDocuments(cached.documents);
-    setLastUpdated(new Date(cached.timestamp));
-    setIsFromCache(true);
-    setLoading(false);
-    
-    return true;
+  const clearCache = () => {
+    localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem(METADATA_CACHE_KEY);
   };
 
   // Helper function to make Google Drive API calls
@@ -193,7 +206,83 @@ export const useGoogleDriveCMS = () => {
     return response.json();
   };
 
-  // Get folder contents
+  // Get folder metadata (lightweight check for changes)
+  const getFolderMetadata = async (folderId: string): Promise<FolderMetadata> => {
+    const response = await driveApiCall(
+      `files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`
+    ) as { files?: GoogleDriveFile[] };
+    
+    const files = response.files || [];
+    
+    return {
+      folderId,
+      lastModified: files.length > 0 ? files[0].modifiedTime : '',
+      fileCount: files.length,
+      files: files.map(f => ({
+        id: f.id,
+        name: f.name,
+        modifiedTime: f.modifiedTime
+      }))
+    };
+  };
+
+  // Check if any folders have changed
+  const checkForChanges = async (): Promise<{hasChanges: boolean, changedFolders: string[]}> => {
+    const cachedMetadata = getCachedMetadata();
+    if (!cachedMetadata) {
+      console.log('[CMS]: No cached metadata found, will fetch fresh data');
+      return { hasChanges: true, changedFolders: ['documents', 'officerPhotos', 'eventPhotos'] };
+    }
+
+    const changedFolders: string[] = [];
+
+    try {
+      // Check documents folder
+      if (DOCUMENTS_FOLDER_ID) {
+        const documentsMetadata = await getFolderMetadata(DOCUMENTS_FOLDER_ID);
+        if (
+          documentsMetadata.lastModified !== cachedMetadata.documents.lastModified ||
+          documentsMetadata.fileCount !== cachedMetadata.documents.fileCount
+        ) {
+          console.log('[CMS]: Changes detected in documents folder');
+          changedFolders.push('documents');
+        }
+      }
+
+      // Check officer photos folder
+      if (OFFICER_PHOTOS_FOLDER_ID) {
+        const photosMetadata = await getFolderMetadata(OFFICER_PHOTOS_FOLDER_ID);
+        if (
+          photosMetadata.lastModified !== cachedMetadata.officerPhotos.lastModified ||
+          photosMetadata.fileCount !== cachedMetadata.officerPhotos.fileCount
+        ) {
+          console.log('[CMS]: Changes detected in officer photos folder');
+          changedFolders.push('officerPhotos');
+        }
+      }
+
+      // Check event photos folder
+      if (EVENT_PHOTOS_FOLDER_ID) {
+        const eventMetadata = await getFolderMetadata(EVENT_PHOTOS_FOLDER_ID);
+        if (
+          eventMetadata.lastModified !== cachedMetadata.eventPhotos.lastModified ||
+          eventMetadata.fileCount !== cachedMetadata.eventPhotos.fileCount
+        ) {
+          console.log('[CMS]: Changes detected in event photos folder');
+          changedFolders.push('eventPhotos');
+        }
+      }
+
+      return { hasChanges: changedFolders.length > 0, changedFolders };
+
+    } catch (error) {
+      console.error('Error checking for changes:', error);
+      // If we can't check for changes, assume there are changes to be safe
+      return { hasChanges: true, changedFolders: ['documents', 'officerPhotos', 'eventPhotos'] };
+    }
+  };
+
+  // Get folder contents (full data)
   const getFolderContents = async (folderId: string): Promise<GoogleDriveFile[]> => {
     const response = await driveApiCall(
       `files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,mimeType,parents,webViewLink,webContentLink,thumbnailLink,modifiedTime,size)&orderBy=name`
@@ -510,13 +599,29 @@ export const useGoogleDriveCMS = () => {
     }
   };
 
-  // Main content loading function
-  const loadAllContent = useCallback(async (forceRefresh: boolean = false) => {
-    // Try to load from cache first (unless force refresh)
-    if (!forceRefresh && loadFromCache()) {
-      return;
-    }
+  // Load data from cache
+  const loadFromCache = (): boolean => {
+    const cached = getCachedData();
+    if (!cached) return false;
 
+    console.log('[CMS]: Loading from cache');
+    setOfficers(cached.officers);
+    setImportantLinks(cached.importantLinks.map(link => ({
+      ...link,
+      icon: getIconComponent((link.icon as any)?.name || 'users')
+    })));
+    setEventGalleries(cached.eventGalleries);
+    setSiteContent(cached.siteContent);
+    setDocuments(cached.documents);
+    setLastUpdated(new Date(cached.timestamp));
+    setIsFromCache(true);
+    setLoading(false);
+    
+    return true;
+  };
+
+  // Main content loading function with smart change detection
+  const loadAllContent = useCallback(async (forceRefresh: boolean = false) => {
     if (!GOOGLE_DRIVE_API_KEY) {
       const msg = 'Google Drive API key not configured. Using fallback data.';
       setError(msg);
@@ -526,10 +631,35 @@ export const useGoogleDriveCMS = () => {
 
     try {
       setError(null);
-      setIsFromCache(false);
-      console.log('[CMS]: Loading fresh data from Google Drive...');
 
-      // Load documents first
+      // If not forcing refresh, try cache first
+      if (!forceRefresh && loadFromCache()) {
+        // Still check for changes in background, but don't block UI
+        checkForChanges().then(({ hasChanges, changedFolders }) => {
+          if (hasChanges) {
+            setChangeDetected(changedFolders);
+            console.log(`[CMS]: Changes detected in: ${changedFolders.join(', ')}`);
+          }
+        }).catch(console.error);
+        return;
+      }
+
+      // Check for changes (or force refresh)
+      const { hasChanges, changedFolders } = forceRefresh ? 
+        { hasChanges: true, changedFolders: ['documents', 'officerPhotos', 'eventPhotos'] } :
+        await checkForChanges();
+
+      if (!hasChanges) {
+        console.log('[CMS]: No changes detected, using cached data');
+        loadFromCache();
+        return;
+      }
+
+      console.log(`[CMS]: Changes detected in: ${changedFolders.join(', ')}, fetching fresh data...`);
+      setIsFromCache(false);
+      setChangeDetected([]);
+
+      // Load fresh data
       const docs = await loadDocuments();
       setDocuments(docs);
 
@@ -564,6 +694,19 @@ export const useGoogleDriveCMS = () => {
       // Load event galleries
       const galleries = await loadEventGalleries();
       setEventGalleries(galleries);
+
+      // Update metadata cache
+      const [documentsMetadata, officerPhotosMetadata, eventPhotosMetadata] = await Promise.all([
+        DOCUMENTS_FOLDER_ID ? getFolderMetadata(DOCUMENTS_FOLDER_ID) : Promise.resolve({} as FolderMetadata),
+        OFFICER_PHOTOS_FOLDER_ID ? getFolderMetadata(OFFICER_PHOTOS_FOLDER_ID) : Promise.resolve({} as FolderMetadata),
+        EVENT_PHOTOS_FOLDER_ID ? getFolderMetadata(EVENT_PHOTOS_FOLDER_ID) : Promise.resolve({} as FolderMetadata)
+      ]);
+
+      setCachedMetadata({
+        documents: documentsMetadata,
+        officerPhotos: officerPhotosMetadata,
+        eventPhotos: eventPhotosMetadata
+      });
 
       // Cache the data
       setCachedData({
@@ -614,6 +757,7 @@ export const useGoogleDriveCMS = () => {
     error,
     lastUpdated,
     isFromCache,
+    changeDetected,
     
     // Actions
     refresh: forceRefresh,
