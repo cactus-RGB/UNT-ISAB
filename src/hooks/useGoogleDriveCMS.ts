@@ -3,10 +3,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Users, CalendarIcon, BookOpen, LucideIcon } from 'lucide-react';
 
+// Use your specific folder IDs
 const GOOGLE_DRIVE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY;
-const ISAB_MAIN_FOLDER_ID = process.env.NEXT_PUBLIC_ISAB_DRIVE_FOLDER_ID;
+const DOCUMENTS_FOLDER_ID = process.env.NEXT_PUBLIC_DOCUMENTS_FOLDER_ID;
+const OFFICER_PHOTOS_FOLDER_ID = process.env.NEXT_PUBLIC_OFFICER_PHOTOS_FOLDER_ID;
+const EVENT_PHOTOS_FOLDER_ID = process.env.NEXT_PUBLIC_EVENT_PHOTOS_FOLDER_ID;
 
-// Import your existing types instead of redefining them
+// Keep your existing interfaces exactly as they are
 export interface Officer {
   name: string;
   role: string;
@@ -89,6 +92,13 @@ export const useGoogleDriveCMS = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string[]>([]);
+
+  // Add debug logging function
+  const addDebugLog = (message: string) => {
+    console.log(`[CMS Debug]: ${message}`);
+    setDebugInfo(prev => [...prev, `${new Date().toISOString()}: ${message}`]);
+  };
 
   // Helper function to make Google Drive API calls
   const driveApiCall = async (endpoint: string): Promise<unknown> => {
@@ -98,45 +108,46 @@ export const useGoogleDriveCMS = () => {
 
     const url = `https://www.googleapis.com/drive/v3/${endpoint}${endpoint.includes('?') ? '&' : '?'}key=${GOOGLE_DRIVE_API_KEY}`;
     
+    addDebugLog(`Making API call to: ${url.replace(GOOGLE_DRIVE_API_KEY, '[REDACTED]')}`);
+    
     const response = await fetch(url, {
       headers: {
         'Accept': 'application/json',
       },
     });
 
+    addDebugLog(`API Response Status: ${response.status}`);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      addDebugLog(`API Error: ${response.status} - ${errorText}`);
+      
       if (response.status === 403) {
         throw new Error('Access denied. Please check your API key and folder permissions.');
       } else if (response.status === 404) {
         throw new Error('Folder or file not found. Please check your folder ID.');
       } else {
-        const errorText = await response.text();
         throw new Error(`Drive API error: ${response.status} - ${errorText}`);
       }
     }
 
-    return response.json();
+    const result = await response.json();
+    addDebugLog(`API Response received successfully`);
+    return result;
   };
 
   // Get folder contents
   const getFolderContents = async (folderId: string): Promise<GoogleDriveFile[]> => {
+    addDebugLog(`Getting contents of folder: ${folderId}`);
     const response = await driveApiCall(
       `files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,mimeType,parents,webViewLink,webContentLink,thumbnailLink,modifiedTime,size)&orderBy=name`
     ) as { files?: GoogleDriveFile[] };
-    return response.files || [];
-  };
-
-  // Get folder by name
-  const getFolderByName = async (parentFolderId: string, folderName: string): Promise<string | null> => {
-    try {
-      const response = await driveApiCall(
-        `files?q='${parentFolderId}'+in+parents+and+name='${folderName}'+and+mimeType='application/vnd.google-apps.folder'+and+trashed=false&fields=files(id,name)`
-      ) as { files?: GoogleDriveFile[] };
-      return response.files && response.files.length > 0 ? response.files[0].id : null;
-    } catch (error) {
-      console.warn(`Folder '${folderName}' not found:`, error);
-      return null;
-    }
+    
+    const files = response.files || [];
+    addDebugLog(`Found ${files.length} files in folder ${folderId}`);
+    files.forEach(file => addDebugLog(`  - ${file.name} (${file.mimeType})`));
+    
+    return files;
   };
 
   // Get document content
@@ -151,13 +162,20 @@ export const useGoogleDriveCMS = () => {
       throw new Error(`Unsupported document type: ${mimeType}`);
     }
     
+    addDebugLog(`Downloading document ${fileId} as ${mimeType}`);
+    
     const response = await fetch(exportUrl);
     
     if (!response.ok) {
+      addDebugLog(`Document download failed: ${response.status} ${response.statusText}`);
       throw new Error(`Failed to download document: ${response.status} ${response.statusText}`);
     }
     
-    return response.text();
+    const content = await response.text();
+    addDebugLog(`Document content length: ${content.length} characters`);
+    addDebugLog(`Document preview: ${content.substring(0, 100)}...`);
+    
+    return content;
   };
 
   // Map icon names to actual Lucide icons
@@ -178,8 +196,11 @@ export const useGoogleDriveCMS = () => {
 
   // Parse officer data from Google Docs (matches your current structure exactly)
   const parseOfficerDocument = (content: string): Officer[] => {
+    addDebugLog(`Parsing officer document with ${content.length} characters`);
     const officers: Officer[] = [];
     const sections = content.split(/---+/).filter(section => section.trim());
+    
+    addDebugLog(`Found ${sections.length} officer sections`);
     
     for (const section of sections) {
       const lines = section.split('\n').filter(line => line.trim());
@@ -227,16 +248,21 @@ export const useGoogleDriveCMS = () => {
         const firstName = officer.name.split(' ')[0];
         officer.image = `/assets/officers/${firstName}.jpg`;
         officers.push(officer as Officer);
+        addDebugLog(`Parsed officer: ${officer.name} - ${officer.role}`);
       }
     }
     
+    addDebugLog(`Successfully parsed ${officers.length} officers`);
     return officers;
   };
 
   // Parse important links (matches your current structure)
   const parseLinksDocument = (content: string): ImportantLink[] => {
+    addDebugLog(`Parsing links document with ${content.length} characters`);
     const links: ImportantLink[] = [];
     const sections = content.split(/---+/).filter(section => section.trim());
+    
+    addDebugLog(`Found ${sections.length} link sections`);
     
     for (const section of sections) {
       const lines = section.split('\n').filter(line => line.trim());
@@ -270,14 +296,17 @@ export const useGoogleDriveCMS = () => {
       
       if (link.title && link.url) {
         links.push(link as ImportantLink);
+        addDebugLog(`Parsed link: ${link.title} - ${link.url}`);
       }
     }
     
+    addDebugLog(`Successfully parsed ${links.length} links`);
     return links;
   };
 
   // Parse site content for about text, hero text, etc.
   const parseSiteContent = (content: string): Partial<SiteContent> => {
+    addDebugLog(`Parsing site content with ${content.length} characters`);
     const lines = content.split('\n').filter(line => line.trim());
     const siteData: Partial<SiteContent> = {};
     
@@ -295,16 +324,20 @@ export const useGoogleDriveCMS = () => {
         case 'about':
         case 'about text':
           siteData.aboutText = value;
+          addDebugLog(`Found about text: ${value.substring(0, 50)}...`);
           break;
         case 'mission':
         case 'mission statement':
           siteData.missionStatement = value;
+          addDebugLog(`Found mission statement: ${value.substring(0, 50)}...`);
           break;
         case 'hero title':
           siteData.heroTitle = value;
+          addDebugLog(`Found hero title: ${value}`);
           break;
         case 'hero subtitle':
           siteData.heroSubtitle = value;
+          addDebugLog(`Found hero subtitle: ${value}`);
           break;
       }
     }
@@ -313,13 +346,21 @@ export const useGoogleDriveCMS = () => {
   };
 
   // Load officer photos from Google Drive
-  const loadOfficerPhotos = async (officers: Officer[], photosFolderId: string): Promise<Officer[]> => {
+  const loadOfficerPhotos = async (officers: Officer[]): Promise<Officer[]> => {
+    if (!OFFICER_PHOTOS_FOLDER_ID) {
+      addDebugLog('No officer photos folder ID configured, using fallback images');
+      return officers;
+    }
+
     try {
-      const photoFiles = await getFolderContents(photosFolderId);
+      addDebugLog(`Loading officer photos from folder ${OFFICER_PHOTOS_FOLDER_ID}`);
+      const photoFiles = await getFolderContents(OFFICER_PHOTOS_FOLDER_ID);
       const imageFiles = photoFiles.filter(file => 
         file.mimeType.startsWith('image/') ||
         /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(file.name)
       );
+      
+      addDebugLog(`Found ${imageFiles.length} image files for officers`);
       
       return officers.map(officer => {
         const firstName = officer.name.split(' ')[0].toLowerCase();
@@ -328,33 +369,46 @@ export const useGoogleDriveCMS = () => {
           return fileName.includes(firstName) || fileName.startsWith(firstName);
         });
         
+        const imageUrl = photoFile ? 
+          `https://drive.google.com/uc?id=${photoFile.id}&export=view` : 
+          `/assets/officers/${officer.name.split(' ')[0]}.jpg`;
+          
+        addDebugLog(`Officer ${officer.name}: ${photoFile ? `Google Drive image (${photoFile.name})` : 'fallback image'}`);
+        
         return {
           ...officer,
-          image: photoFile ? 
-            `https://drive.google.com/uc?id=${photoFile.id}&export=view` : 
-            `/assets/officers/${officer.name.split(' ')[0]}.jpg`
+          image: imageUrl
         };
       });
     } catch (error) {
-      console.error('Error loading officer photos:', error);
+      addDebugLog(`Error loading officer photos: ${error}`);
       return officers;
     }
   };
 
   // Load event galleries from Google Drive
-  const loadEventGalleries = async (eventPhotosFolderId: string): Promise<EventGallery[]> => {
+  const loadEventGalleries = async (): Promise<EventGallery[]> => {
+    if (!EVENT_PHOTOS_FOLDER_ID) {
+      addDebugLog('No event photos folder ID configured, skipping galleries');
+      return [];
+    }
+
     try {
-      const eventFolders = await getFolderContents(eventPhotosFolderId);
+      addDebugLog(`Loading event galleries from folder ${EVENT_PHOTOS_FOLDER_ID}`);
+      const eventFolders = await getFolderContents(EVENT_PHOTOS_FOLDER_ID);
       const galleries: EventGallery[] = [];
       
       for (const folder of eventFolders) {
         if (folder.mimeType === 'application/vnd.google-apps.folder') {
           try {
+            addDebugLog(`Processing event folder: ${folder.name}`);
             const images = await getFolderContents(folder.id);
             const imageFiles = images.filter(file => 
               file.mimeType.startsWith('image/') ||
               /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(file.name)
             );
+            
+            addDebugLog(`Found ${imageFiles.length} images in ${folder.name}`);
             
             if (imageFiles.length === 0) continue;
             
@@ -377,32 +431,44 @@ export const useGoogleDriveCMS = () => {
                 caption: img.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' ')
               }))
             });
+            
+            addDebugLog(`Created gallery: ${folder.name} with ${imageFiles.length} images`);
           } catch (error) {
-            console.error(`Error loading gallery ${folder.name}:`, error);
+            addDebugLog(`Error loading gallery ${folder.name}: ${error}`);
           }
         }
       }
       
+      addDebugLog(`Successfully loaded ${galleries.length} event galleries`);
       return galleries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     } catch (error) {
-      console.error('Error loading event galleries:', error);
+      addDebugLog(`Error loading event galleries: ${error}`);
       return [];
     }
   };
 
   // Load documents from Google Drive
-  const loadDocuments = async (documentsFolderId: string): Promise<DocumentContent[]> => {
+  const loadDocuments = async (): Promise<DocumentContent[]> => {
+    if (!DOCUMENTS_FOLDER_ID) {
+      addDebugLog('No documents folder ID configured');
+      return [];
+    }
+
     try {
-      const files = await getFolderContents(documentsFolderId);
+      addDebugLog(`Loading documents from folder ${DOCUMENTS_FOLDER_ID}`);
+      const files = await getFolderContents(DOCUMENTS_FOLDER_ID);
       const docFiles = files.filter(file => 
         file.mimeType === 'application/vnd.google-apps.document' ||
         file.mimeType === 'text/plain'
       );
       
+      addDebugLog(`Found ${docFiles.length} document files`);
+      
       const documents: DocumentContent[] = [];
       
       for (const file of docFiles) {
         try {
+          addDebugLog(`Processing document: ${file.name}`);
           const content = await getDocumentContent(file.id, file.mimeType);
           
           // Detect document type from filename
@@ -419,6 +485,8 @@ export const useGoogleDriveCMS = () => {
             type = 'history';
           }
           
+          addDebugLog(`Document ${file.name} classified as type: ${type}`);
+          
           documents.push({
             id: file.id,
             name: file.name,
@@ -427,85 +495,78 @@ export const useGoogleDriveCMS = () => {
             type
           });
         } catch (error) {
-          console.error(`Failed to load document ${file.name}:`, error);
+          addDebugLog(`Failed to load document ${file.name}: ${error}`);
         }
       }
       
+      addDebugLog(`Successfully loaded ${documents.length} documents`);
       return documents;
     } catch (error) {
-      console.error('Error loading documents:', error);
+      addDebugLog(`Error loading documents: ${error}`);
       return [];
     }
   };
 
   // Main content loading function
   const loadAllContent = useCallback(async () => {
-    if (!ISAB_MAIN_FOLDER_ID) {
-      console.warn('ISAB main folder ID not configured. Using fallback data.');
+    addDebugLog('=== Starting CMS Content Load ===');
+    addDebugLog(`Environment check - API Key: ${!!GOOGLE_DRIVE_API_KEY}, Documents: ${!!DOCUMENTS_FOLDER_ID}, Officer Photos: ${!!OFFICER_PHOTOS_FOLDER_ID}, Event Photos: ${!!EVENT_PHOTOS_FOLDER_ID}`);
+    
+    if (!GOOGLE_DRIVE_API_KEY) {
+      const msg = 'Google Drive API key not configured. Using fallback data.';
+      addDebugLog(msg);
+      setError(msg);
       setLoading(false);
       return;
     }
 
     try {
       setError(null);
-      console.log('Loading ISAB content from Google Drive...');
+      addDebugLog('Loading ISAB content from Google Drive...');
 
-      // Get folder IDs
-      const [
-        officerPhotosFolderId,
-        eventPhotosFolderId,
-        documentsFolderId
-      ] = await Promise.all([
-        getFolderByName(ISAB_MAIN_FOLDER_ID, 'Officer photos'),
-        getFolderByName(ISAB_MAIN_FOLDER_ID, 'Event Photos'),
-        getFolderByName(ISAB_MAIN_FOLDER_ID, 'Documents')
-      ]);
-
-      if (!documentsFolderId) {
-        console.warn('Documents folder not found. Using fallback data.');
-        setLoading(false);
-        return;
-      }
-
-      // Load documents
-      const docs = await loadDocuments(documentsFolderId);
+      // Load documents first
+      const docs = await loadDocuments();
       setDocuments(docs);
+      addDebugLog(`Loaded ${docs.length} documents`);
 
       // Process each document type
       for (const doc of docs) {
+        addDebugLog(`Processing document: ${doc.name} (type: ${doc.type})`);
         switch (doc.type) {
           case 'officers':
             let officerData = parseOfficerDocument(doc.content);
-            if (officerPhotosFolderId && officerData.length > 0) {
-              officerData = await loadOfficerPhotos(officerData, officerPhotosFolderId);
-            }
+            officerData = await loadOfficerPhotos(officerData);
             setOfficers(officerData);
+            addDebugLog(`Set ${officerData.length} officers`);
             break;
             
           case 'links':
             const links = parseLinksDocument(doc.content);
             setImportantLinks(links);
+            addDebugLog(`Set ${links.length} important links`);
             break;
             
           case 'about':
             const aboutData = parseSiteContent(doc.content);
             setSiteContent(prev => ({ ...prev, ...aboutData }));
+            addDebugLog(`Updated site content`);
             break;
         }
       }
 
       // Load event galleries
-      if (eventPhotosFolderId) {
-        const galleries = await loadEventGalleries(eventPhotosFolderId);
-        setEventGalleries(galleries);
-      }
+      const galleries = await loadEventGalleries();
+      setEventGalleries(galleries);
+      addDebugLog(`Set ${galleries.length} event galleries`);
 
       setLastUpdated(new Date());
-      console.log('Successfully loaded ISAB content from Google Drive');
+      addDebugLog('=== CMS Content Load Complete ===');
 
     } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Failed to load content from Google Drive';
+      addDebugLog(`=== CMS Content Load Failed: ${errorMsg} ===`);
       console.error('Error loading ISAB content:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load content from Google Drive');
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -513,7 +574,6 @@ export const useGoogleDriveCMS = () => {
   }, []);
 
   // Load content once on mount, no automatic refresh
-  // Users can manually refresh when needed
   useEffect(() => {
     loadAllContent();
   }, [loadAllContent]);
@@ -534,6 +594,9 @@ export const useGoogleDriveCMS = () => {
     loading,
     error,
     lastUpdated,
+    
+    // Debug info
+    debugInfo,
     
     // Actions
     refresh: loadAllContent,
