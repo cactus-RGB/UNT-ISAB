@@ -17,11 +17,6 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
-    // Disable image optimization for Google Drive URLs to avoid 400 errors
-    unoptimized: false,
-    // Add custom loader for Google Drive images
-    loader: 'custom',
-    loaderFile: './lib/imageLoader.ts'
   },
 }
 
