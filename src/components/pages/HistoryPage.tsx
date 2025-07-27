@@ -7,129 +7,21 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Users, GraduationCap, Globe, RefreshCw, AlertCircle } from 'lucide-react';
 import { useGoogleDriveCMS } from '@/hooks/useGoogleDriveCMS';
-import type { OfficerProfile, SemesterBoard } from '@/hooks/useGoogleDriveCMS';
+import { semesterBoards, masterOfficerProfiles } from '@/data/history';
+import type { OfficerProfile, SemesterBoard } from '@/data/history';
 import HistoryOfficerModal from '@/components/history/HistoryOfficerModal';
-
-// Fallback data for when Google Drive isn't set up
-const fallbackSemesterBoards: SemesterBoard[] = [
-  {
-    id: 'spring-2025-board',
-    title: 'Spring 2025 Board',
-    period: 'Spring 2025',
-    description: 'The current leadership team focused on innovation and maximizing campus impact.',
-    coverImage: '/assets/boards/spring-2025/cover.jpeg',
-    totalOfficers: 5,
-    officers: [
-      { id: "ibrahim-abubeker", role: "President" },
-      { id: "amaris-charles", role: "Vice President" },
-      { id: "iman-mohammed", role: "Secretary" },
-      { id: "shiori-hisaoka", role: "Outreach Coordinator" },
-      { id: "mohammed-abubeker", role: "Event Coordinator" }
-    ]
-  }
-];
-
-const fallbackMasterOfficerProfiles: { [key: string]: OfficerProfile } = {
-  "ibrahim-abubeker": {
-    name: "Ibrahim Abubeker",
-    major: "Computer Science",
-    homeCountry: "Ethiopia",
-    countryFlag: "🇪🇹",
-    image: "/assets/officers/Ibrahim.jpg",
-    hasPhoto: true,
-    roles: [
-      { semester: "Spring 2025", period: "Spring 2025", role: "President" }
-    ],
-    overallContributions: [
-      "Current President leading ISAB's continued growth and innovation"
-    ],
-    roleSpecificHighlights: {
-      "President": ["Leading current initiatives", "Expanding campus presence"]
-    }
-  },
-  "amaris-charles": {
-    name: "Amaris Charles",
-    major: "Anthropology",
-    homeCountry: "Puerto Rico",
-    countryFlag: "🇵🇷",
-    image: "/assets/officers/Amaris.jpg",
-    hasPhoto: true,
-    roles: [
-      { semester: "Spring 2025", period: "Spring 2025", role: "Vice President" }
-    ],
-    overallContributions: [
-      "Current Vice President supporting organizational leadership"
-    ],
-    roleSpecificHighlights: {
-      "Vice President": ["Supporting presidential initiatives", "Event coordination"]
-    }
-  },
-  "iman-mohammed": {
-    name: "Iman Mohammed",
-    major: "Business Analytics",
-    homeCountry: "Ethiopia",
-    countryFlag: "🇪🇹",
-    image: "/assets/officers/Iman.jpg",
-    hasPhoto: true,
-    roles: [
-      { semester: "Spring 2025", period: "Spring 2025", role: "Secretary" }
-    ],
-    overallContributions: [
-      "Current Secretary managing documentation and communication"
-    ],
-    roleSpecificHighlights: {
-      "Secretary": ["Meeting documentation", "Member communication"]
-    }
-  },
-  "shiori-hisaoka": {
-    name: "Shiori Hisaoka",
-    major: "Psychology",
-    homeCountry: "Japan",
-    countryFlag: "🇯🇵",
-    image: "/assets/officers/Shiori.jpg",
-    hasPhoto: true,
-    roles: [
-      { semester: "Spring 2025", period: "Spring 2025", role: "Outreach Coordinator" }
-    ],
-    overallContributions: [
-      "Current Outreach Coordinator expanding ISAB's campus presence"
-    ],
-    roleSpecificHighlights: {
-      "Outreach Coordinator": ["Campus engagement", "Social media management"]
-    }
-  },
-  "mohammed-abubeker": {
-    name: "Mohammed Abubeker",
-    major: "Business Computer Information Systems",
-    homeCountry: "Ethiopia",
-    countryFlag: "🇪🇹",
-    image: "/assets/officers/Mohammed.jpg",
-    hasPhoto: true,
-    roles: [
-      { semester: "Spring 2025", period: "Spring 2025", role: "Event Coordinator" }
-    ],
-    overallContributions: [
-      "Current Event Coordinator organizing cultural programming"
-    ],
-    roleSpecificHighlights: {
-      "Event Coordinator": ["Cultural events", "Community building"]
-    }
-  }
-};
 
 export default function HistoryPage() {
   const { 
-    masterOfficerProfiles: cmsProfiles, 
-    semesterBoards: cmsBoards, 
     loading, 
     error, 
     lastUpdated, 
     refresh 
   } = useGoogleDriveCMS();
 
-  // Use CMS data if available, fallback to hardcoded data
-  const semesterBoards = cmsBoards.length > 0 ? cmsBoards : fallbackSemesterBoards;
-  const masterOfficerProfiles = Object.keys(cmsProfiles).length > 0 ? cmsProfiles : fallbackMasterOfficerProfiles;
+  // Use hardcoded data for now since CMS history integration is not complete
+  const currentSemesterBoards = semesterBoards;
+  const currentMasterOfficerProfiles = masterOfficerProfiles;
 
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
   const [selectedOfficer, setSelectedOfficer] = useState<(OfficerProfile & { currentRole?: string }) | null>(null);
@@ -148,7 +40,7 @@ export default function HistoryPage() {
 
   const openOfficerModal = (officerId: string, role: string) => {
     console.log('Opening modal for:', officerId, role);
-    const profile = masterOfficerProfiles[officerId];
+    const profile = currentMasterOfficerProfiles[officerId];
     if (profile) {
       console.log('Found profile:', profile);
       setSelectedOfficer({ ...profile, currentRole: role });
@@ -178,7 +70,7 @@ export default function HistoryPage() {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOfficerModalOpen, selectedBoard]);
 
-  const currentBoard = selectedBoard ? semesterBoards.find(board => board.id === selectedBoard) : null;
+  const currentBoard = selectedBoard ? currentSemesterBoards.find(board => board.id === selectedBoard) : null;
 
   // Main history view
   if (!selectedBoard) {
@@ -290,7 +182,7 @@ export default function HistoryPage() {
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-                {semesterBoards.map((board, index) => (
+                {currentSemesterBoards.map((board, index) => (
                   <Card 
                     key={index} 
                     className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2"
@@ -365,7 +257,7 @@ export default function HistoryPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {currentBoard.officers.map((officer, index) => {
-              const profile = masterOfficerProfiles[officer.id];
+              const profile = currentMasterOfficerProfiles[officer.id];
               if (!profile) {
                 console.log('Missing profile for:', officer.id);
                 return null;

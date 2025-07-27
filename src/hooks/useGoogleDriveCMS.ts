@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Users, CalendarIcon, BookOpen, LucideIcon } from 'lucide-react';
 
 const GOOGLE_DRIVE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY;
 const ISAB_MAIN_FOLDER_ID = process.env.NEXT_PUBLIC_ISAB_DRIVE_FOLDER_ID;
 
-// Keep your existing interfaces exactly as they are
+// Import your existing types instead of redefining them
 export interface Officer {
   name: string;
   role: string;
@@ -40,28 +40,8 @@ export interface EventGallery {
   images: EventImage[];
 }
 
-// Keep your existing history interfaces
-export interface OfficerProfile {
-  name: string;
-  major: string;
-  homeCountry: string;
-  countryFlag: string;
-  image: string;
-  hasPhoto: boolean;
-  roles: Array<{ semester: string; period: string; role: string }>;
-  overallContributions: string[];
-  roleSpecificHighlights: { [key: string]: string[] };
-}
-
-export interface SemesterBoard {
-  id: string;
-  title: string;
-  period: string;
-  description: string;
-  coverImage: string;
-  totalOfficers: number;
-  officers: Array<{ id: string; role: string }>;
-}
+// Import types from your existing history file instead of redefining
+export type { OfficerProfile, SemesterBoard } from '@/data/history';
 
 // Additional content types for website management
 export interface SiteContent {
@@ -96,8 +76,8 @@ export const useGoogleDriveCMS = () => {
   const [officers, setOfficers] = useState<Officer[]>([]);
   const [importantLinks, setImportantLinks] = useState<ImportantLink[]>([]);
   const [eventGalleries, setEventGalleries] = useState<EventGallery[]>([]);
-  const [masterOfficerProfiles, setMasterOfficerProfiles] = useState<{ [key: string]: OfficerProfile }>({});
-  const [semesterBoards, setSemesterBoards] = useState<SemesterBoard[]>([]);
+  const [masterOfficerProfiles, setMasterOfficerProfiles] = useState<{ [key: string]: any }>({});
+  const [semesterBoards, setSemesterBoards] = useState<any[]>([]);
   const [siteContent, setSiteContent] = useState<SiteContent>({
     aboutText: "The International Student Advisory Board (ISAB) at UNT is dedicated to advocating for international students, fostering cultural exchange, and enhancing student life through leadership, support, and community engagement.",
     missionStatement: "Our mission is to serve as the voice for international students at UNT, advocating for their needs and fostering a welcoming community that celebrates diversity.",
@@ -111,7 +91,7 @@ export const useGoogleDriveCMS = () => {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   // Helper function to make Google Drive API calls
-  const driveApiCall = async (endpoint: string): Promise<any> => {
+  const driveApiCall = async (endpoint: string): Promise<unknown> => {
     if (!GOOGLE_DRIVE_API_KEY) {
       throw new Error('Google Drive API key not configured. Please add NEXT_PUBLIC_GOOGLE_DRIVE_API_KEY to your environment variables.');
     }
@@ -142,7 +122,7 @@ export const useGoogleDriveCMS = () => {
   const getFolderContents = async (folderId: string): Promise<GoogleDriveFile[]> => {
     const response = await driveApiCall(
       `files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,mimeType,parents,webViewLink,webContentLink,thumbnailLink,modifiedTime,size)&orderBy=name`
-    );
+    ) as { files?: GoogleDriveFile[] };
     return response.files || [];
   };
 
@@ -151,7 +131,7 @@ export const useGoogleDriveCMS = () => {
     try {
       const response = await driveApiCall(
         `files?q='${parentFolderId}'+in+parents+and+name='${folderName}'+and+mimeType='application/vnd.google-apps.folder'+and+trashed=false&fields=files(id,name)`
-      );
+      ) as { files?: GoogleDriveFile[] };
       return response.files && response.files.length > 0 ? response.files[0].id : null;
     } catch (error) {
       console.warn(`Folder '${folderName}' not found:`, error);
@@ -296,207 +276,40 @@ export const useGoogleDriveCMS = () => {
     return links;
   };
 
-  // Parse history content for semester boards and officer profiles
-  const parseHistoryContent = (content: string): { 
-    boards: SemesterBoard[], 
-    profiles: { [key: string]: OfficerProfile } 
-  } => {
-    const boards: SemesterBoard[] = [];
-    const profiles: { [key: string]: OfficerProfile } = {};
+  // Parse site content for about text, hero text, etc.
+  const parseSiteContent = (content: string): Partial<SiteContent> => {
+    const lines = content.split('\n').filter(line => line.trim());
+    const siteData: Partial<SiteContent> = {};
     
-    // Split content into sections (boards and officer profiles)
-    const sections = content.split(/#{2,}\s*/).filter(section => section.trim());
-    
-    for (const section of sections) {
-      const lines = section.split('\n').filter(line => line.trim());
-      if (lines.length === 0) continue;
+    for (const line of lines) {
+      if (!line.includes(':')) continue;
       
-      const headerLine = lines[0].toLowerCase();
+      const [key, ...valueParts] = line.split(':');
+      const value = valueParts.join(':').trim();
       
-      // Parse semester board
-      if (headerLine.includes('board') || headerLine.includes('semester')) {
-        const board: Partial<SemesterBoard> = { officers: [] };
-        let currentOfficer: Partial<{ id: string; role: string }> = {};
-        
-        for (let i = 1; i < lines.length; i++) {
-          const line = lines[i];
-          
-          if (!line.includes(':')) continue;
-          
-          const [key, ...valueParts] = line.split(':');
-          const value = valueParts.join(':').trim();
-          
-          if (!value) continue;
-          
-          const keyLower = key.toLowerCase().trim();
-          
-          switch (keyLower) {
-            case 'id':
-              board.id = value;
-              break;
-            case 'title':
-              board.title = value;
-              break;
-            case 'period':
-              board.period = value;
-              break;
-            case 'description':
-              board.description = value;
-              break;
-            case 'cover image':
-            case 'cover':
-              board.coverImage = value;
-              break;
-            case 'total officers':
-              board.totalOfficers = parseInt(value) || 0;
-              break;
-            case 'officer id':
-              if (currentOfficer.id || currentOfficer.role) {
-                board.officers?.push(currentOfficer as { id: string; role: string });
-              }
-              currentOfficer = { id: value };
-              break;
-            case 'officer role':
-            case 'role':
-              if (currentOfficer.id) {
-                currentOfficer.role = value;
-              }
-              break;
-          }
-        }
-        
-        // Add the last officer
-        if (currentOfficer.id && currentOfficer.role) {
-          board.officers?.push(currentOfficer as { id: string; role: string });
-        }
-        
-        if (board.id && board.title) {
-          boards.push(board as SemesterBoard);
-        }
-      }
+      if (!value) continue;
       
-      // Parse officer profile
-      else if (headerLine.includes('profile') || headerLine.includes('officer')) {
-        const profile: Partial<OfficerProfile> = { 
-          roles: [], 
-          overallContributions: [],
-          roleSpecificHighlights: {}
-        };
-        let profileId = '';
-        
-        for (let i = 1; i < lines.length; i++) {
-          const line = lines[i];
-          
-          if (!line.includes(':')) continue;
-          
-          const [key, ...valueParts] = line.split(':');
-          const value = valueParts.join(':').trim();
-          
-          if (!value) continue;
-          
-          const keyLower = key.toLowerCase().trim();
-          
-          switch (keyLower) {
-            case 'id':
-              profileId = value;
-              break;
-            case 'name':
-              profile.name = value;
-              break;
-            case 'major':
-              profile.major = value;
-              break;
-            case 'home country':
-              profile.homeCountry = value;
-              break;
-            case 'country flag':
-              profile.countryFlag = value;
-              break;
-            case 'image':
-              profile.image = value;
-              break;
-            case 'has photo':
-              profile.hasPhoto = value.toLowerCase() === 'true';
-              break;
-          }
-        }
-        
-        if (profileId && profile.name) {
-          profiles[profileId] = profile as OfficerProfile;
-        }
+      const keyLower = key.toLowerCase().trim();
+      
+      switch (keyLower) {
+        case 'about':
+        case 'about text':
+          siteData.aboutText = value;
+          break;
+        case 'mission':
+        case 'mission statement':
+          siteData.missionStatement = value;
+          break;
+        case 'hero title':
+          siteData.heroTitle = value;
+          break;
+        case 'hero subtitle':
+          siteData.heroSubtitle = value;
+          break;
       }
     }
     
-    return { boards, profiles };
-  };
-
-  // Load semester boards from Board Photos folder structure
-  const loadSemesterBoards = async (boardPhotosFolderId: string): Promise<SemesterBoard[]> => {
-    try {
-      const boardFolders = await getFolderContents(boardPhotosFolderId);
-      const boards: SemesterBoard[] = [];
-      
-      for (const folder of boardFolders) {
-        if (folder.mimeType === 'application/vnd.google-apps.folder') {
-          // Parse folder name to extract board info
-          const folderName = folder.name;
-          let boardId = folderName.toLowerCase().replace(/\s+/g, '-');
-          let title = folderName;
-          let period = folderName;
-          
-          // Map your folder names to proper titles
-          if (folderName === '2025-spring') {
-            title = 'Spring 2025 Board';
-            period = 'Spring 2025';
-            boardId = 'spring-2025-board';
-          } else if (folderName === '2024-spring') {
-            title = 'Spring 2024 Board';
-            period = 'Spring 2024';
-            boardId = 'spring-2024-board';
-          } else if (folderName === '2024-fall') {
-            title = 'Fall 2024 Board';
-            period = 'Fall 2024';
-            boardId = 'fall-2024-board';
-          } else if (folderName === '2023-founding') {
-            title = 'Founding Board';
-            period = 'December 2023';
-            boardId = 'founding-board-2023';
-          }
-          
-          // Get images from folder for cover image
-          const images = await getFolderContents(folder.id);
-          const imageFiles = images.filter(file => 
-            file.mimeType.startsWith('image/') ||
-            /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(file.name)
-          );
-          
-          const coverImage = imageFiles.length > 0 ? 
-            `https://drive.google.com/uc?id=${imageFiles[0].id}&export=view` : 
-            `/assets/boards/${folderName}/cover.jpeg`;
-          
-          // Create board with basic info - officers will come from history document
-          boards.push({
-            id: boardId,
-            title,
-            period,
-            description: `Leadership team for ${period}`,
-            coverImage,
-            totalOfficers: 0, // Will be updated from document
-            officers: [] // Will be populated from document
-          });
-        }
-      }
-      
-      return boards.sort((a, b) => {
-        // Sort by period (newest first)
-        const yearA = parseInt(a.period.match(/\d{4}/)?.[0] || '0');
-        const yearB = parseInt(b.period.match(/\d{4}/)?.[0] || '0');
-        return yearB - yearA;
-      });
-    } catch (error) {
-      console.error('Error loading semester boards:', error);
-      return [];
-    }
+    return siteData;
   };
 
   // Load officer photos from Google Drive
@@ -626,7 +439,7 @@ export const useGoogleDriveCMS = () => {
   };
 
   // Main content loading function
-  const loadAllContent = async () => {
+  const loadAllContent = useCallback(async () => {
     if (!ISAB_MAIN_FOLDER_ID) {
       console.warn('ISAB main folder ID not configured. Using fallback data.');
       setLoading(false);
@@ -637,53 +450,15 @@ export const useGoogleDriveCMS = () => {
       setError(null);
       console.log('Loading ISAB content from Google Drive...');
 
-  // Parse site content for about text, hero text, etc.
-  const parseSiteContent = (content: string): Partial<SiteContent> => {
-    const lines = content.split('\n').filter(line => line.trim());
-    const siteData: Partial<SiteContent> = {};
-    
-    for (const line of lines) {
-      if (!line.includes(':')) continue;
-      
-      const [key, ...valueParts] = line.split(':');
-      const value = valueParts.join(':').trim();
-      
-      if (!value) continue;
-      
-      const keyLower = key.toLowerCase().trim();
-      
-      switch (keyLower) {
-        case 'about':
-        case 'about text':
-          siteData.aboutText = value;
-          break;
-        case 'mission':
-        case 'mission statement':
-          siteData.missionStatement = value;
-          break;
-        case 'hero title':
-          siteData.heroTitle = value;
-          break;
-        case 'hero subtitle':
-          siteData.heroSubtitle = value;
-          break;
-      }
-    }
-    
-    return siteData;
-  };
-
-      // Get all folder IDs
+      // Get folder IDs
       const [
         officerPhotosFolderId,
         eventPhotosFolderId,
-        documentsFolderId,
-        boardPhotosFolderId
+        documentsFolderId
       ] = await Promise.all([
         getFolderByName(ISAB_MAIN_FOLDER_ID, 'Officer photos'),
         getFolderByName(ISAB_MAIN_FOLDER_ID, 'Event Photos'),
-        getFolderByName(ISAB_MAIN_FOLDER_ID, 'Documents'),
-        getFolderByName(ISAB_MAIN_FOLDER_ID, 'Board Photos')
+        getFolderByName(ISAB_MAIN_FOLDER_ID, 'Documents')
       ]);
 
       if (!documentsFolderId) {
@@ -695,12 +470,6 @@ export const useGoogleDriveCMS = () => {
       // Load documents
       const docs = await loadDocuments(documentsFolderId);
       setDocuments(docs);
-
-      // Load semester boards from Board Photos folder structure
-      if (boardPhotosFolderId) {
-        const boardsFromFolders = await loadSemesterBoards(boardPhotosFolderId);
-        setSemesterBoards(boardsFromFolders);
-      }
 
       // Process each document type
       for (const doc of docs) {
@@ -722,21 +491,6 @@ export const useGoogleDriveCMS = () => {
             const aboutData = parseSiteContent(doc.content);
             setSiteContent(prev => ({ ...prev, ...aboutData }));
             break;
-            
-          case 'history':
-            const { boards: historyBoards, profiles } = parseHistoryContent(doc.content);
-            // Merge with boards from folder structure
-            if (historyBoards.length > 0) {
-              setSemesterBoards(prev => {
-                // Update existing boards with history data
-                return prev.map(board => {
-                  const historyBoard = historyBoards.find(h => h.id === board.id);
-                  return historyBoard ? { ...board, ...historyBoard } : board;
-                });
-              });
-            }
-            setMasterOfficerProfiles(profiles);
-            break;
         }
       }
 
@@ -747,7 +501,7 @@ export const useGoogleDriveCMS = () => {
       }
 
       setLastUpdated(new Date());
-      console.log(`Successfully loaded ISAB content from Google Drive`);
+      console.log('Successfully loaded ISAB content from Google Drive');
 
     } catch (err) {
       console.error('Error loading ISAB content:', err);
@@ -755,13 +509,13 @@ export const useGoogleDriveCMS = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // Load content once on mount, no automatic refresh
   // Users can manually refresh when needed
   useEffect(() => {
     loadAllContent();
-  }, []);
+  }, [loadAllContent]);
 
   return {
     // Data (same structure as your current files)
