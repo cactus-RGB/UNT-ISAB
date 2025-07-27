@@ -105,8 +105,8 @@ interface DocumentContent {
 
 // Helper function to get proper Google Drive image URL
 const getGoogleDriveImageUrl = (fileId: string): string => {
-  // Use the direct download URL which works better for public files
-  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+  // Use Google Drive's image serving endpoint that allows embedding
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w500-h500`;
 };
 
 // Helper function to get a fallback image URL

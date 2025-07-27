@@ -34,11 +34,11 @@ function ModalSmartImage({ src, alt, onLoad, onError }: {
     if (!fileId) return [originalUrl];
 
     return [
-      originalUrl, // Original URL
-      `https://drive.google.com/uc?export=download&id=${fileId}`, // Download format
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h400`, // Thumbnail format
-      `https://lh3.googleusercontent.com/d/${fileId}`, // Google User Content format
-      `https://drive.google.com/uc?export=view&id=${fileId}`, // View format
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w500-h500`, // Thumbnail format (CORS-friendly)
+      `https://lh3.googleusercontent.com/d/${fileId}=w500-h500`, // Google User Content format
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h400`, // Smaller thumbnail
+      `https://lh3.googleusercontent.com/d/${fileId}`, // Google User Content without size
+      originalUrl, // Original URL as last resort
     ];
   };
 
