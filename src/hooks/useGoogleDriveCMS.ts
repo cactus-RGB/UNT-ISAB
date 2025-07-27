@@ -105,8 +105,8 @@ interface DocumentContent {
 
 // Helper function to get proper Google Drive image URL
 const getGoogleDriveImageUrl = (fileId: string): string => {
-  // Use the direct view URL that works better for images in React
-  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  // Use the direct download URL which works better for public files
+  return `https://drive.google.com/uc?export=download&id=${fileId}`;
 };
 
 // Helper function to get a fallback image URL
@@ -475,7 +475,7 @@ export const useGoogleDriveCMS = () => {
     return siteData;
   };
 
-  // Load officer photos from Google Drive with improved matching
+  // Load officer photos from Google Drive with enhanced debugging
   const loadOfficerPhotos = async (officers: Officer[]): Promise<Officer[]> => {
     if (!OFFICER_PHOTOS_FOLDER_ID) {
       console.log('[CMS]: No officer photos folder ID configured');
@@ -484,54 +484,99 @@ export const useGoogleDriveCMS = () => {
 
     try {
       console.log('[CMS]: Loading officer photos from Google Drive...');
+      console.log('[CMS]: Officer Photos Folder ID:', OFFICER_PHOTOS_FOLDER_ID);
+      
       const photoFiles = await getFolderContents(OFFICER_PHOTOS_FOLDER_ID);
+      console.log('[CMS]: Raw photo files from API:', photoFiles);
+      
       const imageFiles = photoFiles.filter(file => 
         file.mimeType.startsWith('image/') ||
         /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(file.name)
       );
       
       console.log(`[CMS]: Found ${imageFiles.length} image files in officer photos folder`);
-      console.log('[CMS]: Image files:', imageFiles.map(f => f.name));
+      console.log('[CMS]: Image files found:', imageFiles.map(f => ({ 
+        name: f.name, 
+        id: f.id,
+        mimeType: f.mimeType 
+      })));
       
-      return officers.map(officer => {
+      console.log('[CMS]: Officers to match:', officers.map(o => ({
+        name: o.name,
+        firstName: o.name.split(' ')[0]
+      })));
+      
+      return officers.map((officer, index) => {
         const firstName = officer.name.split(' ')[0].toLowerCase();
         const fullName = officer.name.toLowerCase().replace(/\s+/g, '');
         
+        console.log(`[CMS]: ======== Matching Officer ${index + 1}: ${officer.name} ========`);
+        console.log(`[CMS]: First name to match: "${firstName}"`);
+        console.log(`[CMS]: Full name to match: "${fullName}"`);
+        
         // Try multiple matching strategies
-        const photoFile = imageFiles.find(file => {
+        const photoFile = imageFiles.find((file, fileIndex) => {
           const fileName = file.name.toLowerCase();
           const fileNameNoExt = fileName.replace(/\.[^/.]+$/, '');
           
-          return (
-            // Exact first name match
-            fileNameNoExt === firstName ||
-            // File name starts with first name
-            fileNameNoExt.startsWith(firstName) ||
-            // File name contains first name
-            fileName.includes(firstName) ||
-            // Full name match (no spaces)
-            fileNameNoExt === fullName ||
-            // File name contains full name
-            fileName.includes(fullName)
-          );
+          const matches = {
+            exactFirstName: fileNameNoExt === firstName,
+            startsWithFirstName: fileNameNoExt.startsWith(firstName),
+            containsFirstName: fileName.includes(firstName),
+            exactFullName: fileNameNoExt === fullName,
+            containsFullName: fileName.includes(fullName)
+          };
+          
+          console.log(`[CMS]:   File ${fileIndex + 1}: "${file.name}"`);
+          console.log(`[CMS]:     fileName: "${fileName}"`);
+          console.log(`[CMS]:     fileNameNoExt: "${fileNameNoExt}"`);
+          console.log(`[CMS]:     matches:`, matches);
+          
+          const isMatch = matches.exactFirstName || matches.startsWithFirstName || 
+                         matches.containsFirstName || matches.exactFullName || 
+                         matches.containsFullName;
+          
+          if (isMatch) {
+            console.log(`[CMS]:     ✅ MATCH FOUND!`);
+          }
+          
+          return isMatch;
         });
         
         if (photoFile) {
-          console.log(`[CMS]: Found photo for ${officer.name}: ${photoFile.name}`);
+          const driveUrl = getGoogleDriveImageUrl(photoFile.id);
+          console.log(`[CMS]: ✅ SUCCESS: Found photo for ${officer.name}`);
+          console.log(`[CMS]:    Matched file: ${photoFile.name}`);
+          console.log(`[CMS]:    Drive URL: ${driveUrl}`);
+          console.log(`[CMS]: ========================================`);
           return {
             ...officer,
-            image: getGoogleDriveImageUrl(photoFile.id)
+            image: driveUrl
           };
         } else {
-          console.log(`[CMS]: No photo found for ${officer.name}, using fallback`);
+          const fallbackUrl = getFallbackImageUrl(officer.name);
+          console.log(`[CMS]: ❌ FAILED: No photo found for ${officer.name}`);
+          console.log(`[CMS]:    Using fallback: ${fallbackUrl}`);
+          console.log(`[CMS]: ========================================`);
           return {
             ...officer,
-            image: getFallbackImageUrl(officer.name)
+            image: fallbackUrl
           };
         }
       });
     } catch (error) {
-      console.error('Error loading officer photos:', error);
+      console.error('[CMS]: Error loading officer photos:', error);
+      
+      // Log additional debugging info
+      if (error instanceof Error) {
+        console.error('[CMS]: Error details:', {
+          message: error.message,
+          stack: error.stack,
+          folderId: OFFICER_PHOTOS_FOLDER_ID,
+          apiKey: GOOGLE_DRIVE_API_KEY ? 'Set' : 'Missing'
+        });
+      }
+      
       return officers;
     }
   };

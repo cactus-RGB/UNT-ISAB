@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Officer } from '@/hooks/useGoogleDriveCMS';
 import { Users } from 'lucide-react';
 
@@ -9,7 +9,7 @@ interface OfficerCardProps {
   onClick: (officer: Officer) => void;
 }
 
-// Smart Image component that handles Google Drive URLs
+// Smart Image component that handles Google Drive URLs with fallbacks
 function SmartImage({ src, alt, onLoad, onError }: { 
   src: string; 
   alt: string; 
@@ -18,20 +18,66 @@ function SmartImage({ src, alt, onLoad, onError }: {
 }) {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+  const [currentSrc, setCurrentSrc] = useState(src);
+  const [attemptCount, setAttemptCount] = useState(0);
+
+  // Extract file ID from Google Drive URL
+  const getFileIdFromUrl = (url: string): string | null => {
+    const match = url.match(/[?&]id=([^&]+)/);
+    return match ? match[1] : null;
+  };
+
+  // Generate different URL formats for Google Drive
+  const getAlternativeUrls = (originalUrl: string): string[] => {
+    const fileId = getFileIdFromUrl(originalUrl);
+    if (!fileId) return [originalUrl];
+
+    return [
+      originalUrl, // Original URL
+      `https://drive.google.com/uc?export=download&id=${fileId}`, // Download format
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h400`, // Thumbnail format
+      `https://lh3.googleusercontent.com/d/${fileId}`, // Google User Content format
+      `https://drive.google.com/uc?export=view&id=${fileId}`, // View format
+    ];
+  };
 
   const handleImageError = () => {
-    console.error(`Failed to load image: ${src}`);
+    const isGoogleDriveUrl = src.includes('drive.google.com');
+    
+    if (isGoogleDriveUrl && attemptCount < 4) {
+      // Try alternative URL formats
+      const alternatives = getAlternativeUrls(src);
+      const nextUrl = alternatives[attemptCount + 1];
+      
+      if (nextUrl) {
+        console.log(`Trying alternative URL ${attemptCount + 1} for ${alt}: ${nextUrl}`);
+        setAttemptCount(prev => prev + 1);
+        setCurrentSrc(nextUrl);
+        setImageLoading(true);
+        return; // Don't set error yet, try the next URL
+      }
+    }
+
+    console.error(`All attempts failed for image: ${src}`);
     setImageError(true);
     setImageLoading(false);
     if (onError) onError();
   };
 
   const handleImageLoad = () => {
-    console.log(`Successfully loaded image: ${src}`);
+    console.log(`Successfully loaded image: ${currentSrc}`);
     setImageError(false);
     setImageLoading(false);
     if (onLoad) onLoad();
   };
+
+  // Reset when src changes
+  React.useEffect(() => {
+    setImageError(false);
+    setImageLoading(true);
+    setCurrentSrc(src);
+    setAttemptCount(0);
+  }, [src]);
 
   if (imageError) {
     return (
@@ -45,12 +91,13 @@ function SmartImage({ src, alt, onLoad, onError }: {
     <div className="relative w-full h-full">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={src}
+        src={currentSrc}
         alt={alt}
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         onLoad={handleImageLoad}
         onError={handleImageError}
         loading="lazy"
+        crossOrigin="anonymous"
       />
       
       {imageLoading && (

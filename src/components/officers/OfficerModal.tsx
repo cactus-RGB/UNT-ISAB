@@ -10,6 +10,105 @@ interface OfficerModalProps {
   onClose: () => void;
 }
 
+// Enhanced Smart Image component with Google Drive fallbacks
+function ModalSmartImage({ src, alt, onLoad, onError }: { 
+  src: string; 
+  alt: string; 
+  onLoad?: () => void; 
+  onError?: () => void; 
+}) {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [currentSrc, setCurrentSrc] = useState(src);
+  const [attemptCount, setAttemptCount] = useState(0);
+
+  // Extract file ID from Google Drive URL
+  const getFileIdFromUrl = (url: string): string | null => {
+    const match = url.match(/[?&]id=([^&]+)/);
+    return match ? match[1] : null;
+  };
+
+  // Generate different URL formats for Google Drive
+  const getAlternativeUrls = (originalUrl: string): string[] => {
+    const fileId = getFileIdFromUrl(originalUrl);
+    if (!fileId) return [originalUrl];
+
+    return [
+      originalUrl, // Original URL
+      `https://drive.google.com/uc?export=download&id=${fileId}`, // Download format
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h400`, // Thumbnail format
+      `https://lh3.googleusercontent.com/d/${fileId}`, // Google User Content format
+      `https://drive.google.com/uc?export=view&id=${fileId}`, // View format
+    ];
+  };
+
+  const handleImageError = () => {
+    const isGoogleDriveUrl = src.includes('drive.google.com');
+    
+    if (isGoogleDriveUrl && attemptCount < 4) {
+      // Try alternative URL formats
+      const alternatives = getAlternativeUrls(src);
+      const nextUrl = alternatives[attemptCount + 1];
+      
+      if (nextUrl) {
+        console.log(`Modal: Trying alternative URL ${attemptCount + 1} for ${alt}: ${nextUrl}`);
+        setAttemptCount(prev => prev + 1);
+        setCurrentSrc(nextUrl);
+        setImageLoading(true);
+        return; // Don't set error yet, try the next URL
+      }
+    }
+
+    console.error(`Modal: All attempts failed for image: ${src}`);
+    setImageError(true);
+    setImageLoading(false);
+    if (onError) onError();
+  };
+
+  const handleImageLoad = () => {
+    console.log(`Modal: Successfully loaded image: ${currentSrc}`);
+    setImageError(false);
+    setImageLoading(false);
+    if (onLoad) onLoad();
+  };
+
+  // Reset when src changes
+  useEffect(() => {
+    setImageError(false);
+    setImageLoading(true);
+    setCurrentSrc(src);
+    setAttemptCount(0);
+  }, [src]);
+
+  if (imageError) {
+    return (
+      <div className="w-full h-full bg-muted/50 flex items-center justify-center">
+        <Users className="h-12 w-12 text-primary/60" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full h-full">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={currentSrc}
+        alt={alt}
+        className="w-full h-full object-cover"
+        onError={handleImageError}
+        onLoad={handleImageLoad}
+        crossOrigin="anonymous"
+      />
+      
+      {imageLoading && (
+        <div className="absolute inset-0 bg-muted/20 flex items-center justify-center">
+          <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
   const [imageError, setImageError] = useState(false);
 
@@ -36,16 +135,10 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
   }, [officer]);
 
   const handleImageError = () => {
-    if (officer) {
-      console.error(`Failed to load modal image for ${officer.name}: ${officer.image}`);
-    }
     setImageError(true);
   };
 
   const handleImageLoad = () => {
-    if (officer) {
-      console.log(`Successfully loaded modal image for ${officer.name}`);
-    }
     setImageError(false);
   };
 
@@ -75,20 +168,12 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
             <div className="flex justify-center items-center">
               <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6">
                 <div className="rounded-full overflow-hidden w-full h-full relative ring-4 ring-primary/20">
-                  {!imageError ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={officer.image}
-                      alt={`${officer.name} - ${officer.role}`}
-                      className="w-full h-full object-cover"
-                      onError={handleImageError}
-                      onLoad={handleImageLoad}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-muted/50 flex items-center justify-center">
-                      <Users className="h-12 w-12 text-primary/60" />
-                    </div>
-                  )}
+                  <ModalSmartImage
+                    src={officer.image}
+                    alt={`${officer.name} - ${officer.role}`}
+                    onError={handleImageError}
+                    onLoad={handleImageLoad}
+                  />
                 </div>
               </div>
             </div>
