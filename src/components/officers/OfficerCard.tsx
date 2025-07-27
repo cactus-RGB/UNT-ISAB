@@ -43,6 +43,7 @@ function SmartImage({ src, alt, onLoad, onError }: {
 
   return (
     <div className="relative w-full h-full">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={alt}

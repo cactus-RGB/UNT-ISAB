@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { X, GraduationCap, Globe, Users } from 'lucide-react';
 import type { Officer } from '@/hooks/useGoogleDriveCMS';
 
@@ -77,6 +76,7 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
               <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6">
                 <div className="rounded-full overflow-hidden w-full h-full relative ring-4 ring-primary/20">
                   {!imageError ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={officer.image}
                       alt={`${officer.name} - ${officer.role}`}
