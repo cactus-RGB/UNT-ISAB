@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState } from 'react';
-import Image from 'next/image';
 import type { Officer } from '@/hooks/useGoogleDriveCMS';
 import { Users } from 'lucide-react';
 
@@ -10,18 +9,68 @@ interface OfficerCardProps {
   onClick: (officer: Officer) => void;
 }
 
+// Smart Image component that handles Google Drive URLs
+function SmartImage({ src, alt, onLoad, onError }: { 
+  src: string; 
+  alt: string; 
+  onLoad?: () => void; 
+  onError?: () => void; 
+}) {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  const handleImageError = () => {
+    console.error(`Failed to load image: ${src}`);
+    setImageError(true);
+    setImageLoading(false);
+    if (onError) onError();
+  };
+
+  const handleImageLoad = () => {
+    console.log(`Successfully loaded image: ${src}`);
+    setImageError(false);
+    setImageLoading(false);
+    if (onLoad) onLoad();
+  };
+
+  if (imageError) {
+    return (
+      <div className="w-full h-full bg-white/10 flex items-center justify-center">
+        <Users className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white/60" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full h-full">
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+        loading="lazy"
+      />
+      
+      {imageLoading && (
+        <div className="absolute inset-0 bg-white/20 flex items-center justify-center">
+          <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function OfficerCard({ officer, onClick }: OfficerCardProps) {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
   const handleImageError = () => {
-    console.error(`Failed to load image for ${officer.name}: ${officer.image}`);
     setImageError(true);
     setImageLoading(false);
   };
 
   const handleImageLoad = () => {
-    console.log(`Successfully loaded image for ${officer.name}`);
     setImageError(false);
     setImageLoading(false);
   };
@@ -38,29 +87,12 @@ export default function OfficerCard({ officer, onClick }: OfficerCardProps) {
       <div className="p-6 sm:p-8 text-center flex flex-col items-center justify-center h-full">
         <div className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 mx-auto mb-4 sm:mb-6 flex-shrink-0">
           <div className="rounded-full overflow-hidden w-full h-full relative transition-all duration-300 ring-2 ring-white/20 group-hover:ring-white/40">
-            {!imageError ? (
-              <Image
-                src={officer.image}
-                alt={`${officer.name} - ${officer.role}`}
-                fill
-                style={{ objectFit: 'cover' }}
-                sizes="(max-width: 640px) 96px, (max-width: 768px) 112px, 128px"
-                className="transition-transform duration-500 group-hover:scale-110"
-                onError={handleImageError}
-                onLoad={handleImageLoad}
-                priority={false}
-              />
-            ) : (
-              <div className="w-full h-full bg-white/10 flex items-center justify-center">
-                <Users className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white/60" />
-              </div>
-            )}
-            
-            {imageLoading && !imageError && (
-              <div className="absolute inset-0 bg-white/20 flex items-center justify-center">
-                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              </div>
-            )}
+            <SmartImage
+              src={officer.image}
+              alt={`${officer.name} - ${officer.role}`}
+              onError={handleImageError}
+              onLoad={handleImageLoad}
+            />
           </div>
         </div>
 

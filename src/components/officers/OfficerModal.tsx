@@ -77,13 +77,10 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
               <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6">
                 <div className="rounded-full overflow-hidden w-full h-full relative ring-4 ring-primary/20">
                   {!imageError ? (
-                    <Image
+                    <img
                       src={officer.image}
                       alt={`${officer.name} - ${officer.role}`}
-                      fill
-                      style={{ objectFit: 'cover' }}
-                      sizes="(max-width: 640px) 112px, 128px"
-                      priority
+                      className="w-full h-full object-cover"
                       onError={handleImageError}
                       onLoad={handleImageLoad}
                     />
