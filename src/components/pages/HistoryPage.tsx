@@ -4,11 +4,12 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Users, GraduationCap, Globe, RefreshCw, AlertCircle } from 'lucide-react';
+import { ChevronRight, Users, RefreshCw, AlertCircle } from 'lucide-react';
 import { useGoogleDriveCMS } from '@/hooks/useGoogleDriveCMS';
 import { semesterBoards, masterOfficerProfiles } from '@/data/history';
 import type { OfficerProfile } from '@/data/history';
 import HistoryOfficerModal from '@/components/history/HistoryOfficerModal';
+import HistoryOfficerCard from '@/components/history/HistoryOfficerCard';
 
 export default function HistoryPage() {
   const { 
@@ -240,51 +241,12 @@ export default function HistoryPage() {
               }
               
               return (
-                <Card 
-                  key={index} 
-                  className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card cursor-pointer hover:-translate-y-1"
-                  onClick={() => openOfficerModal(officer.id, officer.role)}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex flex-col items-center text-center">
-                      <div className="w-20 h-20 rounded-full border-2 border-primary/20 overflow-hidden mb-3">
-                        {profile.hasPhoto && profile.image ? (
-                          <Image
-                            src={profile.image}
-                            alt={`${profile.name} - ${officer.role}`}
-                            width={80}
-                            height={80}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-muted/50 flex items-center justify-center">
-                            <Users className="h-6 w-6 text-primary/60" />
-                          </div>
-                        )}
-                      </div>
-
-                      <h3 className="text-lg font-bold text-foreground mb-1">{profile.name}</h3>
-                      <div className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary rounded-full font-medium text-xs mb-2">
-                        {officer.role}
-                      </div>
-                      
-                      <div className="space-y-1 text-xs text-muted-foreground">
-                        <div className="flex items-center justify-center">
-                          <GraduationCap className="h-3 w-3 mr-1 text-primary" />
-                          <span className="truncate">{profile.major}</span>
-                        </div>
-                        <div className="flex items-center justify-center">
-                          <Globe className="h-3 w-3 mr-1 text-primary" />
-                          <span>{profile.countryFlag} {profile.homeCountry}</span>
-                        </div>
-                      </div>
-
-                      <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <p className="text-xs text-primary">Click for full bio →</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <HistoryOfficerCard
+                  key={index}
+                  officer={officer}
+                  profile={profile}
+                  onClick={openOfficerModal}
+                />
               );
             })}
           </div>

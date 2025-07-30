@@ -1,7 +1,6 @@
 "use client"
 
-import React, { useEffect } from 'react';
-import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
 import { X, Users, GraduationCap, Globe } from 'lucide-react';
 import type { OfficerProfile } from '@/data/history';
 
@@ -9,6 +8,63 @@ interface HistoryOfficerModalProps {
   officer: (OfficerProfile & { currentRole?: string }) | null;
   isOpen: boolean;
   onClose: () => void;
+}
+
+// Smart Image component for history officers
+function HistoryModalSmartImage({ src, alt, onLoad, onError }: { 
+  src: string; 
+  alt: string; 
+  onLoad?: () => void; 
+  onError?: () => void; 
+}) {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  const handleImageError = () => {
+    console.error(`History Modal: Failed to load image: ${src}`);
+    setImageError(true);
+    setImageLoading(false);
+    if (onError) onError();
+  };
+
+  const handleImageLoad = () => {
+    console.log(`History Modal: Successfully loaded image: ${src}`);
+    setImageError(false);
+    setImageLoading(false);
+    if (onLoad) onLoad();
+  };
+
+  if (imageError) {
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex flex-col items-center justify-center">
+        <Users className="h-20 w-20 text-primary/60 mb-3" />
+        <p className="text-sm text-primary/60 font-medium">Photo unavailable</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full h-full">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover"
+        onError={handleImageError}
+        onLoad={handleImageLoad}
+        crossOrigin="anonymous"
+      />
+      
+      {/* Gradient overlay for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+      
+      {imageLoading && (
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function HistoryOfficerModal({ officer, isOpen, onClose }: HistoryOfficerModalProps) {
@@ -49,70 +105,70 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose }: Histor
       {/* Simple centering container */}
       <div className="min-h-full flex items-center justify-center p-4">
         <div 
-          className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100 relative"
+          className="bg-card rounded-2xl shadow-card-elevated max-w-3xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100 relative"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/80 hover:bg-background transition-colors duration-200"
+            className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-sm transition-colors duration-200"
             aria-label="Close modal"
           >
-            <X className="h-5 w-5 text-muted-foreground" />
+            <X className="h-5 w-5 text-white" />
           </button>
           
-          {/* Profile image section */}
-          <div className="p-8 pb-4 text-center">
-            <div className="relative w-32 h-32 mx-auto mb-6">
-              <div className="rounded-full overflow-hidden w-32 h-32 relative ring-4 ring-primary/20">
-                {officer.hasPhoto && officer.image ? (
-                  <Image
-                    src={officer.image}
-                    alt={`${officer.name}`}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    sizes="128px"
-                    priority
-                  />
-                ) : (
-                  <div className="w-full h-full bg-muted/50 flex items-center justify-center">
-                    <Users className="h-12 w-12 text-primary/60" />
+          {/* Large Banner Image Section */}
+          <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden rounded-t-2xl">
+            {officer.hasPhoto && officer.image ? (
+              <HistoryModalSmartImage
+                src={officer.image}
+                alt={`${officer.name}`}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex flex-col items-center justify-center">
+                <Users className="h-20 w-20 text-primary/60 mb-3" />
+                <p className="text-sm text-primary/60 font-medium">Photo unavailable</p>
+              </div>
+            )}
+            
+            {/* Name and basic info overlay on image */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+              <div className="text-white">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 drop-shadow-lg">
+                  {officer.name}
+                </h2>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
+                    <GraduationCap className="h-4 w-4 text-white" />
+                    <span className="text-white text-sm font-medium">{officer.major}</span>
                   </div>
-                )}
+                  <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
+                    <Globe className="h-4 w-4 text-white" />
+                    <span className="text-white text-sm font-medium">{officer.countryFlag} {officer.homeCountry}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Content section */}
-          <div className="px-8 pb-8">
-            {/* Name and basic info */}
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-foreground mb-2">{officer.name}</h2>
-              <div className="space-y-2">
-                <div className="flex items-center justify-center space-x-3">
-                  <GraduationCap className="h-4 w-4 text-primary" />
-                  <span className="text-muted-foreground">{officer.major}</span>
-                </div>
-                <div className="flex items-center justify-center space-x-3">
-                  <Globe className="h-4 w-4 text-primary" />
-                  <span className="text-muted-foreground">{officer.countryFlag} {officer.homeCountry}</span>
-                </div>
-              </div>
-            </div>
-
+          <div className="p-6 sm:p-8">
             {/* Role progression timeline */}
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-foreground mb-3">ISAB Journey</h3>
-              <div className="space-y-2">
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center">
+                <div className="w-1 h-6 bg-primary rounded-full mr-3"></div>
+                ISAB Journey
+              </h3>
+              <div className="space-y-3">
                 {officer.roles.map((roleInfo, idx) => (
-                  <div key={idx} className="flex items-center space-x-3 p-2 rounded-lg bg-muted/30">
-                    <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                  <div key={idx} className="flex items-center space-x-4 p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors duration-200">
+                    <div className="w-3 h-3 bg-primary rounded-full flex-shrink-0"></div>
                     <div className="flex-grow">
-                      <span className="font-medium text-foreground">{roleInfo.role}</span>
-                      <span className="text-muted-foreground text-sm ml-2">({roleInfo.period})</span>
+                      <span className="font-semibold text-foreground text-lg">{roleInfo.role}</span>
+                      <span className="text-muted-foreground text-sm ml-3">({roleInfo.period})</span>
                     </div>
                     {roleInfo.role === officer.currentRole && (
-                      <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">Current View</span>
+                      <span className="text-xs bg-primary/20 text-primary px-3 py-1 rounded-full font-medium">Current View</span>
                     )}
                   </div>
                 ))}
@@ -120,13 +176,16 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose }: Histor
             </div>
 
             {/* Overall contributions */}
-            <div className="p-4 rounded-lg bg-primary/5 border-l-4 border-primary">
-              <h4 className="font-semibold text-foreground mb-3">Overall Contributions to ISAB</h4>
-              <ul className="space-y-2">
+            <div className="p-6 rounded-xl bg-primary/5 border-l-4 border-primary">
+              <h4 className="text-lg font-semibold text-foreground mb-4 flex items-center">
+                <div className="w-1 h-5 bg-primary rounded-full mr-3"></div>
+                Overall Contributions to ISAB
+              </h4>
+              <ul className="space-y-3">
                 {officer.overallContributions.map((contribution, idx) => (
-                  <li key={idx} className="flex items-start">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                    <span className="text-muted-foreground leading-relaxed text-sm">{contribution}</span>
+                  <li key={idx} className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-muted-foreground leading-relaxed">{contribution}</span>
                   </li>
                 ))}
               </ul>

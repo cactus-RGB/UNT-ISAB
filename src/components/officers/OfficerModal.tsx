@@ -34,10 +34,11 @@ function ModalSmartImage({ src, alt, onLoad, onError }: {
     if (!fileId) return [originalUrl];
 
     return [
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w500-h500`, // Thumbnail format (CORS-friendly)
-      `https://lh3.googleusercontent.com/d/${fileId}=w500-h500`, // Google User Content format
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h400`, // Smaller thumbnail
-      `https://lh3.googleusercontent.com/d/${fileId}`, // Google User Content without size
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200-h600`, // Large banner format
+      `https://lh3.googleusercontent.com/d/${fileId}=w1200-h600`, // Google User Content format
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w800-h400`, // Medium banner
+      `https://lh3.googleusercontent.com/d/${fileId}=s1200`, // Alternative format
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w600-h300`, // Smaller banner fallback
       originalUrl, // Original URL as last resort
     ];
   };
@@ -45,7 +46,7 @@ function ModalSmartImage({ src, alt, onLoad, onError }: {
   const handleImageError = () => {
     const isGoogleDriveUrl = src.includes('drive.google.com');
     
-    if (isGoogleDriveUrl && attemptCount < 4) {
+    if (isGoogleDriveUrl && attemptCount < 5) {
       // Try alternative URL formats
       const alternatives = getAlternativeUrls(src);
       const nextUrl = alternatives[attemptCount + 1];
@@ -82,8 +83,9 @@ function ModalSmartImage({ src, alt, onLoad, onError }: {
 
   if (imageError) {
     return (
-      <div className="w-full h-full bg-muted/50 flex items-center justify-center">
-        <Users className="h-12 w-12 text-primary/60" />
+      <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex flex-col items-center justify-center">
+        <Users className="h-20 w-20 text-primary/60 mb-3" />
+        <p className="text-sm text-primary/60 font-medium">Photo unavailable</p>
       </div>
     );
   }
@@ -100,9 +102,12 @@ function ModalSmartImage({ src, alt, onLoad, onError }: {
         crossOrigin="anonymous"
       />
       
+      {/* Gradient overlay for better text readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+      
       {imageLoading && (
-        <div className="absolute inset-0 bg-muted/20 flex items-center justify-center">
-          <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
         </div>
       )}
     </div>
@@ -149,73 +154,79 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
       {/* Simple centering container */}
       <div className="min-h-full flex items-center justify-center p-4">
         <div 
-          className="bg-card rounded-2xl shadow-card-elevated max-w-md w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100 relative"
+          className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100 relative"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/80 hover:bg-background transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white"
             aria-label="Close modal"
           >
-            <X className="h-5 w-5 text-muted-foreground" />
+            <X className="h-5 w-5 text-white" />
           </button>
           
-          {/* Profile image section */}
-          <div className="p-6 sm:p-8 pb-4 text-center">
-            <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6">
-              <div className="rounded-full overflow-hidden w-full h-full relative ring-4 ring-primary/20">
-                <ModalSmartImage
-                  src={officer.image}
-                  alt={`${officer.name} - ${officer.role}`}
-                />
+          {/* Large Banner Image Section */}
+          <div className="relative h-64 sm:h-80 md:h-96 overflow-hidden rounded-t-2xl">
+            <ModalSmartImage
+              src={officer.image}
+              alt={`${officer.name} - ${officer.role}`}
+            />
+            
+            {/* Name and role overlay on image */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+              <div className="text-white">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 drop-shadow-lg">
+                  {officer.name}
+                </h2>
+                <div className="inline-flex items-center bg-primary/90 backdrop-blur-sm text-white px-4 py-2 rounded-full font-medium text-sm sm:text-base mb-2">
+                  {officer.role}
+                </div>
+                <p className="text-white/90 font-medium drop-shadow">
+                  {officer.year}
+                </p>
               </div>
             </div>
           </div>
 
           {/* Content section */}
-          <div className="px-6 sm:px-8 pb-6 sm:pb-8">
-            <div className="text-center mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3 leading-tight">
-                {officer.name}
-              </h2>
-              <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-primary/10 text-primary rounded-full font-medium text-sm sm:text-base">
-                {officer.role}
-              </div>
-            </div>
+          <div className="p-6 sm:p-8">
+            <div className="space-y-6">
+              {/* Academic and Personal Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center space-x-3 p-4 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors duration-200">
+                  <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
+                    <GraduationCap className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-muted-foreground font-medium">Major</p>
+                    <p className="font-medium text-foreground text-sm leading-tight">
+                      {officer.major}
+                    </p>
+                  </div>
+                </div>
 
-            <div className="space-y-3 sm:space-y-4 mb-6">
-              <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors duration-200">
-                <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
-                  <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">Major</p>
-                  <p className="font-medium text-foreground text-sm sm:text-base leading-tight">
-                    {officer.major}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors duration-200">
-                <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
-                  <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">Home Country</p>
-                  <p className="font-medium text-foreground text-sm sm:text-base leading-tight">
-                    <span className="mr-2">{officer.countryFlag}</span>
-                    {officer.homeCountry}
-                  </p>
+                <div className="flex items-center space-x-3 p-4 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors duration-200">
+                  <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
+                    <Globe className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-muted-foreground font-medium">Home Country</p>
+                    <p className="font-medium text-foreground text-sm leading-tight">
+                      <span className="mr-2">{officer.countryFlag}</span>
+                      {officer.homeCountry}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="p-4 rounded-lg bg-primary/5 border-l-4 border-primary">
-              <p className="text-muted-foreground text-xs sm:text-sm mb-2 font-medium">Personal Quote</p>
-              <blockquote className="text-foreground font-medium italic text-sm sm:text-base leading-relaxed">
-                &ldquo;{officer.quote}&rdquo;
-              </blockquote>
+              {/* Personal Quote */}
+              <div className="p-6 rounded-xl bg-primary/5 border-l-4 border-primary">
+                <p className="text-muted-foreground text-sm mb-3 font-medium">Personal Quote</p>
+                <blockquote className="text-foreground font-medium italic text-base sm:text-lg leading-relaxed">
+                  &ldquo;{officer.quote}&rdquo;
+                </blockquote>
+              </div>
             </div>
           </div>
         </div>
