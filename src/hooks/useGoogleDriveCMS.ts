@@ -9,9 +9,12 @@ const DOCUMENTS_FOLDER_ID = process.env.NEXT_PUBLIC_DOCUMENTS_FOLDER_ID;
 const OFFICER_PHOTOS_FOLDER_ID = process.env.NEXT_PUBLIC_OFFICER_PHOTOS_FOLDER_ID;
 const EVENT_PHOTOS_FOLDER_ID = process.env.NEXT_PUBLIC_EVENT_PHOTOS_FOLDER_ID;
 
-// Cache configuration
-const CACHE_KEY = 'isab-cms-data';
-const METADATA_CACHE_KEY = 'isab-cms-metadata';
+// Enhanced cache configuration with versioning and ETag support
+const CACHE_KEY = 'isab-cms-data-v2';
+const METADATA_CACHE_KEY = 'isab-cms-metadata-v2';
+const ETAG_CACHE_KEY = 'isab-cms-etag';
+const CACHE_VERSION = '2.1';
+const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 // Keep your existing interfaces exactly as they are
 export interface Officer {
@@ -56,13 +59,17 @@ export interface SiteContent {
   heroSubtitle: string;
 }
 
-interface CachedData {
+// Enhanced cache data structure with versioning and ETag
+interface EnhancedCachedData {
+  version: string;
+  timestamp: number;
+  etag?: string;
+  lastModified?: string;
   officers: Officer[];
   importantLinks: ImportantLink[];
   eventGalleries: EventGallery[];
   siteContent: SiteContent;
   documents: DocumentContent[];
-  timestamp: number;
 }
 
 interface FolderMetadata {
@@ -74,9 +81,11 @@ interface FolderMetadata {
     name: string;
     modifiedTime: string;
   }>;
+  etag?: string;
 }
 
 interface CachedMetadata {
+  version: string;
   documents: FolderMetadata;
   officerPhotos: FolderMetadata;
   eventPhotos: FolderMetadata;
@@ -105,7 +114,6 @@ interface DocumentContent {
 
 // Helper function to get proper Google Drive image URL
 const getGoogleDriveImageUrl = (fileId: string): string => {
-  // Use Google Drive's image serving endpoint that allows embedding
   return `https://drive.google.com/thumbnail?id=${fileId}&sz=w500-h500`;
 };
 
@@ -115,88 +123,65 @@ const getFallbackImageUrl = (name: string): string => {
   return `/assets/officers/${firstName}.jpg`;
 };
 
-export const useGoogleDriveCMS = () => {
-  // Start with empty arrays - content will be loaded from cache or Google Drive
-  const [officers, setOfficers] = useState<Officer[]>([]);
-  const [importantLinks, setImportantLinks] = useState<ImportantLink[]>([]);
-  const [eventGalleries, setEventGalleries] = useState<EventGallery[]>([]);
-  const [masterOfficerProfiles] = useState<{ [key: string]: unknown }>({});
-  const [semesterBoards] = useState<unknown[]>([]);
-  const [siteContent, setSiteContent] = useState<SiteContent>({
-    aboutText: "The International Student Advisory Board (ISAB) at UNT is dedicated to advocating for international students, fostering cultural exchange, and enhancing student life through leadership, support, and community engagement.",
-    missionStatement: "Our mission is to serve as the voice for international students at UNT, advocating for their needs and fostering a welcoming community that celebrates diversity.",
-    heroTitle: "International Student Advisory Board",
-    heroSubtitle: "Empowering international students at the University of North Texas"
-  });
+// Enhanced API client with ETag support
+class EnhancedDriveAPIClient {
+  private apiKey: string;
 
-  const [documents, setDocuments] = useState<DocumentContent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [isFromCache, setIsFromCache] = useState(false);
-  const [changeDetected, setChangeDetected] = useState<string[]>([]);
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
 
-  // Cache management functions
-  const getCachedData = (): CachedData | null => {
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (!cached) return null;
-      return JSON.parse(cached) as CachedData;
-    } catch (error) {
-      console.error('Error reading cache:', error);
-      localStorage.removeItem(CACHE_KEY);
-      return null;
-    }
-  };
+  async fetchWithETag(endpoint: string, etag?: string | null): Promise<{
+    data: unknown;
+    etag?: string;
+    notModified: boolean;
+  }> {
+    const url = `https://www.googleapis.com/drive/v3/${endpoint}${
+      endpoint.includes('?') ? '&' : '?'
+    }key=${this.apiKey}`;
 
-  const getCachedMetadata = (): CachedMetadata | null => {
-    try {
-      const cached = localStorage.getItem(METADATA_CACHE_KEY);
-      if (!cached) return null;
-      return JSON.parse(cached) as CachedMetadata;
-    } catch (error) {
-      console.error('Error reading metadata cache:', error);
-      localStorage.removeItem(METADATA_CACHE_KEY);
-      return null;
-    }
-  };
+    const headers: HeadersInit = {
+      'Accept': 'application/json',
+    };
 
-  const setCachedData = (data: Omit<CachedData, 'timestamp'>) => {
-    try {
-      const cacheData: CachedData = {
-        ...data,
-        timestamp: Date.now()
-      };
-      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-    } catch (error) {
-      console.error('Error setting cache:', error);
-    }
-  };
-
-  const setCachedMetadata = (metadata: Omit<CachedMetadata, 'timestamp'>) => {
-    try {
-      const cacheMetadata: CachedMetadata = {
-        ...metadata,
-        timestamp: Date.now()
-      };
-      localStorage.setItem(METADATA_CACHE_KEY, JSON.stringify(cacheMetadata));
-    } catch (error) {
-      console.error('Error setting metadata cache:', error);
-    }
-  };
-
-  const clearCache = () => {
-    localStorage.removeItem(CACHE_KEY);
-    localStorage.removeItem(METADATA_CACHE_KEY);
-  };
-
-  // Helper function to make Google Drive API calls
-  const driveApiCall = async (endpoint: string): Promise<unknown> => {
-    if (!GOOGLE_DRIVE_API_KEY) {
-      throw new Error('Google Drive API key not configured.');
+    // Add If-None-Match header for conditional requests
+    if (etag && etag.trim()) {
+      headers['If-None-Match'] = etag;
     }
 
-    const url = `https://www.googleapis.com/drive/v3/${endpoint}${endpoint.includes('?') ? '&' : '?'}key=${GOOGLE_DRIVE_API_KEY}`;
+    const response = await fetch(url, { headers });
+
+    // Handle 304 Not Modified
+    if (response.status === 304) {
+      console.log('[CMS]: Server returned 304 Not Modified');
+      return { data: null, notModified: true };
+    }
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        throw new Error('Access denied. Please check your API key and folder permissions.');
+      } else if (response.status === 404) {
+        throw new Error('Folder or file not found. Please check your folder ID.');
+      } else {
+        const errorText = await response.text();
+        throw new Error(`Drive API error: ${response.status} - ${errorText}`);
+      }
+    }
+
+    const data = await response.json();
+    const responseETag = response.headers.get('ETag');
+
+    return {
+      data,
+      etag: responseETag || undefined,
+      notModified: false
+    };
+  }
+
+  async regularFetch(endpoint: string): Promise<unknown> {
+    const url = `https://www.googleapis.com/drive/v3/${endpoint}${
+      endpoint.includes('?') ? '&' : '?'
+    }key=${this.apiKey}`;
     
     const response = await fetch(url, {
       headers: {
@@ -216,29 +201,200 @@ export const useGoogleDriveCMS = () => {
     }
 
     return response.json();
+  }
+}
+
+export const useGoogleDriveCMS = () => {
+  // Start with empty arrays - content will be loaded from cache or Google Drive
+  const [officers, setOfficers] = useState<Officer[]>([]);
+  const [importantLinks, setImportantLinks] = useState<ImportantLink[]>([]);
+  const [eventGalleries, setEventGalleries] = useState<EventGallery[]>([]);
+  const [masterOfficerProfiles] = useState<{ [key: string]: unknown }>({});
+  const [semesterBoards] = useState<unknown[]>([]);
+  const [siteContent, setSiteContent] = useState<SiteContent>({
+    aboutText: "The International Student Advisory Board (ISAB) at UNT is dedicated to advocating for international students, fostering cultural exchange, and enhancing student life through leadership, support, and community engagement.",
+    missionStatement: "Our mission is to serve as the voice for international students at UNT, advocating for their needs and fostering a welcoming community that celebrates diversity.",
+    heroTitle: "International Student Advisory Board",
+    heroSubtitle: "Empowering international students at the University of North Texas"
+  });
+
+  const [documents, setDocuments] = useState<DocumentContent[]>([]);
+  
+  // Enhanced loading states
+  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [backgroundRefreshing, setBackgroundRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [isFromCache, setIsFromCache] = useState(false);
+  const [changeDetected, setChangeDetected] = useState<string[]>([]);
+  const [cacheStatus, setCacheStatus] = useState<'loading' | 'cache-hit' | 'fresh' | 'error'>('loading');
+
+  // API client instance
+  const apiClient = GOOGLE_DRIVE_API_KEY ? new EnhancedDriveAPIClient(GOOGLE_DRIVE_API_KEY) : null;
+
+  // Enhanced cache management functions
+  const getCachedData = (): EnhancedCachedData | null => {
+    try {
+      if (typeof localStorage === 'undefined') return null;
+      
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (!cached) return null;
+
+      const data = JSON.parse(cached) as EnhancedCachedData;
+      
+      // Check cache version and expiry
+      if (data.version !== CACHE_VERSION) {
+        console.log('[CMS]: Cache version mismatch, invalidating');
+        clearCache();
+        return null;
+      }
+
+      const now = Date.now();
+      const cacheAge = now - data.timestamp;
+      
+      if (cacheAge > CACHE_EXPIRY_MS) {
+        console.log('[CMS]: Cache expired, invalidating');
+        clearCache();
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error reading cache:', error);
+      clearCache();
+      return null;
+    }
   };
 
-  // Get folder metadata (lightweight check for changes)
-  const getFolderMetadata = async (folderId: string): Promise<FolderMetadata> => {
-    const response = await driveApiCall(
-      `files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`
-    ) as { files?: GoogleDriveFile[] };
-    
-    const files = response.files || [];
-    
-    return {
-      folderId,
-      lastModified: files.length > 0 ? files[0].modifiedTime : '',
-      fileCount: files.length,
-      files: files.map(f => ({
-        id: f.id,
-        name: f.name,
-        modifiedTime: f.modifiedTime
-      }))
-    };
+  const getCachedMetadata = (): CachedMetadata | null => {
+    try {
+      if (typeof localStorage === 'undefined') return null;
+      
+      const cached = localStorage.getItem(METADATA_CACHE_KEY);
+      if (!cached) return null;
+
+      const data = JSON.parse(cached) as CachedMetadata;
+      
+      // Check version
+      if (data.version !== CACHE_VERSION) {
+        console.log('[CMS]: Metadata cache version mismatch, invalidating');
+        localStorage.removeItem(METADATA_CACHE_KEY);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error reading metadata cache:', error);
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(METADATA_CACHE_KEY);
+      }
+      return null;
+    }
   };
 
-  // Check if any folders have changed
+  const setCachedData = (data: Omit<EnhancedCachedData, 'version' | 'timestamp'>) => {
+    try {
+      if (typeof localStorage === 'undefined') return;
+      
+      const cacheData: EnhancedCachedData = {
+        version: CACHE_VERSION,
+        timestamp: Date.now(),
+        ...data
+      };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+    } catch (error) {
+      console.error('Error setting cache:', error);
+    }
+  };
+
+  const setCachedMetadata = (metadata: Omit<CachedMetadata, 'version' | 'timestamp'>) => {
+    try {
+      if (typeof localStorage === 'undefined') return;
+      
+      const cacheMetadata: CachedMetadata = {
+        version: CACHE_VERSION,
+        timestamp: Date.now(),
+        ...metadata
+      };
+      localStorage.setItem(METADATA_CACHE_KEY, JSON.stringify(cacheMetadata));
+    } catch (error) {
+      console.error('Error setting metadata cache:', error);
+    }
+  };
+
+  const clearCache = () => {
+    if (typeof localStorage === 'undefined') return;
+    
+    localStorage.removeItem(CACHE_KEY);
+    localStorage.removeItem(METADATA_CACHE_KEY);
+    localStorage.removeItem(ETAG_CACHE_KEY);
+  };
+
+  // Helper function to make Google Drive API calls (keeping your original signature)
+  const driveApiCall = async (endpoint: string): Promise<unknown> => {
+    if (!apiClient) {
+      throw new Error('Google Drive API key not configured.');
+    }
+    return apiClient.regularFetch(endpoint);
+  };
+
+  // Get folder metadata (lightweight check for changes) - enhanced with ETag
+  const getFolderMetadata = async (folderId: string, useETag: boolean = false): Promise<FolderMetadata> => {
+    const endpoint = `files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`;
+    
+    if (useETag && apiClient && typeof localStorage !== 'undefined') {
+      const cachedETag = localStorage.getItem(`${ETAG_CACHE_KEY}-${folderId}`);
+      const response = await apiClient.fetchWithETag(endpoint, cachedETag);
+      
+      if (response.notModified) {
+        console.log(`[CMS]: Folder ${folderId} not modified (ETag match)`);
+        // Return cached metadata
+        const cached = getCachedMetadata();
+        if (cached && cached.documents.folderId === folderId) {
+          return { ...cached.documents, etag: cachedETag || undefined };
+        }
+      }
+
+      // Save new ETag
+      if (response.etag) {
+        localStorage.setItem(`${ETAG_CACHE_KEY}-${folderId}`, response.etag);
+      }
+
+      const responseData = response.data as { files?: GoogleDriveFile[] } | null;
+      const files = responseData?.files || [];
+      
+      return {
+        folderId,
+        lastModified: files.length > 0 ? files[0].modifiedTime : '',
+        fileCount: files.length,
+        files: files.map(f => ({
+          id: f.id,
+          name: f.name,
+          modifiedTime: f.modifiedTime
+        })),
+        etag: response.etag
+      };
+    } else {
+      // Fallback to regular API call
+      const response = await driveApiCall(endpoint);
+      const responseData = response as { files?: GoogleDriveFile[] };
+      const files = responseData.files || [];
+      
+      return {
+        folderId,
+        lastModified: files.length > 0 ? files[0].modifiedTime : '',
+        fileCount: files.length,
+        files: files.map(f => ({
+          id: f.id,
+          name: f.name,
+          modifiedTime: f.modifiedTime
+        }))
+      };
+    }
+  };
+
+  // Enhanced check for changes with ETag support
   const checkForChanges = async (): Promise<{hasChanges: boolean, changedFolders: string[]}> => {
     const cachedMetadata = getCachedMetadata();
     if (!cachedMetadata) {
@@ -249,9 +405,9 @@ export const useGoogleDriveCMS = () => {
     const changedFolders: string[] = [];
 
     try {
-      // Check documents folder
+      // Check documents folder with ETag
       if (DOCUMENTS_FOLDER_ID) {
-        const documentsMetadata = await getFolderMetadata(DOCUMENTS_FOLDER_ID);
+        const documentsMetadata = await getFolderMetadata(DOCUMENTS_FOLDER_ID, true);
         if (
           documentsMetadata.lastModified !== cachedMetadata.documents.lastModified ||
           documentsMetadata.fileCount !== cachedMetadata.documents.fileCount
@@ -263,7 +419,7 @@ export const useGoogleDriveCMS = () => {
 
       // Check officer photos folder
       if (OFFICER_PHOTOS_FOLDER_ID) {
-        const photosMetadata = await getFolderMetadata(OFFICER_PHOTOS_FOLDER_ID);
+        const photosMetadata = await getFolderMetadata(OFFICER_PHOTOS_FOLDER_ID, true);
         if (
           photosMetadata.lastModified !== cachedMetadata.officerPhotos.lastModified ||
           photosMetadata.fileCount !== cachedMetadata.officerPhotos.fileCount
@@ -275,7 +431,7 @@ export const useGoogleDriveCMS = () => {
 
       // Check event photos folder
       if (EVENT_PHOTOS_FOLDER_ID) {
-        const eventMetadata = await getFolderMetadata(EVENT_PHOTOS_FOLDER_ID);
+        const eventMetadata = await getFolderMetadata(EVENT_PHOTOS_FOLDER_ID, true);
         if (
           eventMetadata.lastModified !== cachedMetadata.eventPhotos.lastModified ||
           eventMetadata.fileCount !== cachedMetadata.eventPhotos.fileCount
@@ -294,16 +450,17 @@ export const useGoogleDriveCMS = () => {
     }
   };
 
-  // Get folder contents (full data)
+  // Get folder contents (full data) - keeping your original functionality
   const getFolderContents = async (folderId: string): Promise<GoogleDriveFile[]> => {
     const response = await driveApiCall(
       `files?q='${folderId}'+in+parents+and+trashed=false&fields=files(id,name,mimeType,parents,webViewLink,webContentLink,thumbnailLink,modifiedTime,size)&orderBy=name`
-    ) as { files?: GoogleDriveFile[] };
+    );
     
-    return response.files || [];
+    const responseData = response as { files?: GoogleDriveFile[] };
+    return responseData.files || [];
   };
 
-  // Get document content
+  // Get document content - keeping your original functionality
   const getDocumentContent = async (fileId: string, mimeType: string): Promise<string> => {
     let exportUrl: string;
     
@@ -324,7 +481,7 @@ export const useGoogleDriveCMS = () => {
     return response.text();
   };
 
-  // Map icon names to actual Lucide icons
+  // Map icon names to actual Lucide icons - keeping your original functionality
   const getIconComponent = (iconName: string): LucideIcon => {
     switch (iconName.toLowerCase()) {
       case 'users':
@@ -340,7 +497,7 @@ export const useGoogleDriveCMS = () => {
     }
   };
 
-  // Parse officer data from Google Docs
+  // Parse officer data from Google Docs - keeping your original functionality
   const parseOfficerDocument = (content: string): Officer[] => {
     const officers: Officer[] = [];
     const sections = content.split(/---+/).filter(section => section.trim());
@@ -396,7 +553,7 @@ export const useGoogleDriveCMS = () => {
     return officers;
   };
 
-  // Parse important links
+  // Parse important links - keeping your original functionality
   const parseLinksDocument = (content: string): ImportantLink[] => {
     const links: ImportantLink[] = [];
     const sections = content.split(/---+/).filter(section => section.trim());
@@ -439,7 +596,7 @@ export const useGoogleDriveCMS = () => {
     return links;
   };
 
-  // Parse site content
+  // Parse site content - keeping your original functionality
   const parseSiteContent = (content: string): Partial<SiteContent> => {
     const lines = content.split('\n').filter(line => line.trim());
     const siteData: Partial<SiteContent> = {};
@@ -475,7 +632,7 @@ export const useGoogleDriveCMS = () => {
     return siteData;
   };
 
-  // Load officer photos from Google Drive with enhanced debugging
+  // Load officer photos from Google Drive with enhanced debugging - keeping your original functionality
   const loadOfficerPhotos = async (officers: Officer[]): Promise<Officer[]> => {
     if (!OFFICER_PHOTOS_FOLDER_ID) {
       console.log('[CMS]: No officer photos folder ID configured');
@@ -581,7 +738,7 @@ export const useGoogleDriveCMS = () => {
     }
   };
 
-  // Load event galleries from Google Drive with improved error handling
+  // Load event galleries from Google Drive with improved error handling - keeping your original functionality
   const loadEventGalleries = async (): Promise<EventGallery[]> => {
     if (!EVENT_PHOTOS_FOLDER_ID) {
       console.log('[CMS]: No event photos folder ID configured');
@@ -642,7 +799,7 @@ export const useGoogleDriveCMS = () => {
     }
   };
 
-  // Load documents from Google Drive
+  // Load documents from Google Drive - keeping your original functionality
   const loadDocuments = async (): Promise<DocumentContent[]> => {
     if (!DOCUMENTS_FOLDER_ID) {
       console.log('[CMS]: No documents folder ID configured');
@@ -699,12 +856,12 @@ export const useGoogleDriveCMS = () => {
     }
   };
 
-  // Load data from cache
+  // Enhanced load data from cache with instant rendering
   const loadFromCache = (): boolean => {
     const cached = getCachedData();
     if (!cached) return false;
 
-    console.log('[CMS]: Loading from cache');
+    console.log('[CMS]: Loading from cache instantly');
     setOfficers(cached.officers);
     setImportantLinks(cached.importantLinks.map(link => ({
       ...link,
@@ -715,97 +872,160 @@ export const useGoogleDriveCMS = () => {
     setDocuments(cached.documents);
     setLastUpdated(new Date(cached.timestamp));
     setIsFromCache(true);
+    setInitialLoading(false);
     setLoading(false);
+    setCacheStatus('cache-hit');
     
     return true;
   };
 
-  // Main content loading function with smart change detection
+  // Enhanced main content loading function with smart change detection and ETag
   const loadAllContent = useCallback(async (forceRefresh: boolean = false) => {
     if (!GOOGLE_DRIVE_API_KEY) {
       const msg = 'Google Drive API key not configured. Using fallback data.';
       setError(msg);
+      setInitialLoading(false);
       setLoading(false);
+      setCacheStatus('error');
       return;
     }
 
     try {
       setError(null);
 
-      // If not forcing refresh, try cache first
-      if (!forceRefresh && loadFromCache()) {
-        // Still check for changes in background, but don't block UI
-        checkForChanges().then(({ hasChanges, changedFolders }) => {
-          if (hasChanges) {
-            setChangeDetected(changedFolders);
-            console.log(`[CMS]: Changes detected in: ${changedFolders.join(', ')}`);
+      // Step 1: Try to load from cache first (instant loading for return visits)
+      if (!forceRefresh) {
+        const cacheLoaded = loadFromCache();
+        if (cacheLoaded) {
+          // Start background refresh while showing cached content
+          setBackgroundRefreshing(true);
+          
+          // Check for changes in background
+          try {
+            const { hasChanges, changedFolders } = await checkForChanges();
+            if (hasChanges) {
+              console.log(`[CMS]: Changes detected in: ${changedFolders.join(', ')}, refreshing in background`);
+              setChangeDetected(changedFolders);
+              await performFreshDataLoad();
+            } else {
+              console.log('[CMS]: No changes detected, keeping cached data');
+            }
+          } catch (backgroundError) {
+            console.error('[CMS]: Background refresh failed:', backgroundError);
+            // Don't set error state since we have cached data working
+          } finally {
+            setBackgroundRefreshing(false);
           }
-        }).catch(console.error);
-        return;
-      }
-
-      // Check for changes (or force refresh)
-      const { hasChanges, changedFolders } = forceRefresh ? 
-        { hasChanges: true, changedFolders: ['documents', 'officerPhotos', 'eventPhotos'] } :
-        await checkForChanges();
-
-      if (!hasChanges) {
-        console.log('[CMS]: No changes detected, using cached data');
-        loadFromCache();
-        return;
-      }
-
-      console.log(`[CMS]: Changes detected in: ${changedFolders.join(', ')}, fetching fresh data...`);
-      setIsFromCache(false);
-      setChangeDetected([]);
-
-      // Load fresh data
-      const docs = await loadDocuments();
-      setDocuments(docs);
-
-      let newOfficers: Officer[] = [];
-      let newLinks: ImportantLink[] = [];
-      let newSiteContent = { ...siteContent };
-
-      // Process each document type
-      for (const doc of docs) {
-        switch (doc.type) {
-          case 'officers':
-            console.log('[CMS]: Processing officers document...');
-            let officerData = parseOfficerDocument(doc.content);
-            console.log(`[CMS]: Parsed ${officerData.length} officers from document`);
-            officerData = await loadOfficerPhotos(officerData);
-            newOfficers = officerData;
-            setOfficers(officerData);
-            break;
-            
-          case 'links':
-            console.log('[CMS]: Processing links document...');
-            const links = parseLinksDocument(doc.content);
-            console.log(`[CMS]: Parsed ${links.length} links from document`);
-            newLinks = links;
-            setImportantLinks(links);
-            break;
-            
-          case 'about':
-            console.log('[CMS]: Processing about document...');
-            const aboutData = parseSiteContent(doc.content);
-            newSiteContent = { ...newSiteContent, ...aboutData };
-            setSiteContent(newSiteContent);
-            break;
+          
+          return;
         }
       }
 
-      // Load event galleries
-      const galleries = await loadEventGalleries();
-      setEventGalleries(galleries);
+      // Step 2: No cache or forced refresh - fetch fresh data with loading state
+      console.log('[CMS]: No cache found or forced refresh, fetching fresh data');
+      setInitialLoading(true);
+      setLoading(true);
+      setCacheStatus('loading');
+      
+      await performFreshDataLoad();
 
-      // Update metadata cache
-      const [documentsMetadata, officerPhotosMetadata, eventPhotosMetadata] = await Promise.all([
-        DOCUMENTS_FOLDER_ID ? getFolderMetadata(DOCUMENTS_FOLDER_ID) : Promise.resolve({} as FolderMetadata),
-        OFFICER_PHOTOS_FOLDER_ID ? getFolderMetadata(OFFICER_PHOTOS_FOLDER_ID) : Promise.resolve({} as FolderMetadata),
-        EVENT_PHOTOS_FOLDER_ID ? getFolderMetadata(EVENT_PHOTOS_FOLDER_ID) : Promise.resolve({} as FolderMetadata)
-      ]);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Failed to load content from Google Drive';
+      console.error('Error loading ISAB content:', err);
+      setError(errorMsg);
+      setCacheStatus('error');
+    } finally {
+      setInitialLoading(false);
+      setLoading(false);
+      setBackgroundRefreshing(false);
+    }
+  }, []);
+
+  // Separate function to perform fresh data loading
+  const performFreshDataLoad = async () => {
+    console.log('[CMS]: Performing fresh data load...');
+    setIsFromCache(false);
+    setChangeDetected([]);
+
+    // Load fresh data
+    const docs = await loadDocuments();
+    setDocuments(docs);
+
+    let newOfficers: Officer[] = [];
+    let newLinks: ImportantLink[] = [];
+    let newSiteContent = { ...siteContent };
+
+    // Process each document type
+    for (const doc of docs) {
+      switch (doc.type) {
+        case 'officers':
+          console.log('[CMS]: Processing officers document...');
+          let officerData = parseOfficerDocument(doc.content);
+          console.log(`[CMS]: Parsed ${officerData.length} officers from document`);
+          officerData = await loadOfficerPhotos(officerData);
+          newOfficers = officerData;
+          setOfficers(officerData);
+          break;
+          
+        case 'links':
+          console.log('[CMS]: Processing links document...');
+          const links = parseLinksDocument(doc.content);
+          console.log(`[CMS]: Parsed ${links.length} links from document`);
+          newLinks = links;
+          setImportantLinks(links);
+          break;
+          
+        case 'about':
+          console.log('[CMS]: Processing about document...');
+          const aboutData = parseSiteContent(doc.content);
+          newSiteContent = { ...newSiteContent, ...aboutData };
+          setSiteContent(newSiteContent);
+          break;
+      }
+    }
+
+    // Load event galleries
+    const galleries = await loadEventGalleries();
+    setEventGalleries(galleries);
+
+    // Update metadata cache with ETag information
+    try {
+      const metadataPromises: Promise<FolderMetadata>[] = [];
+      
+      if (DOCUMENTS_FOLDER_ID) {
+        metadataPromises.push(getFolderMetadata(DOCUMENTS_FOLDER_ID, true));
+      } else {
+        metadataPromises.push(Promise.resolve({
+          folderId: '',
+          lastModified: '',
+          fileCount: 0,
+          files: []
+        }));
+      }
+      
+      if (OFFICER_PHOTOS_FOLDER_ID) {
+        metadataPromises.push(getFolderMetadata(OFFICER_PHOTOS_FOLDER_ID, true));
+      } else {
+        metadataPromises.push(Promise.resolve({
+          folderId: '',
+          lastModified: '',
+          fileCount: 0,
+          files: []
+        }));
+      }
+      
+      if (EVENT_PHOTOS_FOLDER_ID) {
+        metadataPromises.push(getFolderMetadata(EVENT_PHOTOS_FOLDER_ID, true));
+      } else {
+        metadataPromises.push(Promise.resolve({
+          folderId: '',
+          lastModified: '',
+          fileCount: 0,
+          files: []
+        }));
+      }
+
+      const [documentsMetadata, officerPhotosMetadata, eventPhotosMetadata] = await Promise.all(metadataPromises);
 
       setCachedMetadata({
         documents: documentsMetadata,
@@ -813,33 +1033,42 @@ export const useGoogleDriveCMS = () => {
         eventPhotos: eventPhotosMetadata
       });
 
-      // Cache the data
+      // Cache the fresh data with ETag
+      const latestETag = documentsMetadata.etag;
       setCachedData({
-        officers: newOfficers,
-        importantLinks: newLinks,
+        etag: latestETag,
+        officers: newOfficers.length > 0 ? newOfficers : officers,
+        importantLinks: newLinks.length > 0 ? newLinks : importantLinks,
         eventGalleries: galleries,
         siteContent: newSiteContent,
         documents: docs
       });
 
       setLastUpdated(new Date());
-      console.log('[CMS]: Fresh data loaded and cached');
-
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to load content from Google Drive';
-      console.error('Error loading ISAB content:', err);
-      setError(errorMsg);
-    } finally {
-      setLoading(false);
+      setCacheStatus('fresh');
+      console.log('[CMS]: Fresh data loaded and cached with ETag support');
+    } catch (metadataError) {
+      console.error('[CMS]: Error updating metadata cache:', metadataError);
+      // Still cache the content data even if metadata fails
+      setCachedData({
+        officers: newOfficers.length > 0 ? newOfficers : officers,
+        importantLinks: newLinks.length > 0 ? newLinks : importantLinks,
+        eventGalleries: galleries,
+        siteContent: newSiteContent,
+        documents: docs
+      });
+      setLastUpdated(new Date());
+      setCacheStatus('fresh');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
-  // Force refresh function
+  // Enhanced force refresh function
   const forceRefresh = useCallback(() => {
-    setLoading(true);
+    console.log('[CMS]: Force refresh requested');
+    setBackgroundRefreshing(!isFromCache); // Show background refresh if we have cached data
+    setLoading(!isFromCache); // Show loading only if we don't have cached data
     loadAllContent(true);
-  }, [loadAllContent]);
+  }, [loadAllContent, isFromCache]);
 
   // Load content once on mount
   useEffect(() => {
@@ -847,29 +1076,32 @@ export const useGoogleDriveCMS = () => {
   }, [loadAllContent]);
 
   return {
-    // Data
+    // Data - keeping your original interface
     officers,
     importantLinks,
     eventGalleries,
     siteContent,
     documents,
     
-    // For history page
+    // For history page - keeping your original interface
     masterOfficerProfiles,
     semesterBoards,
     
-    // State
-    loading,
+    // Enhanced state management
+    loading,                    // Backward compatible - true when loading
+    initialLoading,            // True only on first load with no cache
+    backgroundRefreshing,      // True when refreshing in background
     error,
     lastUpdated,
     isFromCache,
     changeDetected,
+    cacheStatus,              // 'loading' | 'cache-hit' | 'fresh' | 'error'
     
-    // Actions
+    // Actions - keeping your original interface
     refresh: forceRefresh,
     clearCache,
     
-    // Helper functions
+    // Helper functions - keeping your original interface
     getDocument: (nameOrType: string) => documents.find(doc => 
       doc.name.toLowerCase().includes(nameOrType.toLowerCase()) ||
       doc.type === nameOrType
