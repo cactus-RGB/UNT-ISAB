@@ -110,8 +110,6 @@ function ModalSmartImage({ src, alt, onLoad, onError }: {
 }
 
 export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
-  const [scrollY, setScrollY] = useState(0);
-
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -120,27 +118,16 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
     };
 
     if (isOpen) {
-      // Store current scroll position when modal opens
-      setScrollY(window.scrollY);
-      
       document.addEventListener('keydown', handleEscape);
+      // Simple approach - just prevent body scroll
       document.body.style.overflow = 'hidden';
-      // Prevent background scroll but maintain scroll position
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${window.scrollY}px`;
-      document.body.style.width = '100%';
       
       return () => {
         document.removeEventListener('keydown', handleEscape);
-        // Restore scroll position when modal closes
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        window.scrollTo(0, scrollY);
+        document.body.style.overflow = 'unset';
       };
     }
-  }, [isOpen, onClose, scrollY]);
+  }, [isOpen, onClose]);
 
   if (!isOpen || !officer) {
     return null;
@@ -148,25 +135,24 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
 
   return (
     <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto"
+      onClick={onClose}
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
-        right: 0,
-        bottom: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 9999
       }}
-      onClick={onClose}
     >
-      <div 
-        className="bg-card rounded-2xl shadow-card-elevated max-w-md w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100 mx-auto"
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          maxHeight: '90vh',
-          overflowY: 'auto'
-        }}
-      >
-        <div className="relative">
+      {/* Simple centering container */}
+      <div className="min-h-full flex items-center justify-center p-4">
+        <div 
+          className="bg-card rounded-2xl shadow-card-elevated max-w-md w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100 relative"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Close button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/80 hover:bg-background transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary"
@@ -175,62 +161,62 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
             <X className="h-5 w-5 text-muted-foreground" />
           </button>
           
+          {/* Profile image section */}
           <div className="p-6 sm:p-8 pb-4 text-center">
-            <div className="flex justify-center items-center">
-              <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6">
-                <div className="rounded-full overflow-hidden w-full h-full relative ring-4 ring-primary/20">
-                  <ModalSmartImage
-                    src={officer.image}
-                    alt={`${officer.name} - ${officer.role}`}
-                  />
+            <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4 sm:mb-6">
+              <div className="rounded-full overflow-hidden w-full h-full relative ring-4 ring-primary/20">
+                <ModalSmartImage
+                  src={officer.image}
+                  alt={`${officer.name} - ${officer.role}`}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Content section */}
+          <div className="px-6 sm:px-8 pb-6 sm:pb-8">
+            <div className="text-center mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3 leading-tight">
+                {officer.name}
+              </h2>
+              <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-primary/10 text-primary rounded-full font-medium text-sm sm:text-base">
+                {officer.role}
+              </div>
+            </div>
+
+            <div className="space-y-3 sm:space-y-4 mb-6">
+              <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors duration-200">
+                <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
+                  <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">Major</p>
+                  <p className="font-medium text-foreground text-sm sm:text-base leading-tight">
+                    {officer.major}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors duration-200">
+                <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
+                  <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground font-medium">Home Country</p>
+                  <p className="font-medium text-foreground text-sm sm:text-base leading-tight">
+                    <span className="mr-2">{officer.countryFlag}</span>
+                    {officer.homeCountry}
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="px-6 sm:px-8 pb-6 sm:pb-8">
-          <div className="text-center mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3 leading-tight">
-              {officer.name}
-            </h2>
-            <div className="inline-flex items-center px-3 sm:px-4 py-2 bg-primary/10 text-primary rounded-full font-medium text-sm sm:text-base">
-              {officer.role}
+            <div className="p-4 rounded-lg bg-primary/5 border-l-4 border-primary">
+              <p className="text-muted-foreground text-xs sm:text-sm mb-2 font-medium">Personal Quote</p>
+              <blockquote className="text-foreground font-medium italic text-sm sm:text-base leading-relaxed">
+                &ldquo;{officer.quote}&rdquo;
+              </blockquote>
             </div>
-          </div>
-
-          <div className="space-y-3 sm:space-y-4 mb-6">
-            <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors duration-200">
-              <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
-                <GraduationCap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Major</p>
-                <p className="font-medium text-foreground text-sm sm:text-base leading-tight">
-                  {officer.major}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors duration-200">
-              <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
-                <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm text-muted-foreground font-medium">Home Country</p>
-                <p className="font-medium text-foreground text-sm sm:text-base leading-tight">
-                  <span className="mr-2">{officer.countryFlag}</span>
-                  {officer.homeCountry}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-lg bg-primary/5 border-l-4 border-primary">
-            <p className="text-muted-foreground text-xs sm:text-sm mb-2 font-medium">Personal Quote</p>
-            <blockquote className="text-foreground font-medium italic text-sm sm:text-base leading-relaxed">
-              &ldquo;{officer.quote}&rdquo;
-            </blockquote>
           </div>
         </div>
       </div>
