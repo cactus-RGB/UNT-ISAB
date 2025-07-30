@@ -270,13 +270,17 @@ export default function HistoryPage() {
             </div>
           </div>
 
-          {/* Colorful Description Box */}
-          <div className="mb-8 p-8 rounded-2xl bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30 border-2 border-gradient-to-r from-blue-200 via-purple-200 to-pink-200 dark:from-blue-800/50 dark:via-purple-800/50 dark:to-pink-800/50 shadow-lg">
+          {/* Colorful Description Box - Site Theme Colors */}
+          <div className="mb-8 p-8 rounded-2xl bg-gradient-to-br from-green-50 via-gray-50 to-green-100 dark:from-green-950/30 dark:via-gray-950/40 dark:to-green-900/30 border-2 border-gradient-to-r from-green-200 via-gray-200 to-green-300 dark:from-green-800/50 dark:via-gray-700/50 dark:to-green-700/50 shadow-lg backdrop-blur-sm">
             <div className="flex items-center mb-4">
-              <div className="w-1 h-8 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 rounded-full mr-4"></div>
+              <div className="w-1 h-8 bg-gradient-to-b from-green-600 via-gray-600 to-green-500 rounded-full mr-4"></div>
               <h3 className="text-xl font-bold text-foreground">About This Board</h3>
             </div>
             <p className="text-foreground/80 leading-relaxed text-lg">{currentBoard.description}</p>
+            
+            {/* Subtle accent elements */}
+            <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-green-400/10 to-green-600/10 rounded-full blur-xl"></div>
+            <div className="absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-br from-gray-400/10 to-green-500/10 rounded-full blur-lg"></div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
