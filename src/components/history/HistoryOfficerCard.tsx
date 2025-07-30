@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Users } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import type { OfficerProfile } from '@/data/history';
 
 interface HistoryOfficerCardProps {
@@ -39,7 +39,7 @@ function HistoryCardImage({ src, alt, hasPhoto }: {
   if (!hasPhoto || !src || imageError) {
     return (
       <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex flex-col items-center justify-center">
-        <Users className="h-12 w-12 text-primary/60 mb-2" />
+        <Users className="h-16 w-16 text-primary/60 mb-2" />
         <p className="text-xs text-primary/60 font-medium">Photo unavailable</p>
       </div>
     );
@@ -80,8 +80,8 @@ export default function HistoryOfficerCard({ officer, profile, onClick }: Histor
       className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card cursor-pointer hover:-translate-y-1 overflow-hidden"
       onClick={handleClick}
     >
-      {/* Banner Image Section */}
-      <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden">
+      {/* Full Card Image - No content section */}
+      <div className="relative h-64 sm:h-72 md:h-80 overflow-hidden">
         <HistoryCardImage
           src={profile.image}
           alt={`${profile.name} - ${officer.role}`}
@@ -117,13 +117,6 @@ export default function HistoryOfficerCard({ officer, profile, onClick }: Histor
           </div>
         </div>
       </div>
-
-      {/* Optional: Small content section for major (can be removed if too much) */}
-      <CardContent className="p-3">
-        <p className="text-xs text-muted-foreground text-center truncate">
-          {profile.major}
-        </p>
-      </CardContent>
     </Card>
   );
 }

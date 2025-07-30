@@ -96,14 +96,6 @@ export default function HomePage({ onPageChange }: HomePageProps) {
             <p className="text-base sm:text-lg text-muted-foreground leading-relaxed whitespace-pre-line">
               {siteContent.aboutText}
             </p>
-            {siteContent.missionStatement && (
-              <div className="mt-6 p-4 rounded-lg bg-primary/5 border-l-4 border-primary">
-                <h3 className="font-semibold text-foreground mb-2">Our Mission</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {siteContent.missionStatement}
-                </p>
-              </div>
-            )}
           </CardContent>
         </Card>
 

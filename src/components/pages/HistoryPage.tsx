@@ -24,6 +24,23 @@ export default function HistoryPage() {
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
   const [selectedOfficer, setSelectedOfficer] = useState<(OfficerProfile & { currentRole?: string }) | null>(null);
   const [isOfficerModalOpen, setIsOfficerModalOpen] = useState(false);
+  
+  // Cycling header images
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const headerImages = currentSemesterBoards.map(board => board.coverImage);
+
+  // Cycle through header images every 3 seconds
+  useEffect(() => {
+    if (headerImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentImageIndex((prevIndex) => 
+          (prevIndex + 1) % headerImages.length
+        );
+      }, 3000); // Change every 3 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [headerImages.length]);
 
   const openBoardView = (boardId: string) => {
     setSelectedBoard(boardId);
@@ -74,20 +91,47 @@ export default function HistoryPage() {
   if (!selectedBoard) {
     return (
       <div className="w-full">
+        {/* Cycling Header Images */}
         <div className="relative h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[40rem] 2xl:h-[48rem] overflow-hidden">
-          <Image
-            src="/assets/banners/history-banner.jpg"
-            alt="ISAB History"
-            fill
-            style={{ objectFit: 'cover' }}
-            sizes="100vw"
-            className="w-full h-full"
-          />
+          {headerImages.map((image, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <Image
+                src={image}
+                alt={`ISAB History - ${currentSemesterBoards[index]?.title || 'Board'}`}
+                fill
+                style={{ objectFit: 'cover' }}
+                sizes="100vw"
+                className="w-full h-full"
+                priority={index === 0}
+              />
+            </div>
+          ))}
           <div className="absolute inset-0 bg-black/40"></div>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-white">
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">Our Legacy</h1>
               <p className="text-lg sm:text-xl md:text-2xl opacity-90">Celebrating ISAB&apos;s Journey of Growth and Impact</p>
+              
+              {/* Image cycling indicators */}
+              <div className="flex justify-center space-x-2 mt-6">
+                {headerImages.map((_, index) => (
+                  <button
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      index === currentImageIndex 
+                        ? 'bg-white scale-125' 
+                        : 'bg-white/50 hover:bg-white/80'
+                    }`}
+                    onClick={() => setCurrentImageIndex(index)}
+                    aria-label={`View ${currentSemesterBoards[index]?.title || 'board'} image`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -226,11 +270,14 @@ export default function HistoryPage() {
             </div>
           </div>
 
-          <Card className="mb-8 shadow-card-hover border-border bg-card">
-            <CardContent className="p-6">
-              <p className="text-muted-foreground leading-relaxed">{currentBoard.description}</p>
-            </CardContent>
-          </Card>
+          {/* Colorful Description Box */}
+          <div className="mb-8 p-8 rounded-2xl bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30 border-2 border-gradient-to-r from-blue-200 via-purple-200 to-pink-200 dark:from-blue-800/50 dark:via-purple-800/50 dark:to-pink-800/50 shadow-lg">
+            <div className="flex items-center mb-4">
+              <div className="w-1 h-8 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 rounded-full mr-4"></div>
+              <h3 className="text-xl font-bold text-foreground">About This Board</h3>
+            </div>
+            <p className="text-foreground/80 leading-relaxed text-lg">{currentBoard.description}</p>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {currentBoard.officers.map((officer, index) => {
