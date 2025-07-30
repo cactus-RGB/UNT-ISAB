@@ -20,25 +20,17 @@ export default function ISABWebsite() {
   const [showSplash, setShowSplash] = useState(true);
   const [splashProgress, setSplashProgress] = useState(0);
   
-  // Enhanced CMS hook with caching
+  // Enhanced CMS hook with caching - only destructure what we use
   const {
-    officers,
-    importantLinks,
-    eventGalleries,
-    siteContent,
-    documents,
     loading,
-    // Handle cases where these might not exist in the hook yet
     initialLoading = loading,
     backgroundRefreshing = false,
-    error,
     lastUpdated,
     isFromCache = false,
     changeDetected = [],
     cacheStatus = 'loading',
     refresh,
-    clearCache,
-    getDocument
+    clearCache
   } = useGoogleDriveCMS();
 
   // Simulate loading progress for fallback display
@@ -231,7 +223,7 @@ export default function ISABWebsite() {
                 onClick={() => setShowSplash(true)} 
                 className="bg-purple-600 hover:bg-purple-700 px-2 py-1 rounded text-xs transition-colors"
               >
-                🎬 Replay Video
+                🎬 Replay
               </button>
             </div>
           </div>

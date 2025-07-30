@@ -939,6 +939,7 @@ export const useGoogleDriveCMS = () => {
       setLoading(false);
       setBackgroundRefreshing(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Separate function to perform fresh data loading
