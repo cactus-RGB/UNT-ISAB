@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { X, Users, GraduationCap, Globe } from 'lucide-react';
 import type { OfficerProfile } from '@/data/history';
@@ -12,6 +12,8 @@ interface HistoryOfficerModalProps {
 }
 
 export default function HistoryOfficerModal({ officer, isOpen, onClose }: HistoryOfficerModalProps) {
+  const [scrollY, setScrollY] = useState(0);
+
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -20,25 +22,49 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose }: Histor
     };
 
     if (isOpen) {
+      // Store current scroll position when modal opens
+      setScrollY(window.scrollY);
+      
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+      // Prevent background scroll but maintain scroll position
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${window.scrollY}px`;
+      document.body.style.width = '100%';
+      
       return () => {
         document.removeEventListener('keydown', handleEscape);
-        document.body.style.overflow = 'unset';
+        // Restore scroll position when modal closes
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
       };
     }
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, scrollY]);
 
   if (!isOpen || !officer) return null;
 
   return (
     <div 
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}
       onClick={onClose}
     >
       <div 
         className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100"
         onClick={(e) => e.stopPropagation()}
+        style={{
+          maxHeight: '90vh',
+          overflowY: 'auto'
+        }}
       >
         {/* Header with close button */}
         <div className="relative">

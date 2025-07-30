@@ -13,9 +13,7 @@ import HistoryOfficerModal from '@/components/history/HistoryOfficerModal';
 export default function HistoryPage() {
   const { 
     loading, 
-    error, 
-    lastUpdated, 
-    refresh 
+    error
   } = useGoogleDriveCMS();
 
   // Use hardcoded data for now since CMS history integration is not complete
@@ -103,16 +101,8 @@ export default function HistoryPage() {
                     <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
                     <div>
                       <h3 className="font-medium text-destructive mb-1">History Content Error</h3>
-                      <p className="text-sm text-muted-foreground mb-3">{error}</p>
-                      <p className="text-sm text-muted-foreground mb-3">Using fallback data.</p>
-                      <Button 
-                        variant="outline" 
-                        onClick={refresh}
-                        className="h-8 px-3 py-1 text-xs"
-                      >
-                        <RefreshCw className="h-4 w-4 mr-1" />
-                        Retry
-                      </Button>
+                      <p className="text-sm text-muted-foreground">{error}</p>
+                      <p className="text-sm text-muted-foreground mt-1">Using fallback data.</p>
                     </div>
                   </div>
                 </CardContent>
@@ -124,7 +114,7 @@ export default function HistoryPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-3">
                     <RefreshCw className="h-5 w-5 animate-spin text-primary" />
-                    <p className="text-primary">Loading history content from Google Drive...</p>
+                    <p className="text-primary">Loading history content...</p>
                   </div>
                 </CardContent>
               </Card>
@@ -159,23 +149,10 @@ export default function HistoryPage() {
             </Card>
 
             <div className="mb-16">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-4xl font-bold flex items-center text-foreground">
-                  <div className="w-2 h-10 bg-primary rounded-full mr-4"></div>
-                  Legacy of Leadership
-                </h2>
-                {lastUpdated && (
-                  <Button 
-                    variant="outline" 
-                    onClick={refresh}
-                    disabled={loading}
-                    className="h-8 px-3 py-1 text-xs"
-                  >
-                    <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
-                    Sync
-                  </Button>
-                )}
-              </div>
+              <h2 className="text-4xl font-bold mb-4 flex items-center text-foreground">
+                <div className="w-2 h-10 bg-primary rounded-full mr-4"></div>
+                Legacy of Leadership
+              </h2>
               <p className="text-muted-foreground mb-12 text-lg">
                 Click on any semester board to view the officers who served during that period
               </p>

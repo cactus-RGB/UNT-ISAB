@@ -2,10 +2,8 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { ExternalLink, CalendarIcon, Clock, MapPin, Users, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
-// Use relative import instead of @/hooks/useISABEvents
+import { CalendarIcon, Clock, MapPin, Users, RefreshCw, AlertCircle } from 'lucide-react';
 import { useISABEvents } from '../../hooks/useISABEvents';
 
 interface ISABEvent {
@@ -41,7 +39,7 @@ interface EventsPageProps {
   onDateSelect: (date: Date | undefined) => void;
 }
 
-// Convert Google Calendar events to display format - Fixed type annotation
+// Convert Google Calendar events to display format
 const convertToDisplayFormat = (googleEvent: ISABEvent): DisplayEvent => ({
   date: googleEvent.start,
   title: googleEvent.title,
@@ -69,7 +67,7 @@ const getEventsForDate = (date: Date, events: DisplayEvent[]) => {
 };
 
 export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
-  const { events: googleEvents, loading, error, lastUpdated, refresh } = useISABEvents();
+  const { events: googleEvents, loading, error } = useISABEvents();
   
   // Convert to display format
   const events = googleEvents.map(convertToDisplayFormat);
@@ -81,55 +79,9 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
-      {/* Header with sync controls */}
-      <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center justify-between mb-8 sm:mb-12">
+      {/* Header */}
+      <div className="mb-8 sm:mb-12">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">ISAB Events</h1>
-        
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          {/* Sync Status */}
-          <div className="flex items-center space-x-2 text-sm">
-            {loading ? (
-              <>
-                <RefreshCw className="h-4 w-4 animate-spin text-primary" />
-                <span className="text-muted-foreground">Syncing calendar...</span>
-              </>
-            ) : error ? (
-              <>
-                <AlertCircle className="h-4 w-4 text-destructive" />
-                <span className="text-destructive">Sync failed</span>
-              </>
-            ) : (
-              <>
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span className="text-muted-foreground">
-                  Last synced: {lastUpdated?.toLocaleTimeString() || 'Never'}
-                </span>
-              </>
-            )}
-          </div>
-          
-          {/* Control buttons */}
-          <div className="flex items-center space-x-2">
-            <Button 
-              variant="outline" 
-              onClick={refresh}
-              disabled={loading}
-              className="flex items-center space-x-2 h-8 px-3 py-1 text-xs"
-            >
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-              <span>Sync</span>
-            </Button>
-            
-            <Button 
-              variant="default"
-              onClick={() => window.open(`https://calendar.google.com/calendar/u/0?cid=${process.env.NEXT_PUBLIC_ISAB_CALENDAR_ID}`, '_blank')}
-              className="flex items-center space-x-2 h-8 px-3 py-1 text-xs"
-            >
-              <ExternalLink className="h-4 w-4" />
-              <span>Manage Events</span>
-            </Button>
-          </div>
-        </div>
       </div>
 
       {/* Error Display */}
@@ -139,15 +91,8 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
             <div className="flex items-start space-x-3">
               <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
               <div>
-                <h3 className="font-medium text-destructive mb-1">Calendar Sync Error</h3>
+                <h3 className="font-medium text-destructive mb-1">Calendar Error</h3>
                 <p className="text-sm text-muted-foreground">{error}</p>
-                <Button 
-                  variant="outline" 
-                  onClick={refresh}
-                  className="mt-3 h-8 px-3 py-1 text-xs"
-                >
-                  Try Again
-                </Button>
               </div>
             </div>
           </CardContent>
@@ -191,17 +136,7 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
                   {selectedDateEvents.map((event, index) => (
                     <Card key={index} className="border border-border bg-muted/20 hover:bg-muted/40 transition-all duration-200">
                       <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-3">
-                          <h3 className="text-xl font-bold text-foreground">{event.title}</h3>
-                          
-                          <Button 
-                            variant="ghost" 
-                            onClick={() => window.open(event.googleCalendarLink, '_blank')}
-                            className="flex items-center space-x-1 h-8 px-3 py-1 text-xs"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </div>
+                        <h3 className="text-xl font-bold text-foreground mb-3">{event.title}</h3>
                         
                         <div className="space-y-2">
                           <div className="flex items-center text-muted-foreground">
@@ -276,22 +211,13 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
               {upcomingEvents.map((event, index) => (
                 <Card key={index} className="border border-border bg-muted/20 hover:bg-muted/40 transition-all duration-200 hover:shadow-md">
                   <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="mb-3">
                       <span className="text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
                         {event.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </span>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-muted-foreground">
-                          {event.isAllDay ? 'All Day' : event.time}
-                        </span>
-                        <Button 
-                          variant="ghost" 
-                          onClick={() => window.open(event.googleCalendarLink, '_blank')}
-                          className="h-8 px-3 py-1 text-xs"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                        </Button>
-                      </div>
+                      <span className="text-sm text-muted-foreground ml-2">
+                        {event.isAllDay ? 'All Day' : event.time}
+                      </span>
                     </div>
                     <h3 className="text-lg font-bold mb-2 text-foreground">{event.title}</h3>
                     {event.location && (
@@ -310,13 +236,6 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
             <div className="text-center py-8">
               <CalendarIcon className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
               <p className="text-muted-foreground">No upcoming events found.</p>
-              <Button 
-                variant="outline" 
-                onClick={() => window.open(`https://calendar.google.com/calendar/u/0?cid=${process.env.NEXT_PUBLIC_ISAB_CALENDAR_ID}`, '_blank')}
-                className="mt-4"
-              >
-                Add First Event
-              </Button>
             </div>
           )}
         </CardContent>

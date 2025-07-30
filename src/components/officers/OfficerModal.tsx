@@ -110,6 +110,8 @@ function ModalSmartImage({ src, alt, onLoad, onError }: {
 }
 
 export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalProps) {
+  const [scrollY, setScrollY] = useState(0);
+
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -118,14 +120,27 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
     };
 
     if (isOpen) {
+      // Store current scroll position when modal opens
+      setScrollY(window.scrollY);
+      
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+      // Prevent background scroll but maintain scroll position
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${window.scrollY}px`;
+      document.body.style.width = '100%';
+      
       return () => {
         document.removeEventListener('keydown', handleEscape);
-        document.body.style.overflow = 'unset';
+        // Restore scroll position when modal closes
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
       };
     }
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, scrollY]);
 
   if (!isOpen || !officer) {
     return null;
@@ -134,11 +149,22 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
   return (
     <div 
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}
       onClick={onClose}
     >
       <div 
         className="bg-card rounded-2xl shadow-card-elevated max-w-md w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100 mx-auto"
         onClick={(e) => e.stopPropagation()}
+        style={{
+          maxHeight: '90vh',
+          overflowY: 'auto'
+        }}
       >
         <div className="relative">
           <button
