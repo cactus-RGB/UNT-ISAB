@@ -8,7 +8,7 @@ interface HistoryOfficerModalProps {
   officer: (OfficerProfile & { currentRole?: string }) | null;
   isOpen: boolean;
   onClose: () => void;
-  boardId?: string; // For proper navigation state
+  boardId?: string | null; // Allow both undefined and null
 }
 
 // Smart Image component for history officers
@@ -81,8 +81,6 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
       
       // Browser history management
       const currentUrl = new URL(window.location.href);
-      const officerParam = officer ? `officer=${encodeURIComponent(officer.name)}` : '';
-      const boardParam = boardId ? `board=${encodeURIComponent(boardId)}` : '';
       
       // Build search params
       const searchParams = new URLSearchParams(currentUrl.search);
