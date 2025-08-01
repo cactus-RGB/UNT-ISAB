@@ -5,14 +5,13 @@ interface VideoSplashScreenProps {
   isVisible: boolean;
   onComplete: () => void;
   videoSrc: string; // Path to your Canva MP4 file
-  loadingProgress?: number; // 0-100 progress for fallback
+  loadingProgress?: number; // 0-100 progress for fallback (kept for compatibility)
 }
 
 export default function VideoSplashScreen({
   isVisible,
   onComplete,
-  videoSrc,
-  loadingProgress = 0
+  videoSrc
 }: VideoSplashScreenProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
