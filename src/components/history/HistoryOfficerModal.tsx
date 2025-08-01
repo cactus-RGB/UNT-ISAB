@@ -118,9 +118,15 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
 
   // Handle closing modal
   const handleClose = () => {
-    // Go back in history to remove modal state
-    window.history.back();
+    // Don't use history.back() - just close the modal and update URL appropriately
     onClose();
+    
+    // Remove officer from URL but keep board if present
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.delete('officer');
+    const newSearch = urlParams.toString();
+    const newUrl = `${window.location.pathname}#history${newSearch ? '?' + newSearch : ''}`;
+    window.history.replaceState(boardId ? { board: boardId } : {}, '', newUrl);
   };
 
   if (!isOpen || !officer) return null;

@@ -219,12 +219,14 @@ export default function HistoryPage() {
   return (
     <>
       {/* Video Splash Screen - only shows first time */}
-      <VideoSplashScreen
-        isVisible={showSplash}
-        onComplete={handleSplashComplete}
-        videoSrc="/assets/splash/isab-intro.mp4"
-        loadingProgress={splashProgress}
-      />
+      {showSplash && (
+        <VideoSplashScreen
+          isVisible={showSplash}
+          onComplete={handleSplashComplete}
+          videoSrc="/assets/splash/isab-intro.mp4"
+          loadingProgress={splashProgress}
+        />
+      )}
 
       {/* Main History Content */}
       <div className={`w-full transition-all duration-1000 ease-out ${
@@ -314,13 +316,13 @@ export default function HistoryPage() {
                 )}
 
                 <Card className="shadow-card-hover border-border bg-card mb-16">
-                  <CardContent className="p-12">
+                  <CardContent className="p-8 sm:p-12">
                     <div className="prose prose-lg max-w-none">
                       <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
                         <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
                         Foundation
                       </h2>
-                      <p className="text-muted-foreground mb-8 leading-relaxed">
+                      <p className="text-muted-foreground mb-0 leading-relaxed">
                         The International Student Advisory Board (ISAB) at UNT was founded to amplify the voices 
                         of international students, ensuring their concerns and needs are heard and addressed by 
                         the university administration. Officially inaugurated on January 30, 2024, ISAB started as a small 

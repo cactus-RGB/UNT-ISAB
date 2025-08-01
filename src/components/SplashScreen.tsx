@@ -20,6 +20,25 @@ export default function VideoSplashScreen({
   const [phase, setPhase] = useState<'loading' | 'playing' | 'ended'>('loading');
   const [showNextButton, setShowNextButton] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [timeElapsed, setTimeElapsed] = useState(0);
+
+  // Timer to ensure button shows regardless of video state
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const timer = setInterval(() => {
+      setTimeElapsed(prev => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isVisible]);
+
+  // Show button after minimum time has elapsed
+  useEffect(() => {
+    if (timeElapsed >= 3) {
+      setShowNextButton(true);
+    }
+  }, [timeElapsed]);
 
   // Handle video loading
   useEffect(() => {
@@ -35,11 +54,13 @@ export default function VideoSplashScreen({
       video.play().catch(error => {
         console.error('[Splash]: Error playing video:', error);
         setShowFallback(true);
+        // Ensure button shows if video fails
+        setTimeout(() => setShowNextButton(true), 1000);
       });
     };
 
     const handleEnded = () => {
-      console.log('[Splash]: Video ended, showing Next button');
+      console.log('[Splash]: Video ended, ensuring Next button is visible');
       setPhase('ended');
       setShowNextButton(true);
     };
@@ -47,6 +68,8 @@ export default function VideoSplashScreen({
     const handleError = (error: Event) => {
       console.error('[Splash]: Video load error:', error);
       setShowFallback(true);
+      // Immediately show button if video fails
+      setShowNextButton(true);
     };
 
     const handleLoadStart = () => {
@@ -59,15 +82,20 @@ export default function VideoSplashScreen({
     video.addEventListener('error', handleError);
     video.addEventListener('loadstart', handleLoadStart);
 
-    // Fallback timeout - show fallback if video takes too long to load
+    // Fallback timer - show fallback if video takes too long to load
     const fallbackTimer = setTimeout(() => {
       if (!videoLoaded) {
         console.log('[Splash]: Video taking too long, showing fallback');
         setShowFallback(true);
-        // Show next button after a delay for fallback
-        setTimeout(() => setShowNextButton(true), 3000);
+        setShowNextButton(true);
       }
-    }, 2000);
+    }, 3000);
+
+    // Emergency button timer - ensure button always appears
+    const emergencyButtonTimer = setTimeout(() => {
+      console.log('[Splash]: Emergency button activation');
+      setShowNextButton(true);
+    }, 5000);
 
     return () => {
       video.removeEventListener('canplay', handleCanPlay);
@@ -75,11 +103,14 @@ export default function VideoSplashScreen({
       video.removeEventListener('error', handleError);
       video.removeEventListener('loadstart', handleLoadStart);
       clearTimeout(fallbackTimer);
+      clearTimeout(emergencyButtonTimer);
     };
   }, [isVisible, videoLoaded]);
 
   // Handle next button click with smooth transition
   const handleNext = () => {
+    if (isTransitioning) return; // Prevent double-clicks
+    
     setIsTransitioning(true);
     
     // Start the transition animation
@@ -142,7 +173,7 @@ export default function VideoSplashScreen({
               Celebrating Our Legacy of Leadership
             </p>
 
-            {/* Loading Animation */}
+            {/* Loading Animation - only show if button isn't visible yet */}
             {!showNextButton && (
               <div className={`flex items-center justify-center space-x-2 transition-all duration-700 delay-300 ${
                 isTransitioning ? 'transform translate-y-4 opacity-0' : 'transform translate-y-0 opacity-100'
@@ -153,7 +184,7 @@ export default function VideoSplashScreen({
                   <div className="w-3 h-3 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                 </div>
                 <span className="text-green-600 font-medium ml-4">
-                  {showFallback ? 'Preparing history...' : `Loading video... ${Math.round(loadingProgress)}%`}
+                  {showFallback ? 'Preparing history...' : `Loading... ${Math.min(timeElapsed * 20, 100)}%`}
                 </span>
               </div>
             )}
@@ -161,36 +192,35 @@ export default function VideoSplashScreen({
         </div>
       )}
 
-      {/* Next Button (appears during video playback) - Always visible after 3 seconds */}
-      {videoLoaded && phase === 'playing' && !isTransitioning && (
+      {/* Skip Button - Always visible during video playback after 3 seconds */}
+      {videoLoaded && phase === 'playing' && timeElapsed >= 3 && !isTransitioning && (
         <button
           onClick={handleNext}
-          className="fixed top-6 right-6 bg-black/50 hover:bg-black/70 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 opacity-0 animate-fade-in z-10"
-          style={{ animationDelay: '3s', animationFillMode: 'forwards' }}
+          className="fixed top-6 right-6 bg-black/60 hover:bg-black/80 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 z-20 backdrop-blur-sm"
         >
-          Next →
+          Skip →
         </button>
       )}
 
-      {/* Dynamic Next Button (appears when video ends) */}
+      {/* Main Next Button - Stable and always appears */}
       {showNextButton && (
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20">
           <div className={`text-center transition-all duration-700 ${
             isTransitioning ? 'transform scale-95 opacity-0' : 'transform scale-100 opacity-100'
           }`}>
             <div className="mb-4">
-              <p className="text-white/90 text-sm font-medium animate-pulse">
-                Explore our history and legacy
+              <p className="text-white/90 text-sm font-medium">
+                {phase === 'ended' ? 'Explore our history and legacy' : 'Continue to our story'}
               </p>
             </div>
             <button
               onClick={handleNext}
               disabled={isTransitioning}
-              className={`group bg-white/90 hover:bg-white text-gray-900 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-2xl backdrop-blur-sm border-2 border-white/50 ${
+              className={`group bg-white/95 hover:bg-white text-gray-900 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-2xl backdrop-blur-sm border-2 border-white/50 ${
                 isTransitioning ? 'opacity-50 cursor-not-allowed' : 'opacity-100'
               }`}
             >
-              <span>{isTransitioning ? 'Loading...' : 'Next'}</span>
+              <span>{isTransitioning ? 'Loading...' : 'Continue'}</span>
               <ChevronRight className={`h-6 w-6 transition-all duration-300 ${
                 isTransitioning ? 'translate-x-2' : 'translate-x-0 group-hover:translate-x-1'
               }`} />
@@ -200,13 +230,12 @@ export default function VideoSplashScreen({
       )}
 
       {/* Click to Skip (mobile-friendly) - only during video playback */}
-      {videoLoaded && phase === 'playing' && !isTransitioning && (
+      {videoLoaded && phase === 'playing' && timeElapsed >= 4 && !showNextButton && !isTransitioning && (
         <div 
-          className="absolute inset-0 cursor-pointer opacity-0 animate-fade-in"
+          className="absolute inset-0 cursor-pointer z-10"
           onClick={handleNext}
-          style={{ animationDelay: '4s', animationFillMode: 'forwards' }}
         >
-          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-lg text-sm">
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm">
             Tap to continue
           </div>
         </div>
@@ -214,7 +243,7 @@ export default function VideoSplashScreen({
 
       {/* Transition Overlay */}
       {isTransitioning && (
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-white animate-fade-in-fast pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-white animate-fade-in-fast pointer-events-none z-30" />
       )}
     </div>
   );

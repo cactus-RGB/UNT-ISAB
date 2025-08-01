@@ -173,8 +173,8 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
         zIndex: 9999
       }}
     >
-      {/* Scrollable container - no longer prevents page scroll */}
-      <div className="min-h-full flex items-start justify-center p-4 py-8">
+      {/* Scrollable container - positions modal near current scroll position */}
+      <div className="min-h-full flex items-center justify-center p-4 py-8">
         <div 
           className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full transform transition-all duration-300 scale-100 relative my-8"
           onClick={(e) => e.stopPropagation()}

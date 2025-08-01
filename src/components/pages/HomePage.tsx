@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Users, ExternalLink, ChevronRight, RefreshCw, AlertCircle } from 'lucide-react';
@@ -25,14 +25,63 @@ export default function HomePage({ onPageChange }: HomePageProps) {
   const [selectedOfficer, setSelectedOfficer] = useState<Officer | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Parse URL parameters on mount to handle direct links to officer modals
+  useEffect(() => {
+    const parseUrlAndSetState = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const officerParam = urlParams.get('officer');
+      
+      if (officerParam && officers.length > 0) {
+        const foundOfficer = officers.find(officer => 
+          officer.name === officerParam
+        );
+        
+        if (foundOfficer) {
+          setSelectedOfficer(foundOfficer);
+          setIsModalOpen(true);
+        }
+      }
+    };
+
+    // Parse URL when officers are loaded
+    if (officers.length > 0) {
+      parseUrlAndSetState();
+    }
+
+    // Handle browser back/forward navigation
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state) {
+        if (event.state.modal === 'officer') {
+          // Modal state handled by modal component
+          return;
+        }
+      } else {
+        // No state means we're back to the main home view
+        setSelectedOfficer(null);
+        setIsModalOpen(false);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [officers]);
+
   const openOfficerModal = (officer: Officer) => {
     setSelectedOfficer(officer);
     setIsModalOpen(true);
+    
+    // Browser history is handled by the modal component
   };
 
   const closeOfficerModal = () => {
     setIsModalOpen(false);
     setSelectedOfficer(null);
+    
+    // Remove officer from URL
+    const url = new URL(window.location.href);
+    url.searchParams.delete('officer');
+    const newUrl = url.pathname + (url.hash || '');
+    window.history.replaceState({}, '', newUrl);
   };
 
   return (
@@ -92,7 +141,7 @@ export default function HomePage({ onPageChange }: HomePageProps) {
               <BookOpen className="mr-2 sm:mr-3 text-primary h-6 w-6 sm:h-8 sm:w-8" /> About ISAB
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pb-6">
             <p className="text-base sm:text-lg text-muted-foreground leading-relaxed whitespace-pre-line">
               {siteContent.aboutText}
             </p>
@@ -140,7 +189,7 @@ export default function HomePage({ onPageChange }: HomePageProps) {
                 const IconComponent = link.icon;
                 return (
                   <Card key={index} className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card hover:-translate-y-2">
-                    <CardContent className="p-8">
+                    <CardContent className="p-6 sm:p-8">
                       <div className="flex items-center mb-4">
                         <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
                           <IconComponent className="h-6 w-6" />
