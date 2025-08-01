@@ -1,234 +1,176 @@
+// app/page.tsx
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { BookOpen, Users, ExternalLink, ChevronRight, RefreshCw, AlertCircle } from 'lucide-react';
+import Navigation from '@/components/Navigation';
+import HomePage from '@/components/pages/HomePage';
+import HistoryPage from '@/components/pages/HistoryPage';
+import GalleryPage from '@/components/pages/GalleryPage';
+import EventsPage from '@/components/pages/EventsPage';
 import { useGoogleDriveCMS } from '@/hooks/useGoogleDriveCMS';
-import OfficerCard from '@/components/officers/OfficerCard';
-import OfficerModal from '@/components/officers/OfficerModal';
-import type { Officer } from '@/hooks/useGoogleDriveCMS';
 
-interface HomePageProps {
-  onPageChange: (page: string) => void;
-}
-
-export default function HomePage({ onPageChange }: HomePageProps) {
-  const { 
-    officers, 
-    importantLinks, 
-    siteContent,
-    loading, 
-    error
-  } = useGoogleDriveCMS();
+export default function ISABWebsite() {
+  // Navigation state
+  const [currentPage, setCurrentPage] = useState('home');
+  const [date, setDate] = useState<Date>(new Date());
+  const [isPageTransitioning, setIsPageTransitioning] = useState(false);
   
-  const [selectedOfficer, setSelectedOfficer] = useState<Officer | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Enhanced CMS hook with caching - only destructure what we use
+  const {
+    loading,
+    initialLoading = loading,
+    backgroundRefreshing = false,
+    lastUpdated,
+    isFromCache = false,
+    changeDetected = [],
+    cacheStatus = 'loading',
+    refresh,
+    clearCache
+  } = useGoogleDriveCMS();
 
-  // Parse URL parameters on mount to handle direct links to officer modals
+  // URL navigation logic
   useEffect(() => {
-    const parseUrlAndSetState = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const officerParam = urlParams.get('officer');
-      
-      if (officerParam && officers.length > 0) {
-        const foundOfficer = officers.find(officer => 
-          officer.name === officerParam
-        );
-        
-        if (foundOfficer) {
-          setSelectedOfficer(foundOfficer);
-          setIsModalOpen(true);
+    const handleInitialLoad = () => {
+      if (typeof window !== 'undefined') {
+        const hash = window.location.hash.slice(1);
+        if (hash && ['home', 'history', 'gallery', 'events'].includes(hash)) {
+          setCurrentPage(hash);
         }
       }
     };
 
-    // Parse URL when officers are loaded
-    if (officers.length > 0) {
-      parseUrlAndSetState();
-    }
+    handleInitialLoad();
 
-    // Handle browser back/forward navigation
     const handlePopState = (event: PopStateEvent) => {
-      if (event.state) {
-        if (event.state.modal === 'officer') {
-          // Modal state handled by modal component
-          return;
-        }
-      } else {
-        // No state means we're back to the main home view
-        setSelectedOfficer(null);
-        setIsModalOpen(false);
+      const page = event.state?.page || 'home';
+      setCurrentPage(page);
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     };
 
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [officers]);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('popstate', handlePopState);
+      return () => window.removeEventListener('popstate', handlePopState);
+    }
+  }, []);
 
-  const openOfficerModal = (officer: Officer) => {
-    setSelectedOfficer(officer);
-    setIsModalOpen(true);
+  // Page change handler
+  const handlePageChange = (page: string) => {
+    if (page === currentPage) return;
     
-    // Browser history is handled by the modal component
+    setIsPageTransitioning(true);
+    
+    if (typeof window !== 'undefined') {
+      const newUrl = page === 'home' ? '/' : `/#${page}`;
+      window.history.pushState({ page }, '', newUrl);
+    }
+    
+    setTimeout(() => {
+      setCurrentPage(page);
+      setIsPageTransitioning(false);
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 200);
   };
 
-  const closeOfficerModal = () => {
-    setIsModalOpen(false);
-    setSelectedOfficer(null);
-    
-    // Remove officer from URL
-    const url = new URL(window.location.href);
-    url.searchParams.delete('officer');
-    const newUrl = url.pathname + (url.hash || '');
-    window.history.replaceState({}, '', newUrl);
+  // Date selection handler
+  const handleDateSelect = (newDate: Date | undefined) => {
+    if (newDate) {
+      setDate(newDate);
+    }
   };
 
   return (
-    <>
-      <header className="bg-primary-gradient text-primary-foreground py-12 sm:py-16 md:py-20 lg:py-24 relative overflow-hidden w-full">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="container mx-auto px-4 sm:px-6 relative z-10 w-full">
-          <div className="max-w-6xl">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight">
-              {siteContent.heroTitle}
-            </h1>
-            <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 opacity-90">
-              {siteContent.heroSubtitle}
-            </p>
-            <Button 
-              size="lg"
-              className="bg-white text-green-700 hover:bg-gray-50 shadow-lg border-2 border-green-600 font-semibold w-full sm:w-auto"
-              onClick={() => onPageChange('history')}
-            >
-              Learn More <ChevronRight className="ml-2 h-5 w-5" />
-            </Button>
+    <div className="min-h-screen bg-background w-full">
+      
+      {/* Background refresh indicator */}
+      {backgroundRefreshing && !initialLoading && (
+        <div className="fixed top-20 right-4 z-40 bg-primary/90 text-white px-3 py-2 rounded-lg text-sm shadow-lg animate-pulse">
+          <div className="flex items-center space-x-2">
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <span>Syncing latest content...</span>
           </div>
         </div>
-      </header>
+      )}
 
-      <section className="py-12 sm:py-16 md:py-20 container mx-auto px-4 sm:px-6 w-full">
-        {/* Loading/Error States - Simplified */}
-        {loading && (
-          <Card className="mb-12 border-primary bg-primary/5">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-3">
-                <RefreshCw className="h-5 w-5 animate-spin text-primary" />
-                <p className="font-medium text-primary">Loading content...</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      {/* Change detection indicator */}
+      {Array.isArray(changeDetected) && changeDetected.length > 0 && !backgroundRefreshing && (
+        <div className="fixed top-20 right-4 z-40 bg-green-600 text-white px-3 py-2 rounded-lg text-sm shadow-lg">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse" />
+            <span>Content updated</span>
+          </div>
+        </div>
+      )}
 
-        {error && (
-          <Card className="mb-12 border-destructive bg-destructive/5">
-            <CardContent className="p-6">
-              <div className="flex items-start space-x-3">
-                <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-destructive mb-1">Content Load Error</h3>
-                  <p className="text-sm text-muted-foreground">{error}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Using fallback data.</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+      {/* Navigation */}
+      <Navigation currentPage={currentPage} onPageChange={handlePageChange} />
+      
+      {/* Page Content with Transitions */}
+      <div className={`transition-all duration-200 ${
+        isPageTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
+      }`}>
+        {currentPage === 'home' && <HomePage onPageChange={handlePageChange} />}
+        {currentPage === 'history' && <HistoryPage />}
+        {currentPage === 'gallery' && <GalleryPage />}
+        {currentPage === 'events' && <EventsPage date={date} onDateSelect={handleDateSelect} />}
+      </div>
 
-        <Card className="mb-12 sm:mb-16 shadow-card-hover border-border bg-card">
-          <CardHeader className="pb-4 sm:pb-6">
-            <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold flex items-center text-foreground">
-              <BookOpen className="mr-2 sm:mr-3 text-primary h-6 w-6 sm:h-8 sm:w-8" /> About ISAB
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-base sm:text-lg text-muted-foreground leading-relaxed whitespace-pre-line">
-              {siteContent.aboutText}
-            </p>
-          </CardContent>
-        </Card>
-
-        <div className="mb-12 sm:mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 flex items-center text-foreground">
-            <Users className="mr-2 sm:mr-3 text-primary h-6 w-6 sm:h-8 sm:w-8" /> Current Officers
-          </h2>
-          <p className="text-muted-foreground mb-8 sm:mb-12 text-sm sm:text-base md:text-lg">
-            Click on any officer card to view their detailed information including major, home country, and personal quote
-          </p>
+      {/* Development Tools */}
+      {typeof window !== 'undefined' && process.env.NODE_ENV === 'development' && (
+        <div className="fixed bottom-4 right-4 z-50 bg-black/90 text-white p-3 rounded-lg text-xs space-y-2 border border-gray-600">
+          <div className="font-bold text-green-400 border-b border-gray-600 pb-1 mb-2">
+            🚀 ISAB Dev Tools
+          </div>
           
-          {loading ? (
-            <div className="text-center py-8">
-              <RefreshCw className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-              <p className="text-muted-foreground">Loading officers...</p>
-            </div>
-          ) : officers.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-              {officers.map((officer, index) => (
-                <OfficerCard
-                  key={index}
-                  officer={officer}
-                  onClick={openOfficerModal}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <Users className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-              <p className="text-muted-foreground">No officers found.</p>
-            </div>
-          )}
+          <div className="space-y-1">
+            <div>Cache Status: <span className={`font-bold ${
+              cacheStatus === 'cache-hit' ? 'text-blue-400' :
+              cacheStatus === 'fresh' ? 'text-green-400' :
+              cacheStatus === 'loading' ? 'text-yellow-400' :
+              'text-red-400'
+            }`}>{cacheStatus}</span></div>
+            
+            <div>Data Source: <span className={`font-bold ${
+              isFromCache ? 'text-blue-400' : 'text-yellow-400'
+            }`}>
+              {isFromCache ? 'Cache Hit ⚡' : 'Fresh Load'}
+            </span></div>
+            
+            {lastUpdated && (
+              <div>Updated: <span className="text-gray-300">
+                {lastUpdated.toLocaleTimeString()}
+              </span></div>
+            )}
+            
+            {backgroundRefreshing && (
+              <div className="text-orange-400 animate-pulse">⟳ Refreshing...</div>
+            )}
+          </div>
+          
+          <div className="flex space-x-1 pt-2 border-t border-gray-600">
+            <button 
+              onClick={() => {
+                if (refresh) refresh();
+              }} 
+              className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs transition-colors"
+              disabled={backgroundRefreshing}
+            >
+              🔄 Refresh
+            </button>
+            <button 
+              onClick={() => {
+                if (clearCache) clearCache();
+              }} 
+              className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs transition-colors"
+            >
+              🗑️ Clear
+            </button>
+          </div>
         </div>
-
-        <div className="mb-12 sm:mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8 sm:mb-12 flex items-center text-foreground">
-            <ExternalLink className="mr-2 sm:mr-3 text-primary h-6 w-6 sm:h-8 sm:w-8" /> Important Links
-          </h2>
-          {importantLinks.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-              {importantLinks.map((link, index) => {
-                const IconComponent = link.icon;
-                return (
-                  <Card key={index} className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card hover:-translate-y-2">
-                    <CardContent className="p-8">
-                      <div className="flex items-center mb-4">
-                        <div className="p-3 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                          <IconComponent className="h-6 w-6" />
-                        </div>
-                        <h3 className="text-xl font-bold ml-4 text-foreground">{link.title}</h3>
-                      </div>
-                      <p className="text-muted-foreground mb-6">{link.description}</p>
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={() => {
-                          if (link.url.startsWith('mailto:')) {
-                            window.location.href = link.url;
-                          } else {
-                            window.open(link.url, '_blank', 'noopener,noreferrer');
-                          }
-                        }}
-                      >
-                        Visit <ExternalLink className="ml-2 h-4 w-4" />
-                      </Button>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <ExternalLink className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-              <p className="text-muted-foreground">No links found.</p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <OfficerModal 
-        officer={selectedOfficer}
-        isOpen={isModalOpen}
-        onClose={closeOfficerModal}
-      />
-    </>
+      )}
+    </div>
   );
 }

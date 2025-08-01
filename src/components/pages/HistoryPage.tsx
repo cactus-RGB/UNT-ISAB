@@ -212,7 +212,7 @@ export default function HistoryPage() {
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOfficerModalOpen, selectedBoard]);
+  }, [isOfficerModalOpen, selectedBoard, closeOfficerModal]);
 
   const currentBoard = selectedBoard ? currentSemesterBoards.find(board => board.id === selectedBoard) : null;
 
