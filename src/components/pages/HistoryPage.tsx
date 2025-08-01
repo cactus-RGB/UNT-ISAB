@@ -231,14 +231,14 @@ export default function HistoryPage() {
                   </Card>
                 )}
 
-                <Card className="shadow-card-hover border-border bg-card mb-16">
+                <div className="shadow-card-hover border-border bg-gradient-to-br from-green-50 via-white to-green-100 dark:from-green-950/20 dark:via-gray-900 dark:to-green-900/30 border-2 border-green-200/50 dark:border-green-800/30 mb-16 rounded-2xl">
                   <CardContent className="p-12">
                     <div className="prose prose-lg max-w-none">
                       <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center">
                         <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
                         Foundation
                       </h2>
-                      <p className="text-muted-foreground mb-8 leading-relaxed">
+                      <p className="text-foreground/80 mb-8 leading-relaxed">
                         The International Student Advisory Board (ISAB) at UNT was founded to amplify the voices 
                         of international students, ensuring their concerns and needs are heard and addressed by 
                         the university administration. Officially inaugurated on January 30, 2024, ISAB started as a small 
@@ -251,13 +251,13 @@ export default function HistoryPage() {
                         <div className="w-2 h-8 bg-primary rounded-full mr-4"></div>
                         Mission
                       </h2>
-                      <p className="text-muted-foreground mb-8 leading-relaxed">
+                      <p className="text-foreground/80 mb-8 leading-relaxed">
                         Our mission is to serve as the voice for international students at UNT, advocating 
                         for their needs and fostering a welcoming community that celebrates diversity.
                       </p>
                     </div>
                   </CardContent>
-                </Card>
+                </div>
 
                 <div className="mb-16">
                   <h2 className="text-4xl font-bold mb-4 flex items-center text-foreground">
@@ -299,7 +299,6 @@ export default function HistoryPage() {
                           <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
                             {board.title}
                           </h3>
-                          <p className="text-primary font-medium text-sm mb-3">{board.period}</p>
                           <p className="text-muted-foreground leading-relaxed text-sm">{board.description}</p>
                           
                           <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -334,10 +333,10 @@ export default function HistoryPage() {
                 </div>
               </div>
 
-              {/* Colorful Description Box */}
-              <div className="mb-8 p-8 rounded-2xl bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30 border-2 border-gradient-to-r from-blue-200 via-purple-200 to-pink-200 dark:from-blue-800/50 dark:via-purple-800/50 dark:to-pink-800/50 shadow-lg">
+              {/* Colorful Description Box - Green Theme */}
+              <div className="mb-8 p-8 rounded-2xl bg-gradient-to-br from-green-50 via-white to-green-100 dark:from-green-950/20 dark:via-gray-900 dark:to-green-900/30 border-2 border-green-200/50 dark:border-green-800/30 shadow-lg">
                 <div className="flex items-center mb-4">
-                  <div className="w-1 h-8 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 rounded-full mr-4"></div>
+                  <div className="w-1 h-8 bg-gradient-to-b from-green-500 to-green-600 rounded-full mr-4"></div>
                   <h3 className="text-xl font-bold text-foreground">About This Board</h3>
                 </div>
                 <p className="text-foreground/80 leading-relaxed text-lg">{currentBoard.description}</p>

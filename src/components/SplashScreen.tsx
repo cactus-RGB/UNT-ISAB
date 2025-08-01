@@ -91,7 +91,7 @@ export default function VideoSplashScreen({
   if (!isVisible) return null;
 
   return (
-    <div className={`fixed inset-0 z-50 bg-black transition-all duration-800 ease-in-out ${
+    <div className={`fixed inset-0 z-50 bg-black transition-all duration-800 ease-in-out overflow-hidden ${
       isTransitioning ? 'opacity-0 scale-110' : 'opacity-100 scale-100'
     }`}>
       {/* Video Player - Full Screen at Top */}
@@ -161,14 +161,14 @@ export default function VideoSplashScreen({
         </div>
       )}
 
-      {/* Skip Button (appears during video playback) */}
+      {/* Next Button (appears during video playback) - Always visible after 3 seconds */}
       {videoLoaded && phase === 'playing' && !isTransitioning && (
         <button
           onClick={handleNext}
           className="fixed top-6 right-6 bg-black/50 hover:bg-black/70 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 opacity-0 animate-fade-in z-10"
           style={{ animationDelay: '3s', animationFillMode: 'forwards' }}
         >
-          Skip →
+          Next →
         </button>
       )}
 
@@ -207,7 +207,7 @@ export default function VideoSplashScreen({
           style={{ animationDelay: '4s', animationFillMode: 'forwards' }}
         >
           <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-lg text-sm">
-            Tap to skip
+            Tap to continue
           </div>
         </div>
       )}
