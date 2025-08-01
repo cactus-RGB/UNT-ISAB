@@ -16,7 +16,6 @@ export default function VideoSplashScreen({
 }: VideoSplashScreenProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
-  const [videoEnded, setVideoEnded] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
   const [phase, setPhase] = useState<'loading' | 'playing' | 'ended'>('loading');
   const [showNextButton, setShowNextButton] = useState(false);
@@ -41,7 +40,6 @@ export default function VideoSplashScreen({
 
     const handleEnded = () => {
       console.log('[Splash]: Video ended, showing Next button');
-      setVideoEnded(true);
       setPhase('ended');
       setShowNextButton(true);
     };
