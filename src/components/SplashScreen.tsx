@@ -91,25 +91,27 @@ export default function VideoSplashScreen({
   if (!isVisible) return null;
 
   return (
-    <div className={`fixed inset-0 z-50 bg-black flex items-center justify-center transition-all duration-800 ease-in-out ${
+    <div className={`fixed inset-0 z-50 bg-black transition-all duration-800 ease-in-out ${
       isTransitioning ? 'opacity-0 scale-110' : 'opacity-100 scale-100'
     }`}>
-      {/* Video Player */}
+      {/* Video Player - Full Screen at Top */}
       {!showFallback && (
-        <video
-          ref={videoRef}
-          className={`max-w-full max-h-full object-contain transition-all duration-500 ${
-            videoLoaded ? 'opacity-100' : 'opacity-0'
-          } ${isTransitioning ? 'scale-110 blur-sm' : 'scale-100'}`}
-          preload="auto"
-          playsInline
-          muted // Required for autoplay on most browsers
-          disablePictureInPicture
-          controlsList="nodownload nofullscreen noremoteplayback"
-        >
-          <source src={videoSrc} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <div className="absolute inset-0 flex items-start justify-center">
+          <video
+            ref={videoRef}
+            className={`w-full h-auto max-h-full object-contain transition-all duration-500 ${
+              videoLoaded ? 'opacity-100' : 'opacity-0'
+            } ${isTransitioning ? 'scale-110 blur-sm' : 'scale-100'}`}
+            preload="auto"
+            playsInline
+            muted // Required for autoplay on most browsers
+            disablePictureInPicture
+            controlsList="nodownload nofullscreen noremoteplayback"
+          >
+            <source src={videoSrc} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
       )}
 
       {/* Loading State / Fallback */}
@@ -163,39 +165,36 @@ export default function VideoSplashScreen({
       {videoLoaded && phase === 'playing' && !isTransitioning && (
         <button
           onClick={handleNext}
-          className="absolute top-6 right-6 bg-black/50 hover:bg-black/70 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 opacity-0 animate-fade-in"
+          className="fixed top-6 right-6 bg-black/50 hover:bg-black/70 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 opacity-0 animate-fade-in z-10"
           style={{ animationDelay: '3s', animationFillMode: 'forwards' }}
         >
           Skip →
         </button>
       )}
 
-      {/* Next Button (appears when video ends or fallback is ready) */}
+      {/* Dynamic Next Button (appears when video ends) */}
       {showNextButton && (
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-10">
           <div className={`text-center transition-all duration-700 ${
             isTransitioning ? 'transform scale-95 opacity-0' : 'transform scale-100 opacity-100'
           }`}>
-            <div className="bg-black/70 backdrop-blur-sm rounded-2xl p-8 max-w-sm mx-4 border border-white/10">
-              <h3 className="text-white text-xl font-bold mb-4">
-                Ready to explore our history?
-              </h3>
-              <p className="text-white/80 mb-6 text-sm">
-                Discover the journey of ISAB and the leaders who shaped our community.
+            <div className="mb-4">
+              <p className="text-white/90 text-sm font-medium animate-pulse">
+                Explore our history and legacy
               </p>
-              <button
-                onClick={handleNext}
-                disabled={isTransitioning}
-                className={`bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2 w-full ${
-                  isTransitioning ? 'opacity-50 cursor-not-allowed' : 'opacity-100'
-                }`}
-              >
-                <span>{isTransitioning ? 'Loading History...' : 'Continue to History'}</span>
-                <ChevronRight className={`h-5 w-5 transition-transform duration-300 ${
-                  isTransitioning ? 'translate-x-2' : 'translate-x-0'
-                }`} />
-              </button>
             </div>
+            <button
+              onClick={handleNext}
+              disabled={isTransitioning}
+              className={`group bg-white/90 hover:bg-white text-gray-900 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-2xl backdrop-blur-sm border-2 border-white/50 ${
+                isTransitioning ? 'opacity-50 cursor-not-allowed' : 'opacity-100'
+              }`}
+            >
+              <span>{isTransitioning ? 'Loading...' : 'Next'}</span>
+              <ChevronRight className={`h-6 w-6 transition-all duration-300 ${
+                isTransitioning ? 'translate-x-2' : 'translate-x-0 group-hover:translate-x-1'
+              }`} />
+            </button>
           </div>
         </div>
       )}

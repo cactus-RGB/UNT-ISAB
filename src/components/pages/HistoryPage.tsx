@@ -1,19 +1,29 @@
-// File: src/components/pages/HistoryPage.tsx
 "use client"
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Users, GraduationCap, Globe } from 'lucide-react';
+import { ChevronRight, Users, RefreshCw, AlertCircle } from 'lucide-react';
+import { useGoogleDriveCMS } from '@/hooks/useGoogleDriveCMS';
 import { semesterBoards, masterOfficerProfiles } from '@/data/history';
 import type { OfficerProfile } from '@/data/history';
 import HistoryOfficerModal from '@/components/history/HistoryOfficerModal';
+import HistoryOfficerCard from '@/components/history/HistoryOfficerCard';
 import VideoSplashScreen from '@/components/SplashScreen';
 
 const HISTORY_SPLASH_VIEWED_KEY = 'isab-history-splash-viewed';
 
 export default function HistoryPage() {
+  const { 
+    loading, 
+    error
+  } = useGoogleDriveCMS();
+
+  // Use hardcoded data for now since CMS history integration is not complete
+  const currentSemesterBoards = semesterBoards;
+  const currentMasterOfficerProfiles = masterOfficerProfiles;
+
   const [selectedBoard, setSelectedBoard] = useState<string | null>(null);
   const [selectedOfficer, setSelectedOfficer] = useState<(OfficerProfile & { currentRole?: string }) | null>(null);
   const [isOfficerModalOpen, setIsOfficerModalOpen] = useState(false);
@@ -22,6 +32,10 @@ export default function HistoryPage() {
   const [showSplash, setShowSplash] = useState(false);
   const [splashProgress, setSplashProgress] = useState(0);
   const [isEntering, setIsEntering] = useState(false);
+  
+  // Cycling header images
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const headerImages = currentSemesterBoards.map(board => board.coverImage);
 
   // Check if splash should be shown on mount
   useEffect(() => {
@@ -62,6 +76,19 @@ export default function HistoryPage() {
     }, 1000);
   };
 
+  // Cycle through header images every 3 seconds
+  useEffect(() => {
+    if (headerImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentImageIndex((prevIndex) => 
+          (prevIndex + 1) % headerImages.length
+        );
+      }, 3000); // Change every 3 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [headerImages.length]);
+
   const openBoardView = (boardId: string) => {
     setSelectedBoard(boardId);
     setTimeout(() => {
@@ -74,14 +101,14 @@ export default function HistoryPage() {
   };
 
   const openOfficerModal = (officerId: string, role: string) => {
-    console.log('Opening modal for:', officerId, role); // Debug log
-    const profile = masterOfficerProfiles[officerId];
+    console.log('Opening modal for:', officerId, role);
+    const profile = currentMasterOfficerProfiles[officerId];
     if (profile) {
-      console.log('Found profile:', profile); // Debug log
+      console.log('Found profile:', profile);
       setSelectedOfficer({ ...profile, currentRole: role });
       setIsOfficerModalOpen(true);
     } else {
-      console.log('No profile found for:', officerId); // Debug log
+      console.log('No profile found for:', officerId);
     }
   };
 
@@ -105,7 +132,7 @@ export default function HistoryPage() {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOfficerModalOpen, selectedBoard]);
 
-  const currentBoard = selectedBoard ? semesterBoards.find(board => board.id === selectedBoard) : null;
+  const currentBoard = selectedBoard ? currentSemesterBoards.find(board => board.id === selectedBoard) : null;
 
   return (
     <>
@@ -123,18 +150,29 @@ export default function HistoryPage() {
       }`}>
         {/* Main history view */}
         {!selectedBoard && (
-          <>
+          <div className="w-full">
+            {/* Cycling Header Images */}
             <div className={`relative h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[40rem] 2xl:h-[48rem] overflow-hidden ${
               isEntering ? 'animate-scale-in' : ''
             }`}>
-              <Image
-                src="/assets/banners/history-banner.jpg"
-                alt="ISAB History"
-                fill
-                style={{ objectFit: 'cover' }}
-                sizes="100vw"
-                className="w-full h-full"
-              />
+              {headerImages.map((image, index) => (
+                <div
+                  key={index}
+                  className={`absolute inset-0 transition-opacity duration-1000 ${
+                    index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  <Image
+                    src={image}
+                    alt={`ISAB History - ${currentSemesterBoards[index]?.title || 'Board'}`}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    sizes="100vw"
+                    className="w-full h-full"
+                    priority={index === 0}
+                  />
+                </div>
+              ))}
               <div className="absolute inset-0 bg-black/40"></div>
               <div className={`absolute inset-0 flex items-center justify-center ${
                 isEntering ? 'animate-fade-in-delayed' : ''
@@ -142,6 +180,22 @@ export default function HistoryPage() {
                 <div className="text-center text-white">
                   <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">Our Legacy</h1>
                   <p className="text-lg sm:text-xl md:text-2xl opacity-90">Celebrating ISAB&apos;s Journey of Growth and Impact</p>
+                  
+                  {/* Image cycling indicators */}
+                  <div className="flex justify-center space-x-2 mt-6">
+                    {headerImages.map((_, index) => (
+                      <button
+                        key={index}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          index === currentImageIndex 
+                            ? 'bg-white scale-125' 
+                            : 'bg-white/50 hover:bg-white/80'
+                        }`}
+                        onClick={() => setCurrentImageIndex(index)}
+                        aria-label={`View ${currentSemesterBoards[index]?.title || 'board'} image`}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -150,6 +204,33 @@ export default function HistoryPage() {
               isEntering ? 'animate-slide-up-delayed' : ''
             }`}>
               <div className="max-w-4xl mx-auto">
+                {/* CMS Status */}
+                {error && (
+                  <Card className="mb-8 border-destructive bg-destructive/5">
+                    <CardContent className="p-6">
+                      <div className="flex items-start space-x-3">
+                        <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
+                        <div>
+                          <h3 className="font-medium text-destructive mb-1">History Content Error</h3>
+                          <p className="text-sm text-muted-foreground">{error}</p>
+                          <p className="text-sm text-muted-foreground mt-1">Using fallback data.</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {loading && (
+                  <Card className="mb-8 border-primary bg-primary/5">
+                    <CardContent className="p-6">
+                      <div className="flex items-center space-x-3">
+                        <RefreshCw className="h-5 w-5 animate-spin text-primary" />
+                        <p className="text-primary">Loading history content...</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
                 <Card className="shadow-card-hover border-border bg-card mb-16">
                   <CardContent className="p-12">
                     <div className="prose prose-lg max-w-none">
@@ -179,7 +260,7 @@ export default function HistoryPage() {
                 </Card>
 
                 <div className="mb-16">
-                  <h2 className="text-4xl font-bold mb-4 text-foreground flex items-center">
+                  <h2 className="text-4xl font-bold mb-4 flex items-center text-foreground">
                     <div className="w-2 h-10 bg-primary rounded-full mr-4"></div>
                     Legacy of Leadership
                   </h2>
@@ -188,7 +269,7 @@ export default function HistoryPage() {
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
-                    {semesterBoards.map((board, index) => (
+                    {currentSemesterBoards.map((board, index) => (
                       <Card 
                         key={index} 
                         className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2"
@@ -231,7 +312,7 @@ export default function HistoryPage() {
                 </div>
               </div>
             </div>
-          </>
+          </div>
         )}
 
         {/* Individual semester board view */}
@@ -253,76 +334,42 @@ export default function HistoryPage() {
                 </div>
               </div>
 
-              <Card className="mb-8 shadow-card-hover border-border bg-card">
-                <CardContent className="p-6">
-                  <p className="text-muted-foreground leading-relaxed">{currentBoard.description}</p>
-                </CardContent>
-              </Card>
+              {/* Colorful Description Box */}
+              <div className="mb-8 p-8 rounded-2xl bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30 border-2 border-gradient-to-r from-blue-200 via-purple-200 to-pink-200 dark:from-blue-800/50 dark:via-purple-800/50 dark:to-pink-800/50 shadow-lg">
+                <div className="flex items-center mb-4">
+                  <div className="w-1 h-8 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 rounded-full mr-4"></div>
+                  <h3 className="text-xl font-bold text-foreground">About This Board</h3>
+                </div>
+                <p className="text-foreground/80 leading-relaxed text-lg">{currentBoard.description}</p>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {currentBoard.officers.map((officer, index) => {
-                  const profile = masterOfficerProfiles[officer.id];
+                  const profile = currentMasterOfficerProfiles[officer.id];
                   if (!profile) {
-                    console.log('Missing profile for:', officer.id); // Debug log
+                    console.log('Missing profile for:', officer.id);
                     return null;
                   }
                   
                   return (
-                    <Card 
-                      key={index} 
-                      className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card cursor-pointer hover:-translate-y-1"
-                      onClick={() => openOfficerModal(officer.id, officer.role)}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex flex-col items-center text-center">
-                          <div className="w-20 h-20 rounded-full border-2 border-primary/20 overflow-hidden mb-3">
-                            {profile.hasPhoto && profile.image ? (
-                              <Image
-                                src={profile.image}
-                                alt={`${profile.name} - ${officer.role}`}
-                                width={80}
-                                height={80}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-muted/50 flex items-center justify-center">
-                                <Users className="h-6 w-6 text-primary/60" />
-                              </div>
-                            )}
-                          </div>
-
-                          <h3 className="text-lg font-bold text-foreground mb-1">{profile.name}</h3>
-                          <div className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary rounded-full font-medium text-xs mb-2">
-                            {officer.role}
-                          </div>
-                          
-                          <div className="space-y-1 text-xs text-muted-foreground">
-                            <div className="flex items-center justify-center">
-                              <GraduationCap className="h-3 w-3 mr-1 text-primary" />
-                              <span className="truncate">{profile.major}</span>
-                            </div>
-                            <div className="flex items-center justify-center">
-                              <Globe className="h-3 w-3 mr-1 text-primary" />
-                              <span>{profile.countryFlag} {profile.homeCountry}</span>
-                            </div>
-                          </div>
-
-                          <div className="mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <p className="text-xs text-primary">Click for full bio →</p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <HistoryOfficerCard
+                      key={index}
+                      officer={officer}
+                      profile={profile}
+                      onClick={openOfficerModal}
+                    />
                   );
                 })}
               </div>
 
-              {/* History Officer Modal */}
-              <HistoryOfficerModal
-                officer={selectedOfficer}
-                isOpen={isOfficerModalOpen}
-                onClose={closeOfficerModal}
-              />
+              {/* History Officer Modal - Fixed conditional rendering */}
+              {selectedOfficer && isOfficerModalOpen && (
+                <HistoryOfficerModal
+                  officer={selectedOfficer}
+                  isOpen={isOfficerModalOpen}
+                  onClose={closeOfficerModal}
+                />
+              )}
             </div>
           </div>
         )}
