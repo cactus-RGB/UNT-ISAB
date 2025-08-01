@@ -181,18 +181,7 @@ export default function HistoryPage() {
       setSelectedOfficer({ ...profile, currentRole: role });
       setIsOfficerModalOpen(true);
       
-      // Update URL to include officer parameter while preserving board state
-      const urlParams = new URLSearchParams(window.location.search);
-      urlParams.set('officer', profile.name);
-      if (selectedBoard) {
-        urlParams.set('board', selectedBoard);
-      }
-      const newUrl = `${window.location.pathname}#history?${urlParams.toString()}`;
-      window.history.pushState({ 
-        modal: 'history-officer', 
-        officer: profile.name, 
-        board: selectedBoard 
-      }, '', newUrl);
+      // Browser history is handled by the modal component
     } else {
       console.log('No profile found for:', officerId);
     }
@@ -298,6 +287,24 @@ export default function HistoryPage() {
             <div className={`container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full ${
               isEntering ? 'animate-slide-up-delayed' : ''
             }`}>
+              {/* Replay Intro Button - Top of page under banner */}
+              <div className="max-w-4xl mx-auto mb-8">
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => {
+                      setShowSplash(true);
+                      setSplashProgress(0);
+                      setIsEntering(false);
+                    }}
+                    className="bg-primary/90 hover:bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105 shadow-lg backdrop-blur-sm flex items-center space-x-2"
+                    title="Replay introduction video"
+                  >
+                    <span className="text-lg">🎬</span>
+                    <span>Replay Intro</span>
+                  </button>
+                </div>
+              </div>
+
               <div className="max-w-4xl mx-auto">
                 {/* CMS Status */}
                 {error && (
@@ -462,35 +469,19 @@ export default function HistoryPage() {
 
         {/* Development Tools - Reset Splash Button */}
         {typeof window !== 'undefined' && process.env.NODE_ENV === 'development' && (
-          <div className="fixed bottom-20 right-4 z-40 space-y-2">
+          <div className="fixed bottom-4 right-4 z-40">
             <button
               onClick={() => {
                 localStorage.removeItem(HISTORY_SPLASH_VIEWED_KEY);
                 setShowSplash(true);
                 setSplashProgress(0);
               }}
-              className="block bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors shadow-lg"
+              className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors shadow-lg"
             >
               🎬 Reset History Splash
             </button>
           </div>
         )}
-
-        {/* Replay Intro Button - Always available */}
-        <div className="fixed bottom-4 right-4 z-40">
-          <button
-            onClick={() => {
-              setShowSplash(true);
-              setSplashProgress(0);
-              setIsEntering(false);
-            }}
-            className="bg-primary/90 hover:bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg backdrop-blur-sm flex items-center space-x-2"
-            title="Replay introduction video"
-          >
-            <span className="text-lg">🎬</span>
-            <span>Replay Intro</span>
-          </button>
-        </div>
       </div>
     </>
   );

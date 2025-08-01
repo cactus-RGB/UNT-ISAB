@@ -196,19 +196,9 @@ export default function VideoSplashScreen({
         </div>
       )}
 
-      {/* Skip Button - Always visible during video playback after 3 seconds */}
-      {videoLoaded && phase === 'playing' && timeElapsed >= 3 && !isTransitioning && (
-        <button
-          onClick={handleNext}
-          className="fixed top-6 right-6 bg-black/60 hover:bg-black/80 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 z-20 backdrop-blur-sm"
-        >
-          Next →
-        </button>
-      )}
-
-      {/* Main Next Button - Stable and always appears */}
+      {/* Main Continue Button - Positioned right under video/content area */}
       {(showNextButton || buttonStable) && (
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-20">
           <div className={`text-center transition-all duration-700 ${
             isTransitioning ? 'transform scale-95 opacity-0' : 'transform scale-100 opacity-100'
           }`}>
@@ -233,7 +223,7 @@ export default function VideoSplashScreen({
         </div>
       )}
 
-      {/* Click to Skip (mobile-friendly) - only during video playback */}
+      {/* Click to Continue (mobile-friendly) - only during video playback */}
       {videoLoaded && phase === 'playing' && timeElapsed >= 4 && !showNextButton && !isTransitioning && (
         <div 
           className="absolute inset-0 cursor-pointer z-10"
