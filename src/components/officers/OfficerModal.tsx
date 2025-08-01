@@ -124,15 +124,37 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      // Simple approach - just prevent body scroll
-      document.body.style.overflow = 'hidden';
+      
+      // Browser history management
+      const currentUrl = window.location.href;
+      const officerParam = officer ? `officer=${encodeURIComponent(officer.name)}` : '';
+      const newUrl = `${currentUrl}${currentUrl.includes('?') ? '&' : '?'}${officerParam}`;
+      
+      // Push new state for modal
+      window.history.pushState({ modal: 'officer', officer: officer?.name }, '', newUrl);
+      
+      // Handle browser back button
+      const handlePopState = (event: PopStateEvent) => {
+        if (!event.state?.modal) {
+          onClose();
+        }
+      };
+      
+      window.addEventListener('popstate', handlePopState);
       
       return () => {
         document.removeEventListener('keydown', handleEscape);
-        document.body.style.overflow = 'unset';
+        window.removeEventListener('popstate', handlePopState);
       };
     }
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, officer]);
+
+  // Handle closing modal
+  const handleClose = () => {
+    // Go back in history to remove modal state
+    window.history.back();
+    onClose();
+  };
 
   if (!isOpen || !officer) {
     return null;
@@ -141,7 +163,7 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
   return (
     <div 
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto"
-      onClick={onClose}
+      onClick={handleClose}
       style={{
         position: 'fixed',
         top: 0,
@@ -151,15 +173,15 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
         zIndex: 9999
       }}
     >
-      {/* Simple centering container */}
-      <div className="min-h-full flex items-center justify-center p-4">
+      {/* Scrollable container - no longer prevents page scroll */}
+      <div className="min-h-full flex items-start justify-center p-4 py-8">
         <div 
-          className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100 relative"
+          className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full transform transition-all duration-300 scale-100 relative my-8"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white"
             aria-label="Close modal"
           >
