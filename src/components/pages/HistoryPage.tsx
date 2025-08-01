@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -187,7 +187,7 @@ export default function HistoryPage() {
     }
   };
 
-  const closeOfficerModal = () => {
+  const closeOfficerModal = useCallback(() => {
     setIsOfficerModalOpen(false);
     setSelectedOfficer(null);
     
@@ -197,7 +197,7 @@ export default function HistoryPage() {
     const newSearch = urlParams.toString();
     const newUrl = `${window.location.pathname}#history${newSearch ? '?' + newSearch : ''}`;
     window.history.replaceState(selectedBoard ? { board: selectedBoard } : {}, '', newUrl);
-  };
+  }, [selectedBoard]);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
