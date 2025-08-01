@@ -79,28 +79,7 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
       
-      // Browser history management
-      const currentUrl = new URL(window.location.href);
-      
-      // Build search params
-      const searchParams = new URLSearchParams(currentUrl.search);
-      if (officer) {
-        searchParams.set('officer', officer.name);
-      }
-      if (boardId) {
-        searchParams.set('board', boardId);
-      }
-      
-      const newUrl = `${currentUrl.pathname}#history?${searchParams.toString()}`;
-      
-      // Push new state for modal
-      window.history.pushState({ 
-        modal: 'history-officer', 
-        officer: officer?.name,
-        board: boardId 
-      }, '', newUrl);
-      
-      // Handle browser back button
+      // Handle browser back button - don't create new history entry
       const handlePopState = (event: PopStateEvent) => {
         if (!event.state?.modal || event.state?.modal !== 'history-officer') {
           onClose();
@@ -118,15 +97,9 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
 
   // Handle closing modal
   const handleClose = () => {
-    // Don't use history.back() - just close the modal and update URL appropriately
+    // Use history.back() to properly restore previous state
+    window.history.back();
     onClose();
-    
-    // Remove officer from URL but keep board if present
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.delete('officer');
-    const newSearch = urlParams.toString();
-    const newUrl = `${window.location.pathname}#history${newSearch ? '?' + newSearch : ''}`;
-    window.history.replaceState(boardId ? { board: boardId } : {}, '', newUrl);
   };
 
   if (!isOpen || !officer) return null;

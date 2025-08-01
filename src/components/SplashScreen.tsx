@@ -20,6 +20,7 @@ export default function VideoSplashScreen({
   const [showNextButton, setShowNextButton] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [buttonStable, setButtonStable] = useState(false); // Ensures button stays once shown
 
   // Timer to ensure button shows regardless of video state
   useEffect(() => {
@@ -32,12 +33,13 @@ export default function VideoSplashScreen({
     return () => clearInterval(timer);
   }, [isVisible]);
 
-  // Show button after minimum time has elapsed
+  // Show button after minimum time has elapsed and make it stable
   useEffect(() => {
-    if (timeElapsed >= 3) {
+    if (timeElapsed >= 3 && !buttonStable) {
       setShowNextButton(true);
+      setButtonStable(true); // Once shown, never hide again
     }
-  }, [timeElapsed]);
+  }, [timeElapsed, buttonStable]);
 
   // Handle video loading
   useEffect(() => {
@@ -62,6 +64,7 @@ export default function VideoSplashScreen({
       console.log('[Splash]: Video ended, ensuring Next button is visible');
       setPhase('ended');
       setShowNextButton(true);
+      setButtonStable(true); // Ensure it stays visible
     };
 
     const handleError = (error: Event) => {
@@ -69,6 +72,7 @@ export default function VideoSplashScreen({
       setShowFallback(true);
       // Immediately show button if video fails
       setShowNextButton(true);
+      setButtonStable(true);
     };
 
     const handleLoadStart = () => {
@@ -90,10 +94,11 @@ export default function VideoSplashScreen({
       }
     }, 3000);
 
-    // Emergency button timer - ensure button always appears
+    // Emergency button timer - ensure button always appears and stays
     const emergencyButtonTimer = setTimeout(() => {
       console.log('[Splash]: Emergency button activation');
       setShowNextButton(true);
+      setButtonStable(true);
     }, 5000);
 
     return () => {
@@ -197,12 +202,12 @@ export default function VideoSplashScreen({
           onClick={handleNext}
           className="fixed top-6 right-6 bg-black/60 hover:bg-black/80 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 z-20 backdrop-blur-sm"
         >
-          Skip →
+          Next →
         </button>
       )}
 
       {/* Main Next Button - Stable and always appears */}
-      {showNextButton && (
+      {(showNextButton || buttonStable) && (
         <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-20">
           <div className={`text-center transition-all duration-700 ${
             isTransitioning ? 'transform scale-95 opacity-0' : 'transform scale-100 opacity-100'

@@ -181,7 +181,18 @@ export default function HistoryPage() {
       setSelectedOfficer({ ...profile, currentRole: role });
       setIsOfficerModalOpen(true);
       
-      // Browser history is handled by the modal component
+      // Update URL to include officer parameter while preserving board state
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('officer', profile.name);
+      if (selectedBoard) {
+        urlParams.set('board', selectedBoard);
+      }
+      const newUrl = `${window.location.pathname}#history?${urlParams.toString()}`;
+      window.history.pushState({ 
+        modal: 'history-officer', 
+        officer: profile.name, 
+        board: selectedBoard 
+      }, '', newUrl);
     } else {
       console.log('No profile found for:', officerId);
     }
@@ -451,19 +462,35 @@ export default function HistoryPage() {
 
         {/* Development Tools - Reset Splash Button */}
         {typeof window !== 'undefined' && process.env.NODE_ENV === 'development' && (
-          <div className="fixed bottom-20 right-4 z-40">
+          <div className="fixed bottom-20 right-4 z-40 space-y-2">
             <button
               onClick={() => {
                 localStorage.removeItem(HISTORY_SPLASH_VIEWED_KEY);
                 setShowSplash(true);
                 setSplashProgress(0);
               }}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors shadow-lg"
+              className="block bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors shadow-lg"
             >
               🎬 Reset History Splash
             </button>
           </div>
         )}
+
+        {/* Replay Intro Button - Always available */}
+        <div className="fixed bottom-4 right-4 z-40">
+          <button
+            onClick={() => {
+              setShowSplash(true);
+              setSplashProgress(0);
+              setIsEntering(false);
+            }}
+            className="bg-primary/90 hover:bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg backdrop-blur-sm flex items-center space-x-2"
+            title="Replay introduction video"
+          >
+            <span className="text-lg">🎬</span>
+            <span>Replay Intro</span>
+          </button>
+        </div>
       </div>
     </>
   );
