@@ -129,7 +129,7 @@ export default function GalleryPage() {
 
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [lightboxPosition, setLightboxPosition] = useState<{ x: number; y: number } | null>(null);
+  const [currentScrollPosition, setCurrentScrollPosition] = useState(0);
 
   const openEventGallery = (eventId: string) => {
     setSelectedEvent(eventId);
@@ -140,14 +140,9 @@ export default function GalleryPage() {
   };
 
   const openLightbox = (imageUrl: string, clickEvent: React.MouseEvent<HTMLDivElement>) => {
-    const target = clickEvent.currentTarget;
-    const rect = target.getBoundingClientRect();
+    // Save the current scroll position when opening lightbox
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    
-    setLightboxPosition({
-      x: rect.left + rect.width / 2,
-      y: rect.top + scrollTop + rect.height / 2
-    });
+    setCurrentScrollPosition(scrollTop);
     
     setSelectedImage(imageUrl);
     document.body.style.overflow = 'hidden';
@@ -155,7 +150,7 @@ export default function GalleryPage() {
 
   const closeLightbox = () => {
     setSelectedImage(null);
-    setLightboxPosition(null);
+    setCurrentScrollPosition(0);
     document.body.style.overflow = 'unset';
   };
 
@@ -310,7 +305,7 @@ export default function GalleryPage() {
           ))}
         </div>
 
-        {/* Perfect Mobile Lightbox */}
+        {/* Perfect Mobile Lightbox - Positioned at Current Scroll Level */}
         {selectedImage && (
           <div 
             className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50"
@@ -337,12 +332,13 @@ export default function GalleryPage() {
               <X className="h-6 w-6" />
             </button>
             
+            {/* Image positioned at user's current scroll position */}
             <div 
-              className="absolute inset-0 flex items-center justify-center p-4"
+              className="absolute w-full h-screen flex items-center justify-center p-4"
               style={{
-                ...(lightboxPosition && {
-                  transform: `translate(${Math.max(-50, Math.min(50, (lightboxPosition.x - window.innerWidth / 2) / 10))}px, ${Math.max(-50, Math.min(50, (lightboxPosition.y - window.innerHeight / 2) / 10))}px)`
-                })
+                top: `${currentScrollPosition}px`,
+                left: 0,
+                right: 0,
               }}
             >
               <div className="relative max-w-[90vw] max-h-[90vh] w-full h-full flex items-center justify-center">
@@ -354,7 +350,13 @@ export default function GalleryPage() {
               </div>
             </div>
             
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm sm:hidden">
+            {/* Mobile instruction positioned relative to scroll */}
+            <div 
+              className="absolute left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm sm:hidden"
+              style={{
+                top: `${currentScrollPosition + window.innerHeight - 80}px`,
+              }}
+            >
               Tap to close
             </div>
           </div>
