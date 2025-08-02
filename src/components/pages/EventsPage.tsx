@@ -77,6 +77,9 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
     .filter(event => event.date >= new Date())
     .slice(0, 3);
 
+  // NEW: Get array of dates that have events for the calendar
+  const eventDates = events.map(event => event.date);
+
   return (
     <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
       {/* Header */}
@@ -111,6 +114,7 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
                 mode="single"
                 selected={date}
                 onSelect={onDateSelect}
+                events={eventDates} // NEW: Pass event dates to show dots
                 className="w-full"
               />
             </CardContent>

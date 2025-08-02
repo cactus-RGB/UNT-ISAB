@@ -135,6 +135,7 @@ export default function GalleryPage() {
 
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   const openEventGallery = (eventId: string) => {
     setSelectedEvent(eventId);
@@ -145,11 +146,17 @@ export default function GalleryPage() {
   };
 
   const openLightbox = (imageUrl: string) => {
+    // Save current scroll position before opening lightbox
+    setScrollPosition(window.pageYOffset || document.documentElement.scrollTop);
     setSelectedImage(imageUrl);
   };
 
   const closeLightbox = () => {
     setSelectedImage(null);
+    // Restore scroll position after closing lightbox
+    setTimeout(() => {
+      window.scrollTo({ top: scrollPosition, behavior: 'instant' });
+    }, 0);
   };
 
   useEffect(() => {
@@ -165,7 +172,7 @@ export default function GalleryPage() {
 
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [selectedImage, selectedEvent]);
+  }, [selectedImage, selectedEvent, scrollPosition]);
 
   const currentEvent = selectedEvent ? eventGalleries.find(event => event.id === selectedEvent) : null;
 
@@ -313,7 +320,7 @@ export default function GalleryPage() {
           ))}
         </div>
 
-        {/* Lightbox */}
+        {/* FIXED: Lightbox positioned relative to current scroll position */}
         {selectedImage && (
           <div 
             className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
@@ -324,6 +331,7 @@ export default function GalleryPage() {
               left: 0,
               right: 0,
               bottom: 0,
+              zIndex: 9999
             }}
           >
             <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center">

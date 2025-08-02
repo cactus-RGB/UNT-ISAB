@@ -209,9 +209,7 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
                       <span className="font-semibold text-foreground text-lg">{roleInfo.role}</span>
                       <span className="text-muted-foreground text-sm ml-3">({roleInfo.period})</span>
                     </div>
-                    {roleInfo.role === officer.currentRole && (
-                      <span className="text-xs bg-primary/20 text-primary px-3 py-1 rounded-full font-medium">Current View</span>
-                    )}
+                    {/* REMOVED: "Current View" badge */}
                   </div>
                 ))}
               </div>

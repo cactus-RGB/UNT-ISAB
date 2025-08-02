@@ -8,9 +8,10 @@ interface CalendarProps {
   selected?: Date;
   onSelect?: (date: Date | undefined) => void;
   mode?: "single" | "range" | "multiple";
+  events?: Date[]; // NEW: Array of dates that have events
 }
 
-const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) => {
+const Calendar = ({ className, selected, onSelect, events = [], ...props }: CalendarProps) => {
   const [currentMonth, setCurrentMonth] = useState(selected || new Date());
   const [hoveredDay, setHoveredDay] = useState<number | null>(null);
 
@@ -77,6 +78,19 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
     );
   };
 
+  // NEW: Check if a day has events
+  const hasEvents = (day: number) => {
+    if (!day) return false;
+    
+    return events.some(eventDate => {
+      return (
+        eventDate.getDate() === day &&
+        eventDate.getMonth() === currentMonth.getMonth() &&
+        eventDate.getFullYear() === currentMonth.getFullYear()
+      );
+    });
+  };
+
   // Handle day selection
   const handleSelectDay = (day: number | null) => {
     if (!day || !onSelect) return;
@@ -129,6 +143,7 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
           const isSelected = isSelectedDay(day as number);
           const isTodayDate = isToday(day as number);
           const isHovered = hoveredDay === day;
+          const dayHasEvents = hasEvents(day as number); // NEW: Check for events
           
           return (
             <button
@@ -154,11 +169,19 @@ const Calendar = ({ className, selected, onSelect, ...props }: CalendarProps) =>
               onClick={() => handleSelectDay(day)}
               onMouseEnter={() => setHoveredDay(day)}
               onMouseLeave={() => setHoveredDay(null)}
-              aria-label={day ? `Select ${day} ${currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : undefined}
+              aria-label={day ? `Select ${day} ${currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}${dayHasEvents ? ' (has events)' : ''}` : undefined}
             >
               {day}
               {isSelected && (
                 <div className="absolute inset-0 rounded-lg bg-primary/20 pointer-events-none" />
+              )}
+              {/* NEW: Event indicator dot */}
+              {dayHasEvents && !isSelected && (
+                <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2">
+                  <div className={`w-1.5 h-1.5 rounded-full ${
+                    isTodayDate ? 'bg-accent' : 'bg-primary'
+                  }`} />
+                </div>
               )}
             </button>
           );
