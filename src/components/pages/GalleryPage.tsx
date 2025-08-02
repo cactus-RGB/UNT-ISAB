@@ -135,7 +135,6 @@ export default function GalleryPage() {
 
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [scrollPosition, setScrollPosition] = useState(0);
 
   const openEventGallery = (eventId: string) => {
     setSelectedEvent(eventId);
@@ -146,17 +145,15 @@ export default function GalleryPage() {
   };
 
   const openLightbox = (imageUrl: string) => {
-    // Save current scroll position before opening lightbox
-    setScrollPosition(window.pageYOffset || document.documentElement.scrollTop);
     setSelectedImage(imageUrl);
+    // Prevent body scroll when lightbox is open
+    document.body.style.overflow = 'hidden';
   };
 
   const closeLightbox = () => {
     setSelectedImage(null);
-    // Restore scroll position after closing lightbox
-    setTimeout(() => {
-      window.scrollTo({ top: scrollPosition, behavior: 'instant' });
-    }, 0);
+    // Restore body scroll
+    document.body.style.overflow = 'unset';
   };
 
   useEffect(() => {
@@ -171,8 +168,12 @@ export default function GalleryPage() {
     };
 
     document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [selectedImage, selectedEvent, scrollPosition]);
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      // Cleanup: restore scroll if component unmounts
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedImage, selectedEvent]);
 
   const currentEvent = selectedEvent ? eventGalleries.find(event => event.id === selectedEvent) : null;
 
@@ -314,16 +315,14 @@ export default function GalleryPage() {
                   </div>
                 </div>
               </div>
-              
-              {/* Remove file name caption - keep it clean */}
             </Card>
           ))}
         </div>
 
-        {/* FIXED: Lightbox positioned relative to current scroll position */}
+        {/* MOBILE-FIXED: Lightbox with proper mobile positioning and no scroll issues */}
         {selectedImage && (
           <div 
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={closeLightbox}
             style={{
               position: 'fixed',
@@ -331,24 +330,40 @@ export default function GalleryPage() {
               left: 0,
               right: 0,
               bottom: 0,
-              zIndex: 9999
+              zIndex: 9999,
+              // Ensure it's above everything and fills viewport
+              width: '100vw',
+              height: '100vh',
+              margin: 0,
+              padding: '1rem'
             }}
           >
-            <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center">
-              <button
-                onClick={closeLightbox}
-                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200"
-              >
-                <X className="h-6 w-6 text-white" />
-              </button>
-              
-              <div className="relative w-full h-full flex items-center justify-center">
+            {/* Close button - always visible and accessible */}
+            <button
+              onClick={closeLightbox}
+              className="absolute top-4 right-4 z-20 p-3 rounded-full bg-black/60 hover:bg-black/80 transition-colors duration-200 text-white"
+              style={{ position: 'fixed' }}
+            >
+              <X className="h-6 w-6" />
+            </button>
+            
+            {/* Image container - properly centered for all screen sizes */}
+            <div 
+              className="relative w-full h-full flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="relative max-w-full max-h-full">
                 <GalleryImage
                   src={selectedImage}
                   alt="Gallery image"
                   className="max-w-full max-h-full object-contain"
                 />
               </div>
+            </div>
+            
+            {/* Mobile-friendly instruction */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm sm:hidden">
+              Tap outside to close
             </div>
           </div>
         )}

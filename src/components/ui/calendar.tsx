@@ -8,7 +8,7 @@ interface CalendarProps {
   selected?: Date;
   onSelect?: (date: Date | undefined) => void;
   mode?: "single" | "range" | "multiple";
-  events?: Date[]; // NEW: Array of dates that have events
+  events?: Date[]; // Array of dates that have events
 }
 
 const Calendar = ({ className, selected, onSelect, events = [], ...props }: CalendarProps) => {
@@ -78,15 +78,18 @@ const Calendar = ({ className, selected, onSelect, events = [], ...props }: Cale
     );
   };
 
-  // NEW: Check if a day has events
+  // FIXED: Check if a day has events with proper date comparison
   const hasEvents = (day: number) => {
-    if (!day) return false;
+    if (!day || !events || events.length === 0) return false;
     
     return events.some(eventDate => {
+      // Ensure we're working with Date objects
+      const eventDateObj = eventDate instanceof Date ? eventDate : new Date(eventDate);
+      
       return (
-        eventDate.getDate() === day &&
-        eventDate.getMonth() === currentMonth.getMonth() &&
-        eventDate.getFullYear() === currentMonth.getFullYear()
+        eventDateObj.getDate() === day &&
+        eventDateObj.getMonth() === currentMonth.getMonth() &&
+        eventDateObj.getFullYear() === currentMonth.getFullYear()
       );
     });
   };
@@ -102,6 +105,20 @@ const Calendar = ({ className, selected, onSelect, events = [], ...props }: Cale
 
   // Get the days array for rendering
   const daysArray = getDaysInMonth();
+
+  // Debug: Log events for current month (remove in production)
+  React.useEffect(() => {
+    if (events && events.length > 0) {
+      const currentMonthEvents = events.filter(eventDate => {
+        const eventDateObj = eventDate instanceof Date ? eventDate : new Date(eventDate);
+        return (
+          eventDateObj.getMonth() === currentMonth.getMonth() &&
+          eventDateObj.getFullYear() === currentMonth.getFullYear()
+        );
+      });
+      console.log('Calendar: Events for current month:', currentMonthEvents);
+    }
+  }, [events, currentMonth]);
 
   return (
     <div className={`bg-card border border-border rounded-xl p-4 shadow-card hover:shadow-card-hover transition-all duration-300 ${className || ""}`} {...props}>
@@ -143,7 +160,7 @@ const Calendar = ({ className, selected, onSelect, events = [], ...props }: Cale
           const isSelected = isSelectedDay(day as number);
           const isTodayDate = isToday(day as number);
           const isHovered = hoveredDay === day;
-          const dayHasEvents = hasEvents(day as number); // NEW: Check for events
+          const dayHasEvents = hasEvents(day as number); // Check for events
           
           return (
             <button
@@ -175,18 +192,33 @@ const Calendar = ({ className, selected, onSelect, events = [], ...props }: Cale
               {isSelected && (
                 <div className="absolute inset-0 rounded-lg bg-primary/20 pointer-events-none" />
               )}
-              {/* NEW: Event indicator dot */}
-              {dayHasEvents && !isSelected && (
-                <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${
-                    isTodayDate ? 'bg-accent' : 'bg-primary'
-                  }`} />
+              {/* FIXED: Event indicator dot with better positioning and visibility */}
+              {dayHasEvents && (
+                <div className="absolute bottom-0.5 left-1/2 transform -translate-x-1/2">
+                  <div className={`w-2 h-2 rounded-full ${
+                    isSelected 
+                      ? 'bg-primary-foreground' 
+                      : isTodayDate 
+                        ? 'bg-accent' 
+                        : 'bg-primary'
+                  } shadow-sm`} />
                 </div>
               )}
             </button>
           );
         })}
       </div>
+      
+      {/* Debug info - remove in production */}
+      {process.env.NODE_ENV === 'development' && events && events.length > 0 && (
+        <div className="mt-4 p-2 bg-muted/50 rounded text-xs text-muted-foreground">
+          <div>Events this month: {events.filter(e => {
+            const eventDateObj = e instanceof Date ? e : new Date(e);
+            return eventDateObj.getMonth() === currentMonth.getMonth() && 
+                   eventDateObj.getFullYear() === currentMonth.getFullYear();
+          }).length}</div>
+        </div>
+      )}
     </div>
   );
 };
