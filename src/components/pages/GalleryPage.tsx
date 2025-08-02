@@ -46,12 +46,12 @@ function GalleryImage({ src, alt, onClick, className }: {
     if (!fileId) return [originalUrl];
 
     return [
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w800-h800`, // High quality thumbnail
-      `https://lh3.googleusercontent.com/d/${fileId}=w800-h800`, // Google User Content format
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w600-h600`, // Medium quality
-      `https://lh3.googleusercontent.com/d/${fileId}=s800`, // Alternative format
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h400`, // Lower quality fallback
-      originalUrl, // Original URL as last resort
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w800-h800`,
+      `https://lh3.googleusercontent.com/d/${fileId}=w800-h800`,
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w600-h600`,
+      `https://lh3.googleusercontent.com/d/${fileId}=s800`,
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h400`,
+      originalUrl,
     ];
   };
 
@@ -59,31 +59,26 @@ function GalleryImage({ src, alt, onClick, className }: {
     const isGoogleDriveUrl = src.includes('drive.google.com');
     
     if (isGoogleDriveUrl && attemptCount < 5) {
-      // Try alternative URL formats
       const alternatives = getAlternativeUrls(src);
       const nextUrl = alternatives[attemptCount + 1];
       
       if (nextUrl) {
-        console.log(`Gallery: Trying alternative URL ${attemptCount + 1} for ${alt}: ${nextUrl}`);
         setAttemptCount(prev => prev + 1);
         setCurrentSrc(nextUrl);
         setImageLoading(true);
-        return; // Don't set error yet, try the next URL
+        return;
       }
     }
 
-    console.error(`Gallery: All attempts failed for image: ${src}`);
     setImageError(true);
     setImageLoading(false);
   };
 
   const handleImageLoad = () => {
-    console.log(`Gallery: Successfully loaded image: ${currentSrc}`);
     setImageError(false);
     setImageLoading(false);
   };
 
-  // Reset when src changes
   useEffect(() => {
     setImageError(false);
     setImageLoading(true);
@@ -130,11 +125,11 @@ export default function GalleryPage() {
     error
   } = useGoogleDriveCMS();
 
-  // Use CMS data if available, fallback to hardcoded data
   const eventGalleries = cmsGalleries.length > 0 ? cmsGalleries : fallbackEventGalleries;
 
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [lightboxPosition, setLightboxPosition] = useState<{ x: number; y: number } | null>(null);
 
   const openEventGallery = (eventId: string) => {
     setSelectedEvent(eventId);
@@ -144,15 +139,23 @@ export default function GalleryPage() {
     setSelectedEvent(null);
   };
 
-  const openLightbox = (imageUrl: string) => {
+  const openLightbox = (imageUrl: string, clickEvent: React.MouseEvent<HTMLDivElement>) => {
+    const target = clickEvent.currentTarget;
+    const rect = target.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    setLightboxPosition({
+      x: rect.left + rect.width / 2,
+      y: rect.top + scrollTop + rect.height / 2
+    });
+    
     setSelectedImage(imageUrl);
-    // Prevent body scroll when lightbox is open
     document.body.style.overflow = 'hidden';
   };
 
   const closeLightbox = () => {
     setSelectedImage(null);
-    // Restore body scroll
+    setLightboxPosition(null);
     document.body.style.overflow = 'unset';
   };
 
@@ -170,7 +173,6 @@ export default function GalleryPage() {
     document.addEventListener('keydown', handleEscape);
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      // Cleanup: restore scroll if component unmounts
       document.body.style.overflow = 'unset';
     };
   }, [selectedImage, selectedEvent]);
@@ -188,7 +190,6 @@ export default function GalleryPage() {
           </p>
         </div>
 
-        {/* CMS Status */}
         {error && (
           <Card className="mb-8 border-destructive bg-destructive/5">
             <CardContent className="p-6">
@@ -241,10 +242,6 @@ export default function GalleryPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   
-                  <div className="absolute top-4 right-4 bg-primary/90 backdrop-blur-sm rounded-lg p-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <ImageIcon className="h-5 w-5 text-white" />
-                  </div>
-                  
                   <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
                     {event.totalImages} photos
                   </div>
@@ -296,10 +293,10 @@ export default function GalleryPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {currentEvent.images.map((image, index) => (
-            <Card 
+            <div
               key={index} 
-              className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-1"
-              onClick={() => openLightbox(image.url)}
+              className="group transition-all duration-300 hover:shadow-card-elevated border border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-1 rounded-lg"
+              onClick={(e) => openLightbox(image.url, e)}
             >
               <div className="relative aspect-square overflow-hidden">
                 <GalleryImage
@@ -307,22 +304,16 @@ export default function GalleryPage() {
                   alt={`Gallery image ${index + 1}`}
                   className="w-full h-full"
                 />
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
-                    <ImageIcon className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
 
-        {/* MOBILE-FIXED: Lightbox with proper mobile positioning and no scroll issues */}
+        {/* Perfect Mobile Lightbox */}
         {selectedImage && (
           <div 
-            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50"
             onClick={closeLightbox}
             style={{
               position: 'fixed',
@@ -331,28 +322,30 @@ export default function GalleryPage() {
               right: 0,
               bottom: 0,
               zIndex: 9999,
-              // Ensure it's above everything and fills viewport
               width: '100vw',
               height: '100vh',
-              margin: 0,
-              padding: '1rem'
             }}
           >
-            {/* Close button - always visible and accessible */}
             <button
-              onClick={closeLightbox}
+              onClick={(e) => {
+                e.stopPropagation();
+                closeLightbox();
+              }}
               className="absolute top-4 right-4 z-20 p-3 rounded-full bg-black/60 hover:bg-black/80 transition-colors duration-200 text-white"
               style={{ position: 'fixed' }}
             >
               <X className="h-6 w-6" />
             </button>
             
-            {/* Image container - properly centered for all screen sizes */}
             <div 
-              className="relative w-full h-full flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
+              className="absolute inset-0 flex items-center justify-center p-4"
+              style={{
+                ...(lightboxPosition && {
+                  transform: `translate(${Math.max(-50, Math.min(50, (lightboxPosition.x - window.innerWidth / 2) / 10))}px, ${Math.max(-50, Math.min(50, (lightboxPosition.y - window.innerHeight / 2) / 10))}px)`
+                })
+              }}
             >
-              <div className="relative max-w-full max-h-full">
+              <div className="relative max-w-[90vw] max-h-[90vh] w-full h-full flex items-center justify-center">
                 <GalleryImage
                   src={selectedImage}
                   alt="Gallery image"
@@ -361,9 +354,8 @@ export default function GalleryPage() {
               </div>
             </div>
             
-            {/* Mobile-friendly instruction */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm sm:hidden">
-              Tap outside to close
+              Tap to close
             </div>
           </div>
         )}
