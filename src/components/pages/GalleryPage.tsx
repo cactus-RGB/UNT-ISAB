@@ -139,7 +139,7 @@ export default function GalleryPage() {
     setSelectedEvent(null);
   };
 
-  const openLightbox = (imageUrl: string, clickEvent: React.MouseEvent<HTMLDivElement>) => {
+  const openLightbox = (imageUrl: string) => {
     // Save the current scroll position when opening lightbox
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     setCurrentScrollPosition(scrollTop);
@@ -291,7 +291,7 @@ export default function GalleryPage() {
             <div
               key={index} 
               className="group transition-all duration-300 hover:shadow-card-elevated border border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-1 rounded-lg"
-              onClick={(e) => openLightbox(image.url, e)}
+              onClick={() => openLightbox(image.url)}
             >
               <div className="relative aspect-square overflow-hidden">
                 <GalleryImage
