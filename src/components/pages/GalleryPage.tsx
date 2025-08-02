@@ -305,61 +305,74 @@ export default function GalleryPage() {
           ))}
         </div>
 
-        {/* Perfect Mobile Lightbox - Positioned at Current Scroll Level */}
+        {/* Perfect Mobile Lightbox with Background Blur - Positioned at Current Scroll Level */}
         {selectedImage && (
-          <div 
-            className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50"
-            onClick={closeLightbox}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 9999,
-              width: '100vw',
-              height: '100vh',
-            }}
-          >
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                closeLightbox();
-              }}
-              className="absolute top-4 right-4 z-20 p-3 rounded-full bg-black/60 hover:bg-black/80 transition-colors duration-200 text-white"
-              style={{ position: 'fixed' }}
-            >
-              <X className="h-6 w-6" />
-            </button>
-            
-            {/* Image positioned at user's current scroll position */}
+          <>
+            {/* Background blur overlay */}
             <div 
-              className="absolute w-full h-screen flex items-center justify-center p-4"
+              className="fixed inset-0 z-40"
               style={{
-                top: `${currentScrollPosition}px`,
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              }}
+            />
+            
+            {/* Lightbox content */}
+            <div 
+              className="fixed inset-0 z-50"
+              onClick={closeLightbox}
+              style={{
+                position: 'fixed',
+                top: 0,
                 left: 0,
                 right: 0,
+                bottom: 0,
+                zIndex: 50,
+                width: '100vw',
+                height: '100vh',
               }}
             >
-              <div className="relative max-w-[90vw] max-h-[90vh] w-full h-full flex items-center justify-center">
-                <GalleryImage
-                  src={selectedImage}
-                  alt="Gallery image"
-                  className="max-w-full max-h-full object-contain"
-                />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  closeLightbox();
+                }}
+                className="absolute top-4 right-4 z-20 p-3 rounded-full bg-black/60 hover:bg-black/80 transition-colors duration-200 text-white"
+                style={{ position: 'fixed' }}
+              >
+                <X className="h-6 w-6" />
+              </button>
+              
+              {/* Image positioned at user's current scroll position */}
+              <div 
+                className="absolute w-full h-screen flex items-center justify-center p-4"
+                style={{
+                  top: `${currentScrollPosition}px`,
+                  left: 0,
+                  right: 0,
+                }}
+              >
+                <div className="relative max-w-[90vw] max-h-[90vh] w-full h-full flex items-center justify-center">
+                  <GalleryImage
+                    src={selectedImage}
+                    alt="Gallery image"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                </div>
+              </div>
+              
+              {/* Mobile instruction positioned relative to scroll */}
+              <div 
+                className="absolute left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm sm:hidden"
+                style={{
+                  top: `${currentScrollPosition + window.innerHeight - 80}px`,
+                }}
+              >
+                Tap to close
               </div>
             </div>
-            
-            {/* Mobile instruction positioned relative to scroll */}
-            <div 
-              className="absolute left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm sm:hidden"
-              style={{
-                top: `${currentScrollPosition + window.innerHeight - 80}px`,
-              }}
-            >
-              Tap to close
-            </div>
-          </div>
+          </>
         )}
       </div>
     );
