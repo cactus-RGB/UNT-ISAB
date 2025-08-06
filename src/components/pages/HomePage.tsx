@@ -98,7 +98,7 @@ export default function HomePage({ onPageChange }: HomePageProps) {
             </p>
             <Button 
               size="lg"
-              className="bg-white/95 text-green-700 hover:bg-white hover:text-green-800 shadow-lg border-2 border-white/50 font-semibold w-full sm:w-auto backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              className="bg-white text-green-700 hover:bg-gray-50 shadow-lg border-2 border-green-600 font-semibold w-full sm:w-auto"
               onClick={() => onPageChange('history')}
             >
               Learn More <ChevronRight className="ml-2 h-5 w-5" />

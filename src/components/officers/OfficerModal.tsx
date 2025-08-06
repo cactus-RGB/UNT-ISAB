@@ -179,7 +179,7 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
       {/* Scrollable container - positions modal near current scroll position */}
       <div className="min-h-full flex items-center justify-center p-4 py-8">
         <div 
-          className="bg-card/95 backdrop-blur-md rounded-2xl shadow-card-elevated max-w-2xl w-full transform transition-all duration-300 scale-100 relative my-8 border border-border/50"
+          className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full transform transition-all duration-300 scale-100 relative my-8"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
@@ -215,7 +215,7 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
           </div>
 
           {/* Content section */}
-          <div className="p-6 sm:p-8 bg-card/95 backdrop-blur-md text-foreground border-t border-border/30">
+          <div className="p-6 sm:p-8">
             <div className="space-y-6">
               {/* Academic/Professional and Personal Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

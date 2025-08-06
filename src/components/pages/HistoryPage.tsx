@@ -397,13 +397,13 @@ export default function HistoryPage() {
                 </div>
               </div>
 
-              {/* Colorful Description Box - Green Theme - FIXED for dark mode */}
-              <div className="mb-8 p-8 rounded-2xl bg-gradient-to-br from-green-900/30 via-gray-800/50 to-green-800/40 border-2 border-green-700/30 shadow-lg">
+              {/* Colorful Description Box - Green Theme */}
+              <div className="mb-8 p-8 rounded-2xl bg-gradient-to-br from-green-50 via-white to-green-100 dark:from-green-950/20 dark:via-gray-900 dark:to-green-900/30 border-2 border-green-200/50 dark:border-green-800/30 shadow-lg">
                 <div className="flex items-center mb-4">
                   <div className="w-1 h-8 bg-gradient-to-b from-green-500 to-green-600 rounded-full mr-4"></div>
                   <h3 className="text-xl font-bold text-foreground">About This Board</h3>
                 </div>
-                <p className="text-foreground leading-relaxed text-lg">{currentBoard.description}</p>
+                <p className="text-foreground/80 leading-relaxed text-lg">{currentBoard.description}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
