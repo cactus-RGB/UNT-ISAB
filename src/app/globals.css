@@ -89,6 +89,17 @@ button.bg-white,
   color: #166534 !important; /* green-800 */
 }
 
+/* Ensure the chevron icon in the button is also green */
+.bg-primary-gradient button.bg-white svg,
+.bg-primary-gradient .bg-white svg {
+  color: #15803d !important; /* green-700 */
+}
+
+.bg-primary-gradient button.bg-white:hover svg,
+.bg-primary-gradient .bg-white:hover svg {
+  color: #166534 !important; /* green-800 */
+}
+
 /* Navigation improvements for mobile - center icons */
 @media (max-width: 640px) {
   .nav-mobile-icons {
