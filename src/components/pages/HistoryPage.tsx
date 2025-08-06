@@ -13,7 +13,8 @@ import HistoryOfficerCard from '@/components/history/HistoryOfficerCard';
 // Splash screen import commented out for deployment
 // import VideoSplashScreen from '@/components/SplashScreen';
 
-const HISTORY_SPLASH_VIEWED_KEY = 'isab-history-splash-viewed';
+// SPLASH SCREEN DISABLED - Key kept for potential future use
+// const HISTORY_SPLASH_VIEWED_KEY = 'isab-history-splash-viewed';
 
 export default function HistoryPage() {
   const { 
@@ -31,7 +32,7 @@ export default function HistoryPage() {
   
   // Splash screen state - DISABLED for deployment
   const [showSplash] = useState(false); // Always false
-  const [isEntering, setIsEntering] = useState(false);
+  const [isEntering] = useState(false); // Used in JSX classes
   
   // Cycling header images
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
