@@ -31,7 +31,6 @@ export default function HistoryPage() {
   
   // Splash screen state - DISABLED for deployment
   const [showSplash] = useState(false); // Always false
-  const [splashProgress] = useState(0); // Unused
   const [isEntering, setIsEntering] = useState(false);
   
   // Cycling header images
@@ -116,19 +115,14 @@ export default function HistoryPage() {
   //   // ... progress timer code
   // }, [showSplash]);
 
-  // SPLASH SCREEN DISABLED - Handle splash completion (unused)
-  const handleSplashComplete = () => {
-    // setShowSplash(false);
-    setIsEntering(true);
-    
-    // Mark as viewed so it won't show again
-    localStorage.setItem(HISTORY_SPLASH_VIEWED_KEY, 'true');
-    
-    // Reset entrance animation after it completes
-    setTimeout(() => {
-      setIsEntering(false);
-    }, 1000);
-  };
+  // SPLASH SCREEN DISABLED - Handle splash completion (kept for potential future use)
+  // const handleSplashComplete = () => {
+  //   setIsEntering(true);
+  //   localStorage.setItem(HISTORY_SPLASH_VIEWED_KEY, 'true');
+  //   setTimeout(() => {
+  //     setIsEntering(false);
+  //   }, 1000);
+  // };
 
   // Cycle through header images every 3 seconds
   useEffect(() => {
