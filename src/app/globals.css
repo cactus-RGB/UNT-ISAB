@@ -78,6 +78,17 @@ button.bg-white,
   color: inherit;
 }
 
+/* Force Learn More button to have green text */
+.bg-primary-gradient button.bg-white,
+.bg-primary-gradient .bg-white {
+  color: #15803d !important; /* green-700 */
+}
+
+.bg-primary-gradient button.bg-white:hover,
+.bg-primary-gradient .bg-white:hover {
+  color: #166534 !important; /* green-800 */
+}
+
 /* Navigation improvements for mobile - center icons */
 @media (max-width: 640px) {
   .nav-mobile-icons {
