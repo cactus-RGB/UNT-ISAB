@@ -133,7 +133,7 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
 
   return (
     <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto modal-backdrop"
       onClick={handleClose}
       style={{
         position: 'fixed',
@@ -144,10 +144,10 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
         zIndex: 9999
       }}
     >
-      {/* Scrollable container - no longer prevents page scroll */}
+      {/* Scrollable container */}
       <div className="min-h-full flex items-start justify-center p-4 py-8">
         <div 
-          className="bg-card rounded-2xl shadow-card-elevated max-w-3xl w-full transform transition-all duration-300 scale-100 relative my-8"
+          className="bg-card rounded-2xl shadow-card-elevated max-w-3xl w-full transform transition-all duration-300 scale-100 relative my-8 modal-content border border-border"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
@@ -194,7 +194,7 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
           </div>
 
           {/* Content section */}
-          <div className="p-6 sm:p-8">
+          <div className="p-6 sm:p-8 bg-card text-foreground">
             {/* Role progression timeline */}
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center">
@@ -209,7 +209,6 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
                       <span className="font-semibold text-foreground text-lg">{roleInfo.role}</span>
                       <span className="text-muted-foreground text-sm ml-3">({roleInfo.period})</span>
                     </div>
-                    {/* REMOVED: "Current View" badge */}
                   </div>
                 ))}
               </div>

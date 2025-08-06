@@ -36,40 +36,77 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
               </div>
             </div>
             
-            <div className="flex space-x-1 sm:space-x-2">
+            {/* Desktop Navigation */}
+            <div className="hidden sm:flex space-x-2">
               <Button 
                 variant={currentPage === 'home' ? "default" : "ghost"}
                 onClick={() => onPageChange('home')}
-                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-4 py-3 sm:px-3 sm:py-2 h-12 sm:h-10"
+                className="flex items-center space-x-2 text-sm md:text-base px-3 py-2 h-10"
               >
-                <Home className="h-5 w-5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                <span className="hidden sm:inline">Home</span>
+                <Home className="h-4 w-4 md:h-5 md:w-5" />
+                <span>Home</span>
               </Button>
               <Button 
                 variant={currentPage === 'history' ? "default" : "ghost"}
                 onClick={() => onPageChange('history')}
-                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-4 py-3 sm:px-3 sm:py-2 h-12 sm:h-10"
+                className="flex items-center space-x-2 text-sm md:text-base px-3 py-2 h-10"
               >
-                <BookOpen className="h-5 w-5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                <span className="hidden sm:inline">History</span>
+                <BookOpen className="h-4 w-4 md:h-5 md:w-5" />
+                <span>History</span>
               </Button>
               <Button 
                 variant={currentPage === 'gallery' ? "default" : "ghost"}
                 onClick={() => onPageChange('gallery')}
-                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-4 py-3 sm:px-3 sm:py-2 h-12 sm:h-10"
+                className="flex items-center space-x-2 text-sm md:text-base px-3 py-2 h-10"
               >
-                <ImageIcon className="h-5 w-5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                <span className="hidden sm:inline">Gallery</span>
+                <ImageIcon className="h-4 w-4 md:h-5 md:w-5" />
+                <span>Gallery</span>
               </Button>
               <Button 
                 variant={currentPage === 'events' ? "default" : "ghost"}
                 onClick={() => onPageChange('events')}
-                className="flex items-center space-x-1 sm:space-x-2 text-sm md:text-base px-4 py-3 sm:px-3 sm:py-2 h-12 sm:h-10"
+                className="flex items-center space-x-2 text-sm md:text-base px-3 py-2 h-10"
               >
-                <CalendarIcon className="h-5 w-5 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                <span className="hidden sm:inline">Events</span>
+                <CalendarIcon className="h-4 w-4 md:h-5 md:w-5" />
+                <span>Events</span>
               </Button>
             </div>
+          </div>
+
+          {/* Mobile Navigation - Centered Icons */}
+          <div className="flex sm:hidden justify-center items-center space-x-1 flex-1">
+            <Button 
+              variant={currentPage === 'home' ? "default" : "ghost"}
+              onClick={() => onPageChange('home')}
+              className="flex items-center justify-center px-3 py-3 h-12 min-w-[48px]"
+              aria-label="Home"
+            >
+              <Home className="h-5 w-5" />
+            </Button>
+            <Button 
+              variant={currentPage === 'history' ? "default" : "ghost"}
+              onClick={() => onPageChange('history')}
+              className="flex items-center justify-center px-3 py-3 h-12 min-w-[48px]"
+              aria-label="History"
+            >
+              <BookOpen className="h-5 w-5" />
+            </Button>
+            <Button 
+              variant={currentPage === 'gallery' ? "default" : "ghost"}
+              onClick={() => onPageChange('gallery')}
+              className="flex items-center justify-center px-3 py-3 h-12 min-w-[48px]"
+              aria-label="Gallery"
+            >
+              <ImageIcon className="h-5 w-5" />
+            </Button>
+            <Button 
+              variant={currentPage === 'events' ? "default" : "ghost"}
+              onClick={() => onPageChange('events')}
+              className="flex items-center justify-center px-3 py-3 h-12 min-w-[48px]"
+              aria-label="Events"
+            >
+              <CalendarIcon className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </div>

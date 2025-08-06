@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { X, GraduationCap, Globe, Users } from 'lucide-react';
+import { X, GraduationCap, Globe, Users, Briefcase } from 'lucide-react';
 import type { Officer } from '@/hooks/useGoogleDriveCMS';
 
 interface OfficerModalProps {
@@ -160,9 +160,12 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
     return null;
   }
 
+  // Check if this is Yunju (the advisor)
+  const isAdvisor = officer.name.toLowerCase().includes('yunju') || officer.role.toLowerCase().includes('advisor');
+
   return (
     <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto modal-backdrop"
       onClick={handleClose}
       style={{
         position: 'fixed',
@@ -176,7 +179,7 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
       {/* Scrollable container - positions modal near current scroll position */}
       <div className="min-h-full flex items-center justify-center p-4 py-8">
         <div 
-          className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full transform transition-all duration-300 scale-100 relative my-8"
+          className="bg-card rounded-2xl shadow-card-elevated max-w-2xl w-full transform transition-all duration-300 scale-100 relative my-8 modal-content border border-border"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
@@ -212,18 +215,24 @@ export default function OfficerModal({ officer, isOpen, onClose }: OfficerModalP
           </div>
 
           {/* Content section */}
-          <div className="p-6 sm:p-8">
+          <div className="p-6 sm:p-8 bg-card text-foreground">
             <div className="space-y-6">
-              {/* Academic and Personal Info */}
+              {/* Academic/Professional and Personal Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex items-center space-x-3 p-4 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors duration-200">
                   <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
-                    <GraduationCap className="h-5 w-5 text-primary" />
+                    {isAdvisor ? (
+                      <Briefcase className="h-5 w-5 text-primary" />
+                    ) : (
+                      <GraduationCap className="h-5 w-5 text-primary" />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-muted-foreground font-medium">Major</p>
+                    <p className="text-xs text-muted-foreground font-medium">
+                      {isAdvisor ? 'Role' : 'Major'}
+                    </p>
                     <p className="font-medium text-foreground text-sm leading-tight">
-                      {officer.major}
+                      {isAdvisor ? 'Asst. Director International Programs and Communications' : officer.major}
                     </p>
                   </div>
                 </div>

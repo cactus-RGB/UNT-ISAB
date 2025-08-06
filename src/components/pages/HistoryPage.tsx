@@ -10,7 +10,8 @@ import { semesterBoards, masterOfficerProfiles } from '@/data/history';
 import type { OfficerProfile } from '@/data/history';
 import HistoryOfficerModal from '@/components/history/HistoryOfficerModal';
 import HistoryOfficerCard from '@/components/history/HistoryOfficerCard';
-import VideoSplashScreen from '@/components/SplashScreen';
+// Splash screen import commented out for deployment
+// import VideoSplashScreen from '@/components/SplashScreen';
 
 const HISTORY_SPLASH_VIEWED_KEY = 'isab-history-splash-viewed';
 
@@ -28,9 +29,9 @@ export default function HistoryPage() {
   const [selectedOfficer, setSelectedOfficer] = useState<(OfficerProfile & { currentRole?: string }) | null>(null);
   const [isOfficerModalOpen, setIsOfficerModalOpen] = useState(false);
   
-  // Splash screen state
-  const [showSplash, setShowSplash] = useState(false);
-  const [splashProgress, setSplashProgress] = useState(0);
+  // Splash screen state - DISABLED for deployment
+  const [showSplash] = useState(false); // Always false
+  const [splashProgress] = useState(0); // Unused
   const [isEntering, setIsEntering] = useState(false);
   
   // Cycling header images
@@ -101,34 +102,23 @@ export default function HistoryPage() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [currentSemesterBoards, currentMasterOfficerProfiles]);
 
-  // Check if splash should be shown on mount
-  useEffect(() => {
-    const hasViewedSplash = localStorage.getItem(HISTORY_SPLASH_VIEWED_KEY);
-    if (!hasViewedSplash) {
-      setShowSplash(true);
-    }
-  }, []);
+  // SPLASH SCREEN DISABLED - No check for splash on mount
+  // useEffect(() => {
+  //   const hasViewedSplash = localStorage.getItem(HISTORY_SPLASH_VIEWED_KEY);
+  //   if (!hasViewedSplash) {
+  //     setShowSplash(true);
+  //   }
+  // }, []);
 
-  // Simulate loading progress for splash fallback
-  useEffect(() => {
-    if (!showSplash) return;
+  // SPLASH SCREEN DISABLED - No progress simulation
+  // useEffect(() => {
+  //   if (!showSplash) return;
+  //   // ... progress timer code
+  // }, [showSplash]);
 
-    const progressTimer = setInterval(() => {
-      setSplashProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(progressTimer);
-          return 100;
-        }
-        return Math.min(prev + 15, 100);
-      });
-    }, 200);
-
-    return () => clearInterval(progressTimer);
-  }, [showSplash]);
-
-  // Handle splash completion with entrance animation
+  // SPLASH SCREEN DISABLED - Handle splash completion (unused)
   const handleSplashComplete = () => {
-    setShowSplash(false);
+    // setShowSplash(false);
     setIsEntering(true);
     
     // Mark as viewed so it won't show again
@@ -218,15 +208,15 @@ export default function HistoryPage() {
 
   return (
     <>
-      {/* Video Splash Screen - only shows first time */}
-      {showSplash && (
+      {/* SPLASH SCREEN DISABLED FOR DEPLOYMENT */}
+      {/* {showSplash && (
         <VideoSplashScreen
           isVisible={showSplash}
           onComplete={handleSplashComplete}
           videoSrc="/assets/splash/isab-intro.mp4"
           loadingProgress={splashProgress}
         />
-      )}
+      )} */}
 
       {/* Main History Content */}
       <div className={`w-full transition-all duration-1000 ease-out ${
@@ -235,7 +225,7 @@ export default function HistoryPage() {
         {/* Main history view */}
         {!selectedBoard && (
           <div className="w-full">
-            {/* Cycling Header Images */}
+            {/* Cycling Header Images - DOTS REMOVED */}
             <div className={`relative h-64 sm:h-72 md:h-80 lg:h-96 xl:h-[40rem] 2xl:h-[48rem] overflow-hidden ${
               isEntering ? 'animate-scale-in' : ''
             }`}>
@@ -265,21 +255,7 @@ export default function HistoryPage() {
                   <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">Our Legacy</h1>
                   <p className="text-lg sm:text-xl md:text-2xl opacity-90">Celebrating ISAB&apos;s Journey of Growth and Impact</p>
                   
-                  {/* Image cycling indicators */}
-                  <div className="flex justify-center space-x-2 mt-6">
-                    {headerImages.map((_, index) => (
-                      <button
-                        key={index}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                          index === currentImageIndex 
-                            ? 'bg-white scale-125' 
-                            : 'bg-white/50 hover:bg-white/80'
-                        }`}
-                        onClick={() => setCurrentImageIndex(index)}
-                        aria-label={`View ${currentSemesterBoards[index]?.title || 'board'} image`}
-                      />
-                    ))}
-                  </div>
+                  {/* DOTS REMOVED - No image cycling indicators */}
                 </div>
               </div>
             </div>
@@ -287,8 +263,8 @@ export default function HistoryPage() {
             <div className={`container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full ${
               isEntering ? 'animate-slide-up-delayed' : ''
             }`}>
-              {/* Replay Intro Button - Top of page under banner */}
-              <div className="max-w-4xl mx-auto mb-8">
+              {/* SPLASH SCREEN REPLAY BUTTON DISABLED FOR DEPLOYMENT */}
+              {/* <div className="max-w-4xl mx-auto mb-8">
                 <div className="flex justify-end">
                   <button
                     onClick={() => {
@@ -303,7 +279,7 @@ export default function HistoryPage() {
                     <span>Replay Intro</span>
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               <div className="max-w-4xl mx-auto">
                 {/* CMS Status */}
@@ -467,8 +443,8 @@ export default function HistoryPage() {
           </div>
         )}
 
-        {/* Development Tools - Reset Splash Button */}
-        {typeof window !== 'undefined' && process.env.NODE_ENV === 'development' && (
+        {/* DEVELOPMENT TOOLS DISABLED FOR DEPLOYMENT */}
+        {/* {typeof window !== 'undefined' && process.env.NODE_ENV === 'development' && (
           <div className="fixed bottom-4 right-4 z-40">
             <button
               onClick={() => {
@@ -481,7 +457,7 @@ export default function HistoryPage() {
               🎬 Reset History Splash
             </button>
           </div>
-        )}
+        )} */}
       </div>
     </>
   );
