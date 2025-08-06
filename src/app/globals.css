@@ -65,11 +65,17 @@ body {
   color: white !important;
 }
 
-/* Fix for green/primary backgrounds to ensure white text */
-.bg-primary,
-.text-primary-foreground,
-.bg-accent {
+/* Fix for green/primary backgrounds to ensure white text - BUT exclude buttons */
+.bg-primary:not(button):not(.bg-white),
+.text-primary-foreground:not(button):not(.bg-white),
+.bg-accent:not(button):not(.bg-white) {
   color: white !important;
+}
+
+/* Ensure white background buttons keep their intended text color */
+button.bg-white,
+.bg-white button {
+  color: inherit;
 }
 
 /* Navigation improvements for mobile - center icons */
