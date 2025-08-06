@@ -78,25 +78,30 @@ button.bg-white,
   color: inherit;
 }
 
-/* Force Learn More button to have green text */
+/* Force Learn More button to have green text - MAXIMUM SPECIFICITY */
+header.bg-primary-gradient button,
+header.bg-primary-gradient button *,
+.bg-primary-gradient header button,
+.bg-primary-gradient header button *,
+.bg-primary-gradient .container button,
+.bg-primary-gradient .container button *,
 .bg-primary-gradient button.bg-white,
-.bg-primary-gradient .bg-white {
+.bg-primary-gradient button.bg-white *,
+.bg-primary-gradient .bg-white,
+.bg-primary-gradient .bg-white * {
   color: #15803d !important; /* green-700 */
 }
 
+header.bg-primary-gradient button:hover,
+header.bg-primary-gradient button:hover *,
+.bg-primary-gradient header button:hover,
+.bg-primary-gradient header button:hover *,
+.bg-primary-gradient .container button:hover,
+.bg-primary-gradient .container button:hover *,
 .bg-primary-gradient button.bg-white:hover,
-.bg-primary-gradient .bg-white:hover {
-  color: #166534 !important; /* green-800 */
-}
-
-/* Ensure the chevron icon in the button is also green */
-.bg-primary-gradient button.bg-white svg,
-.bg-primary-gradient .bg-white svg {
-  color: #15803d !important; /* green-700 */
-}
-
-.bg-primary-gradient button.bg-white:hover svg,
-.bg-primary-gradient .bg-white:hover svg {
+.bg-primary-gradient button.bg-white:hover *,
+.bg-primary-gradient .bg-white:hover,
+.bg-primary-gradient .bg-white:hover * {
   color: #166534 !important; /* green-800 */
 }
 

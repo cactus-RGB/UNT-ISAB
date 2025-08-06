@@ -100,8 +100,9 @@ export default function HomePage({ onPageChange }: HomePageProps) {
               size="lg"
               className="bg-white text-green-700 hover:bg-gray-50 hover:text-green-800 shadow-lg border-2 border-green-600 font-semibold w-full sm:w-auto"
               onClick={() => onPageChange('history')}
+              style={{ color: '#15803d' }}
             >
-              Learn More <ChevronRight className="ml-2 h-5 w-5" />
+              <span style={{ color: '#15803d' }}>Learn More</span> <ChevronRight className="ml-2 h-5 w-5" style={{ color: '#15803d' }} />
             </Button>
           </div>
         </div>
