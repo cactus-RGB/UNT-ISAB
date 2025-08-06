@@ -133,7 +133,7 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
 
   return (
     <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto modal-backdrop"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 overflow-y-auto"
       onClick={handleClose}
       style={{
         position: 'fixed',
@@ -147,7 +147,7 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
       {/* Scrollable container */}
       <div className="min-h-full flex items-start justify-center p-4 py-8">
         <div 
-          className="bg-card rounded-2xl shadow-card-elevated max-w-3xl w-full transform transition-all duration-300 scale-100 relative my-8 modal-content border border-border"
+          className="bg-card/95 backdrop-blur-md rounded-2xl shadow-card-elevated max-w-3xl w-full transform transition-all duration-300 scale-100 relative my-8 border border-border/50"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
@@ -194,7 +194,7 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
           </div>
 
           {/* Content section */}
-          <div className="p-6 sm:p-8 bg-card text-foreground">
+          <div className="p-6 sm:p-8 bg-card/95 backdrop-blur-md text-foreground border-t border-border/30">
             {/* Role progression timeline */}
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center">
