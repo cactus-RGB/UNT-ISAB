@@ -144,7 +144,7 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
         zIndex: 9999
       }}
     >
-      {/* Scrollable container - no longer prevents page scroll */}
+      {/* Scrollable container */}
       <div className="min-h-full flex items-start justify-center p-4 py-8">
         <div 
           className="bg-card rounded-2xl shadow-card-elevated max-w-3xl w-full transform transition-all duration-300 scale-100 relative my-8"
@@ -209,7 +209,6 @@ export default function HistoryOfficerModal({ officer, isOpen, onClose, boardId 
                       <span className="font-semibold text-foreground text-lg">{roleInfo.role}</span>
                       <span className="text-muted-foreground text-sm ml-3">({roleInfo.period})</span>
                     </div>
-                    {/* REMOVED: "Current View" badge */}
                   </div>
                 ))}
               </div>
