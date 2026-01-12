@@ -95,7 +95,8 @@ export class GoogleDriveClient {
     try {
       const response = await this.fetchWithRetry(endpoint);
       return response as string;
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_error) {
       // If export fails, try getting file metadata to check if it's a regular file
       console.warn(`[GoogleDriveClient]: Failed to export document ${fileId}, trying regular download...`);
       return this.downloadFile(fileId);

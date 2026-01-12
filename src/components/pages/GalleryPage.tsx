@@ -3,9 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Image as ImageIcon, X, RefreshCw, AlertCircle } from 'lucide-react';
-import { useGoogleDriveCMS } from '@/hooks/useGoogleDriveCMS';
-import type { EventGallery } from '@/hooks/useGoogleDriveCMS';
+import { ChevronRight, Image as ImageIcon, X } from 'lucide-react';
+import type { EventGallery } from '@/lib/google-drive/types';
 
 // Fallback data for when Google Drive isn't set up
 const fallbackEventGalleries: EventGallery[] = [
@@ -118,13 +117,11 @@ function GalleryImage({ src, alt, onClick, className }: {
   );
 }
 
-export default function GalleryPage() {
-  const { 
-    eventGalleries: cmsGalleries, 
-    loading, 
-    error
-  } = useGoogleDriveCMS();
+interface GalleryPageProps {
+  eventGalleries: EventGallery[];
+}
 
+export default function GalleryPage({ eventGalleries: cmsGalleries }: GalleryPageProps) {
   const eventGalleries = cmsGalleries.length > 0 ? cmsGalleries : fallbackEventGalleries;
 
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
@@ -184,32 +181,6 @@ export default function GalleryPage() {
             Click on any event folder to view photos from that event
           </p>
         </div>
-
-        {error && (
-          <Card className="mb-8 border-destructive bg-destructive/5">
-            <CardContent className="p-6">
-              <div className="flex items-start space-x-3">
-                <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-destructive mb-1">Gallery Content Error</h3>
-                  <p className="text-sm text-muted-foreground">{error}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Using fallback data.</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {loading && (
-          <Card className="mb-8 border-primary bg-primary/5">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-3">
-                <RefreshCw className="h-5 w-5 animate-spin text-primary" />
-                <p className="text-primary">Loading galleries...</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {eventGalleries.length === 0 ? (
           <Card className="text-center py-12">

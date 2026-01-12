@@ -204,8 +204,6 @@ async function fetchDocuments(): Promise<DocumentContent[]> {
         file.mimeType === 'text/plain'
     );
 
-    const documents: DocumentContent[] = [];
-
     // Fetch all documents in parallel
     const documentPromises = docFiles.map(async file => {
       try {
@@ -374,8 +372,6 @@ async function fetchEventGalleriesData(): Promise<EventGallery[]> {
     const eventFolders = await googleDriveClient.listFolderContents(
       config.googleDrive.eventPhotosFolder
     );
-
-    const galleries: EventGallery[] = [];
 
     // Fetch all galleries in parallel
     const galleryPromises = eventFolders

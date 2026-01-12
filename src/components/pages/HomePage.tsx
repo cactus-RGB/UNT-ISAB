@@ -3,24 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Users, ExternalLink, ChevronRight, RefreshCw, AlertCircle } from 'lucide-react';
-import { useGoogleDriveCMS } from '@/hooks/useGoogleDriveCMS';
+import { BookOpen, Users, ExternalLink, ChevronRight } from 'lucide-react';
 import OfficerCard from '@/components/officers/OfficerCard';
 import OfficerModal from '@/components/officers/OfficerModal';
-import type { Officer } from '@/hooks/useGoogleDriveCMS';
+import type { Officer, ImportantLink, SiteContent } from '@/lib/google-drive/types';
 
 interface HomePageProps {
+  officers: Officer[];
+  importantLinks: ImportantLink[];
+  siteContent: SiteContent;
   onPageChange: (page: string) => void;
 }
 
-export default function HomePage({ onPageChange }: HomePageProps) {
-  const { 
-    officers, 
-    importantLinks, 
-    siteContent,
-    loading, 
-    error
-  } = useGoogleDriveCMS();
+export default function HomePage({ officers, importantLinks, siteContent, onPageChange }: HomePageProps) {
   
   const [selectedOfficer, setSelectedOfficer] = useState<Officer | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -109,33 +104,6 @@ export default function HomePage({ onPageChange }: HomePageProps) {
       </header>
 
       <section className="py-12 sm:py-16 md:py-20 container mx-auto px-4 sm:px-6 w-full">
-        {/* Loading/Error States - Simplified */}
-        {loading && (
-          <Card className="mb-12 border-primary bg-primary/5">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-3">
-                <RefreshCw className="h-5 w-5 animate-spin text-primary" />
-                <p className="font-medium text-primary">Loading content...</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {error && (
-          <Card className="mb-12 border-destructive bg-destructive/5">
-            <CardContent className="p-6">
-              <div className="flex items-start space-x-3">
-                <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-destructive mb-1">Content Load Error</h3>
-                  <p className="text-sm text-muted-foreground">{error}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Using fallback data.</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         <Card className="mb-12 sm:mb-16 shadow-card-hover border-border bg-card">
           <CardHeader className="pb-4 sm:pb-6">
             <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold flex items-center text-foreground">
@@ -156,13 +124,8 @@ export default function HomePage({ onPageChange }: HomePageProps) {
           <p className="text-muted-foreground mb-8 sm:mb-12 text-sm sm:text-base md:text-lg">
             Click on any officer card to view their detailed information including major, home country, and personal quote
           </p>
-          
-          {loading ? (
-            <div className="text-center py-8">
-              <RefreshCw className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-              <p className="text-muted-foreground">Loading officers...</p>
-            </div>
-          ) : officers.length > 0 ? (
+
+          {officers.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
               {officers.map((officer, index) => (
                 <OfficerCard

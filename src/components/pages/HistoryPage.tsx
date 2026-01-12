@@ -4,23 +4,24 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Users, RefreshCw, AlertCircle } from 'lucide-react';
-import { useGoogleDriveCMS } from '@/hooks/useGoogleDriveCMS';
+import { ChevronRight, Users } from 'lucide-react';
 import { semesterBoards, masterOfficerProfiles } from '@/data/history';
 import type { OfficerProfile } from '@/data/history';
 import HistoryOfficerModal from '@/components/history/HistoryOfficerModal';
 import HistoryOfficerCard from '@/components/history/HistoryOfficerCard';
+import type { SiteContent } from '@/lib/google-drive/types';
 // Splash screen import commented out for deployment
 // import VideoSplashScreen from '@/components/SplashScreen';
 
 // SPLASH SCREEN DISABLED - Key kept for potential future use
 // const HISTORY_SPLASH_VIEWED_KEY = 'isab-history-splash-viewed';
 
-export default function HistoryPage() {
-  const { 
-    loading, 
-    error
-  } = useGoogleDriveCMS();
+interface HistoryPageProps {
+  siteContent: SiteContent;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function HistoryPage({ siteContent }: HistoryPageProps) {
 
   // Use hardcoded data for now since CMS history integration is not complete
   const currentSemesterBoards = semesterBoards;
@@ -277,33 +278,6 @@ export default function HistoryPage() {
               </div> */}
 
               <div className="max-w-4xl mx-auto">
-                {/* CMS Status */}
-                {error && (
-                  <Card className="mb-8 border-destructive bg-destructive/5">
-                    <CardContent className="p-6">
-                      <div className="flex items-start space-x-3">
-                        <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
-                        <div>
-                          <h3 className="font-medium text-destructive mb-1">History Content Error</h3>
-                          <p className="text-sm text-muted-foreground">{error}</p>
-                          <p className="text-sm text-muted-foreground mt-1">Using fallback data.</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {loading && (
-                  <Card className="mb-8 border-primary bg-primary/5">
-                    <CardContent className="p-6">
-                      <div className="flex items-center space-x-3">
-                        <RefreshCw className="h-5 w-5 animate-spin text-primary" />
-                        <p className="text-primary">Loading history content...</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
                 <Card className="shadow-card-hover border-border bg-card mb-16">
                   <CardContent className="p-8 sm:p-12">
                     <div className="prose prose-lg max-w-none">
