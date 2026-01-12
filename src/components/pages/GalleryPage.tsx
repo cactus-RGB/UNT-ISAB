@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Image as ImageIcon, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Image as ImageIcon, X, Calendar, ImagePlus } from 'lucide-react';
 import type { EventGallery } from '@/lib/google-drive/types';
 
 // Fallback data for when Google Drive isn't set up
@@ -65,39 +65,53 @@ export default function GalleryPage({ eventGalleries: cmsGalleries }: GalleryPag
   const eventGalleries = cmsGalleries.length > 0 ? cmsGalleries : fallbackEventGalleries;
 
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [currentScrollPosition, setCurrentScrollPosition] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
   const openEventGallery = (eventId: string) => {
     setSelectedEvent(eventId);
+    setSelectedImageIndex(null); // Reset image selection when opening gallery
   };
 
   const closeEventGallery = () => {
     setSelectedEvent(null);
+    setSelectedImageIndex(null);
   };
 
-  const openLightbox = (imageUrl: string) => {
-    // Save the current scroll position when opening lightbox
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    setCurrentScrollPosition(scrollTop);
-    
-    setSelectedImage(imageUrl);
+  const openLightbox = (index: number) => {
+    setSelectedImageIndex(index);
     document.body.style.overflow = 'hidden';
   };
 
   const closeLightbox = () => {
-    setSelectedImage(null);
-    setCurrentScrollPosition(0);
+    setSelectedImageIndex(null);
     document.body.style.overflow = 'unset';
+  };
+
+  const goToPreviousImage = () => {
+    if (selectedImageIndex !== null && currentEvent) {
+      setSelectedImageIndex((selectedImageIndex - 1 + currentEvent.images.length) % currentEvent.images.length);
+    }
+  };
+
+  const goToNextImage = () => {
+    if (selectedImageIndex !== null && currentEvent) {
+      setSelectedImageIndex((selectedImageIndex + 1) % currentEvent.images.length);
+    }
   };
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        if (selectedImage) {
+        if (selectedImageIndex !== null) {
           closeLightbox();
         } else if (selectedEvent) {
           closeEventGallery();
+        }
+      } else if (selectedImageIndex !== null) {
+        if (event.key === 'ArrowLeft') {
+          goToPreviousImage();
+        } else if (event.key === 'ArrowRight') {
+          goToNextImage();
         }
       }
     };
@@ -107,61 +121,76 @@ export default function GalleryPage({ eventGalleries: cmsGalleries }: GalleryPag
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [selectedImage, selectedEvent]);
+  }, [selectedImageIndex, selectedEvent]);
 
   const currentEvent = selectedEvent ? eventGalleries.find(event => event.id === selectedEvent) : null;
+  const currentImage = currentEvent && selectedImageIndex !== null ? currentEvent.images[selectedImageIndex] : null;
 
   // Main gallery view
   if (!selectedEvent) {
     return (
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
+        {/* Header */}
         <div className="mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-foreground">Event Gallery</h1>
-          <p className="text-muted-foreground text-sm sm:text-base md:text-lg">
-            Click on any event folder to view photos from that event
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-foreground bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Event Gallery
+          </h1>
+          <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl">
+            Explore our vibrant community through photos from our events and gatherings
           </p>
         </div>
 
         {eventGalleries.length === 0 ? (
-          <Card className="text-center py-12">
+          <Card className="text-center py-16 border-2 border-dashed border-border">
             <CardContent className="p-12">
-              <ImageIcon className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-foreground mb-2">No Event Galleries Found</h3>
-              <p className="text-muted-foreground">
+              <ImageIcon className="h-20 w-20 text-muted-foreground/50 mx-auto mb-6" />
+              <h3 className="text-2xl font-bold text-foreground mb-3">No Event Galleries Found</h3>
+              <p className="text-muted-foreground text-lg">
                 Create event folders in your Google Drive to see galleries here.
               </p>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {eventGalleries.map((event, index) => (
-              <Card 
-                key={index} 
-                className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2"
+              <Card
+                key={index}
+                className="group relative transition-all duration-300 hover:shadow-2xl border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-3 hover:scale-[1.02]"
                 onClick={() => openEventGallery(event.id)}
               >
-                <div className="relative h-64 overflow-hidden">
+                {/* Cover Image */}
+                <div className="relative h-72 overflow-hidden">
                   <GalleryImage
                     src={event.coverImage}
                     alt={event.title}
                     className="w-full h-full"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                  <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {event.totalImages} photos
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+
+                  {/* Photo Count Badge */}
+                  <div className="absolute top-4 right-4 flex items-center gap-2 bg-primary/90 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    <ImagePlus className="h-4 w-4" />
+                    {event.totalImages}
+                  </div>
+
+                  {/* Title Overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                      {event.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-white/90 text-sm">
+                      <Calendar className="h-4 w-4" />
+                      <span className="font-medium">{event.date}</span>
+                    </div>
                   </div>
                 </div>
-                
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
-                    {event.title}
-                  </h3>
-                  <p className="text-primary font-medium text-sm mb-2">{event.date}</p>
-                  <p className="text-muted-foreground leading-relaxed">{event.description}</p>
-                  
-                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <p className="text-sm text-primary font-medium">Click to view gallery →</p>
+
+                {/* Card Content */}
+                <CardContent className="p-6 bg-gradient-to-br from-card to-muted/20">
+                  <div className="flex items-center justify-between">
+                    <span className="text-primary font-semibold text-sm uppercase tracking-wide">View Gallery</span>
+                    <ChevronRight className="h-5 w-5 text-primary transition-transform duration-300 group-hover:translate-x-1" />
                   </div>
                 </CardContent>
               </Card>
@@ -176,114 +205,132 @@ export default function GalleryPage({ eventGalleries: cmsGalleries }: GalleryPag
   if (currentEvent) {
     return (
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
-        <div className="flex flex-col sm:flex-row sm:items-center mb-6 sm:mb-8">
-          <Button 
-            variant="ghost" 
-            onClick={closeEventGallery}
-            className="mb-4 sm:mb-0 sm:mr-4 hover:bg-primary/10 self-start"
+        {/* Header with Back Button */}
+        <div className="mb-8 sm:mb-12">
+          <Button
+            variant="ghost"
+            onClick={(e) => {
+              e.preventDefault();
+              closeEventGallery();
+            }}
+            className="mb-6 hover:bg-primary/10 group"
           >
-            <ChevronRight className="h-4 sm:h-5 w-4 sm:w-5 mr-2 rotate-180" />
-            Back to Gallery
+            <ChevronLeft className="h-5 w-5 mr-2 transition-transform group-hover:-translate-x-1" />
+            <span className="font-semibold">Back to All Galleries</span>
           </Button>
-          <div className="flex-1">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">{currentEvent.title}</h1>
-            <p className="text-muted-foreground text-sm sm:text-base md:text-lg mt-2">{currentEvent.date} • {currentEvent.totalImages} photos</p>
+
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-foreground">
+            {currentEvent.title}
+          </h1>
+
+          <div className="flex items-center gap-4 text-muted-foreground text-lg">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              <span>{currentEvent.date}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ImagePlus className="h-5 w-5 text-primary" />
+              <span>{currentEvent.totalImages} photos</span>
+            </div>
           </div>
         </div>
 
-        <Card className="mb-8 shadow-card-hover border-border bg-card">
-          <CardContent className="p-6">
-            <p className="text-muted-foreground leading-relaxed">{currentEvent.description}</p>
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        {/* Photo Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {currentEvent.images.map((image, index) => (
             <div
-              key={index} 
-              className="group transition-all duration-300 hover:shadow-card-elevated border border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-1 rounded-lg"
-              onClick={() => openLightbox(image.url)}
+              key={index}
+              className="group relative transition-all duration-300 hover:shadow-2xl border border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2 hover:scale-105 rounded-xl"
+              onClick={() => openLightbox(index)}
             >
               <div className="relative aspect-square overflow-hidden">
                 <GalleryImage
                   src={image.url}
-                  alt={`Gallery image ${index + 1}`}
+                  alt={image.caption || `Photo ${index + 1}`}
                   className="w-full h-full"
                 />
-                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
+                    <ImageIcon className="h-6 w-6 text-primary" />
+                  </div>
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Perfect Mobile Lightbox with Background Blur - Positioned at Current Scroll Level */}
-        {selectedImage && (
-          <>
-            {/* Background blur overlay */}
-            <div 
-              className="fixed inset-0 z-40"
-              style={{
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              }}
-            />
-            
-            {/* Lightbox content */}
-            <div 
-              className="fixed inset-0 z-50"
+        {/* Lightbox */}
+        {selectedImageIndex !== null && currentImage && (
+          <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-lg">
+            {/* Close Button */}
+            <button
               onClick={closeLightbox}
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                zIndex: 50,
-                width: '100vw',
-                height: '100vh',
-              }}
+              className="absolute top-4 right-4 z-20 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 text-white backdrop-blur-sm"
             >
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  closeLightbox();
-                }}
-                className="absolute top-4 right-4 z-20 p-3 rounded-full bg-black/60 hover:bg-black/80 transition-colors duration-200 text-white"
-                style={{ position: 'fixed' }}
-              >
-                <X className="h-6 w-6" />
-              </button>
-              
-              {/* Image positioned at user's current scroll position */}
-              <div 
-                className="absolute w-full h-screen flex items-center justify-center p-4"
-                style={{
-                  top: `${currentScrollPosition}px`,
-                  left: 0,
-                  right: 0,
-                }}
-              >
-                <div className="relative max-w-[90vw] max-h-[90vh] w-full h-full flex items-center justify-center">
-                  <GalleryImage
-                    src={selectedImage}
-                    alt="Gallery image"
-                    className="max-w-full max-h-full object-contain"
+              <X className="h-6 w-6" />
+            </button>
+
+            {/* Image Counter */}
+            <div className="absolute top-4 left-4 z-20 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-white font-semibold">
+              {selectedImageIndex + 1} / {currentEvent.images.length}
+            </div>
+
+            {/* Navigation Buttons */}
+            {currentEvent.images.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToPreviousImage();
+                  }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 text-white backdrop-blur-sm"
+                >
+                  <ChevronLeft className="h-8 w-8" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goToNextImage();
+                  }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors duration-200 text-white backdrop-blur-sm"
+                >
+                  <ChevronRight className="h-8 w-8" />
+                </button>
+              </>
+            )}
+
+            {/* Image Container */}
+            <div
+              className="w-full h-full flex items-center justify-center p-4 sm:p-8"
+              onClick={closeLightbox}
+            >
+              <div className="relative max-w-7xl max-h-full w-full h-full flex items-center justify-center">
+                <div className="relative w-full h-full">
+                  <Image
+                    src={currentImage.url}
+                    alt={currentImage.caption || `Photo ${selectedImageIndex + 1}`}
+                    fill
+                    className="object-contain"
+                    sizes="100vw"
+                    priority
                   />
                 </div>
               </div>
-              
-              {/* Mobile instruction positioned relative to scroll */}
-              <div 
-                className="absolute left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm sm:hidden"
-                style={{
-                  top: `${currentScrollPosition + window.innerHeight - 80}px`,
-                }}
-              >
-                Tap to close
-              </div>
             </div>
-          </>
+
+            {/* Caption */}
+            {currentImage.caption && (
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 max-w-2xl px-6 py-3 bg-white/10 backdrop-blur-md rounded-lg text-white text-center">
+                {currentImage.caption}
+              </div>
+            )}
+
+            {/* Mobile Instruction */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm sm:hidden">
+              Tap to close
+            </div>
+          </div>
         )}
       </div>
     );
