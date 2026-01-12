@@ -23,12 +23,11 @@ const fallbackEventGalleries: EventGallery[] = [
 ];
 
 // Next.js Image component with fallback for gallery images
-function GalleryImage({ src, alt, onClick, className, fill = false }: {
+function GalleryImage({ src, alt, onClick, className }: {
   src: string;
   alt: string;
   onClick?: () => void;
   className?: string;
-  fill?: boolean;
 }) {
   const [imageError, setImageError] = useState(false);
 
@@ -48,10 +47,8 @@ function GalleryImage({ src, alt, onClick, className, fill = false }: {
       <Image
         src={src}
         alt={alt}
-        fill={fill}
-        width={fill ? undefined : 800}
-        height={fill ? undefined : 600}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        fill
+        className="object-cover transition-transform duration-500 group-hover:scale-110"
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         onError={() => setImageError(true)}
         priority={false}
