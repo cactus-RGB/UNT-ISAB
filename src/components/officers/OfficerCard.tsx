@@ -1,7 +1,8 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
-import type { Officer } from '@/hooks/useGoogleDriveCMS';
+import React, { useState } from 'react';
+import Image from 'next/image';
+import type { Officer } from '@/lib/google-drive/types';
 import { Users } from 'lucide-react';
 
 interface OfficerCardProps {
@@ -9,76 +10,9 @@ interface OfficerCardProps {
   onClick: (officer: Officer) => void;
 }
 
-// Smart Image component that handles Google Drive URLs with fallbacks
-function SmartImage({ src, alt, onLoad, onError }: { 
-  src: string; 
-  alt: string; 
-  onLoad?: () => void; 
-  onError?: () => void; 
-}) {
+// Next.js Image component with fallback for officer photos
+function OfficerImage({ src, alt }: { src: string; alt: string }) {
   const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-  const [currentSrc, setCurrentSrc] = useState(src);
-  const [attemptCount, setAttemptCount] = useState(0);
-
-  // Extract file ID from Google Drive URL
-  const getFileIdFromUrl = (url: string): string | null => {
-    const match = url.match(/[?&]id=([^&]+)/);
-    return match ? match[1] : null;
-  };
-
-  // Generate different URL formats for Google Drive
-  const getAlternativeUrls = (originalUrl: string): string[] => {
-    const fileId = getFileIdFromUrl(originalUrl);
-    if (!fileId) return [originalUrl];
-
-    return [
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w800-h600`, // Banner size format
-      `https://lh3.googleusercontent.com/d/${fileId}=w800-h600`, // Google User Content format
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w600-h450`, // Medium banner
-      `https://lh3.googleusercontent.com/d/${fileId}=s800`, // Alternative format
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h300`, // Smaller banner fallback
-      originalUrl, // Original URL as last resort
-    ];
-  };
-
-  const handleImageError = () => {
-    const isGoogleDriveUrl = src.includes('drive.google.com');
-    
-    if (isGoogleDriveUrl && attemptCount < 5) {
-      // Try alternative URL formats
-      const alternatives = getAlternativeUrls(src);
-      const nextUrl = alternatives[attemptCount + 1];
-      
-      if (nextUrl) {
-        console.log(`Card: Trying alternative URL ${attemptCount + 1} for ${alt}: ${nextUrl}`);
-        setAttemptCount(prev => prev + 1);
-        setCurrentSrc(nextUrl);
-        setImageLoading(true);
-        return; // Don't set error yet, try the next URL
-      }
-    }
-
-    console.error(`Card: All attempts failed for image: ${src}`);
-    setImageError(true);
-    setImageLoading(false);
-    if (onError) onError();
-  };
-
-  const handleImageLoad = () => {
-    console.log(`Card: Successfully loaded image: ${currentSrc}`);
-    setImageError(false);
-    setImageLoading(false);
-    if (onLoad) onLoad();
-  };
-
-  // Reset when src changes
-  useEffect(() => {
-    setImageError(false);
-    setImageLoading(true);
-    setCurrentSrc(src);
-    setAttemptCount(0);
-  }, [src]);
 
   if (imageError) {
     return (
@@ -91,25 +25,18 @@ function SmartImage({ src, alt, onLoad, onError }: {
 
   return (
     <div className="relative w-full h-full">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={currentSrc}
+      <Image
+        src={src}
         alt={alt}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        onLoad={handleImageLoad}
-        onError={handleImageError}
-        loading="lazy"
-        crossOrigin="anonymous"
+        fill
+        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        onError={() => setImageError(true)}
+        priority={false}
       />
-      
+
       {/* Gradient overlay for better text readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-300"></div>
-      
-      {imageLoading && (
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-        </div>
-      )}
     </div>
   );
 }
@@ -126,7 +53,7 @@ export default function OfficerCard({ officer, onClick }: OfficerCardProps) {
     >
       {/* Banner Image Section */}
       <div className="relative h-64 sm:h-72 md:h-80 overflow-hidden">
-        <SmartImage
+        <OfficerImage
           src={officer.image}
           alt={`${officer.name} - ${officer.role}`}
         />

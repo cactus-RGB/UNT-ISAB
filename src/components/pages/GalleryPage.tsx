@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Image as ImageIcon, X } from 'lucide-react';
@@ -21,69 +22,15 @@ const fallbackEventGalleries: EventGallery[] = [
   }
 ];
 
-// Smart Image component for Google Drive images
-function GalleryImage({ src, alt, onClick, className }: { 
-  src: string; 
-  alt: string; 
+// Next.js Image component with fallback for gallery images
+function GalleryImage({ src, alt, onClick, className, fill = false }: {
+  src: string;
+  alt: string;
   onClick?: () => void;
   className?: string;
+  fill?: boolean;
 }) {
   const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-  const [currentSrc, setCurrentSrc] = useState(src);
-  const [attemptCount, setAttemptCount] = useState(0);
-
-  // Extract file ID from Google Drive URL
-  const getFileIdFromUrl = (url: string): string | null => {
-    const match = url.match(/[?&]id=([^&]+)/);
-    return match ? match[1] : null;
-  };
-
-  // Generate different URL formats for Google Drive
-  const getAlternativeUrls = (originalUrl: string): string[] => {
-    const fileId = getFileIdFromUrl(originalUrl);
-    if (!fileId) return [originalUrl];
-
-    return [
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w800-h800`,
-      `https://lh3.googleusercontent.com/d/${fileId}=w800-h800`,
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w600-h600`,
-      `https://lh3.googleusercontent.com/d/${fileId}=s800`,
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h400`,
-      originalUrl,
-    ];
-  };
-
-  const handleImageError = () => {
-    const isGoogleDriveUrl = src.includes('drive.google.com');
-    
-    if (isGoogleDriveUrl && attemptCount < 5) {
-      const alternatives = getAlternativeUrls(src);
-      const nextUrl = alternatives[attemptCount + 1];
-      
-      if (nextUrl) {
-        setAttemptCount(prev => prev + 1);
-        setCurrentSrc(nextUrl);
-        setImageLoading(true);
-        return;
-      }
-    }
-
-    setImageError(true);
-    setImageLoading(false);
-  };
-
-  const handleImageLoad = () => {
-    setImageError(false);
-    setImageLoading(false);
-  };
-
-  useEffect(() => {
-    setImageError(false);
-    setImageLoading(true);
-    setCurrentSrc(src);
-    setAttemptCount(0);
-  }, [src]);
 
   if (imageError) {
     return (
@@ -98,21 +45,17 @@ function GalleryImage({ src, alt, onClick, className }: {
 
   return (
     <div className={`relative ${className}`} onClick={onClick}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={currentSrc}
+      <Image
+        src={src}
         alt={alt}
+        fill={fill}
+        width={fill ? undefined : 800}
+        height={fill ? undefined : 600}
         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        onError={handleImageError}
-        onLoad={handleImageLoad}
-        crossOrigin="anonymous"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        onError={() => setImageError(true)}
+        priority={false}
       />
-      
-      {imageLoading && (
-        <div className="absolute inset-0 bg-muted/20 flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-        </div>
-      )}
     </div>
   );
 }
