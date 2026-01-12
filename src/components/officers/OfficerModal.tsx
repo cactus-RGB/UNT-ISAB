@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { X, GraduationCap, Globe, Users, Briefcase } from 'lucide-react';
-import type { Officer } from '@/hooks/useGoogleDriveCMS';
+import type { Officer } from '@/lib/google-drive/types';
 
 interface OfficerModalProps {
   officer: Officer | null;

@@ -1,3 +1,14 @@
+/**
+ * @deprecated This hook is deprecated. Use server-side data fetching instead.
+ *
+ * This file is kept for backward compatibility with existing client-side components
+ * that still import types from this file. For new code:
+ * - Use `fetchAllCMSData()` from '@/lib/google-drive/fetchers' for server-side fetching
+ * - Import types from '@/lib/google-drive/types'
+ *
+ * Migration: This hook performs client-side fetching which is slower and exposes API keys.
+ * The new architecture uses SSG/ISR with server-side fetching at build time.
+ */
 "use client"
 
 import { useState, useEffect, useCallback } from 'react';
