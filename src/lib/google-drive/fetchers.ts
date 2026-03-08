@@ -1,4 +1,3 @@
-import { Users, CalendarIcon, BookOpen, LucideIcon } from 'lucide-react';
 import { googleDriveClient } from './client';
 import { config, validateConfig, getGoogleDriveImageUrl, getFallbackImageUrl } from './config';
 import type {
@@ -9,22 +8,6 @@ import type {
   DocumentContent,
   CMSData,
 } from './types';
-
-// ============================================================================
-// ICON MAPPING
-// ============================================================================
-
-const getIconComponent = (iconName: string): LucideIcon => {
-  const iconMap: Record<string, LucideIcon> = {
-    users: Users,
-    calendar: CalendarIcon,
-    book: BookOpen,
-    bookopen: BookOpen,
-  };
-
-  const normalized = iconName.toLowerCase().trim();
-  return iconMap[normalized] || Users;
-};
 
 // ============================================================================
 // PARSING FUNCTIONS
@@ -129,15 +112,14 @@ export function parseLinksDocument(content: string): ImportantLink[] {
           link.description = value;
           break;
         case 'icon':
-          link.icon = getIconComponent(value);
+          link.icon = value.toLowerCase().trim();
           break;
       }
     }
 
     if (link.title && link.url) {
-      // Set default icon if not provided
       if (!link.icon) {
-        link.icon = Users;
+        link.icon = 'users';
       }
       links.push(link as ImportantLink);
     }

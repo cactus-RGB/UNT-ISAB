@@ -25,7 +25,8 @@ export class GoogleDriveClient {
    */
   private async fetchWithRetry(
     endpoint: string,
-    retryCount = 0
+    retryCount = 0,
+    returnText = false
   ): Promise<unknown> {
     const url = `${this.baseUrl}/${endpoint}${
       endpoint.includes('?') ? '&' : '?'
@@ -46,7 +47,7 @@ export class GoogleDriveClient {
           const delay = this.retryDelay * Math.pow(2, retryCount);
           console.log(`[GoogleDriveClient]: Rate limited, retrying in ${delay}ms...`);
           await new Promise(resolve => setTimeout(resolve, delay));
-          return this.fetchWithRetry(endpoint, retryCount + 1);
+          return this.fetchWithRetry(endpoint, retryCount + 1, returnText);
         }
 
         // Handle specific errors
@@ -62,14 +63,14 @@ export class GoogleDriveClient {
         }
       }
 
-      return response.json();
+      return returnText ? response.text() : response.json();
     } catch (error) {
       // Retry on network errors
       if (retryCount < this.maxRetries && error instanceof TypeError) {
         const delay = this.retryDelay * Math.pow(2, retryCount);
         console.log(`[GoogleDriveClient]: Network error, retrying in ${delay}ms...`);
         await new Promise(resolve => setTimeout(resolve, delay));
-        return this.fetchWithRetry(endpoint, retryCount + 1);
+        return this.fetchWithRetry(endpoint, retryCount + 1, returnText);
       }
       throw error;
     }
@@ -87,18 +88,25 @@ export class GoogleDriveClient {
   }
 
   /**
-   * Export a Google Doc as plain text
+   * Export a Google Doc as plain text.
+   * Uses the direct Docs export URL which works for publicly shared files
+   * without OAuth (the Drive API export endpoint requires OAuth even for public files).
    */
   async exportDocument(fileId: string): Promise<string> {
-    const endpoint = `files/${fileId}/export?mimeType=text/plain`;
+    const url = `https://docs.google.com/document/d/${fileId}/export?format=txt`;
 
     try {
-      const response = await this.fetchWithRetry(endpoint);
-      return response as string;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_error) {
-      // If export fails, try getting file metadata to check if it's a regular file
-      console.warn(`[GoogleDriveClient]: Failed to export document ${fileId}, trying regular download...`);
+      const response = await fetch(url, {
+        next: { revalidate: 3600 },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to export document: ${response.status}`);
+      }
+
+      return response.text();
+    } catch {
+      console.warn(`[GoogleDriveClient]: Failed to export document ${fileId}, trying Drive API download...`);
       return this.downloadFile(fileId);
     }
   }
@@ -108,7 +116,7 @@ export class GoogleDriveClient {
    */
   async downloadFile(fileId: string): Promise<string> {
     const endpoint = `files/${fileId}?alt=media`;
-    const response = await this.fetchWithRetry(endpoint);
+    const response = await this.fetchWithRetry(endpoint, 0, true);
     return response as string;
   }
 

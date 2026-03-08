@@ -1,5 +1,3 @@
-import { LucideIcon } from 'lucide-react';
-
 // ============================================================================
 // CORE CMS DATA TYPES
 // ============================================================================
@@ -21,7 +19,7 @@ export interface ImportantLink {
   title: string;
   url: string;
   description: string;
-  icon: LucideIcon;
+  icon: string;
 }
 
 export interface EventImage {

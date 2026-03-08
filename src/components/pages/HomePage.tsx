@@ -3,7 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Users, ExternalLink, ChevronRight } from 'lucide-react';
+import { BookOpen, Users, CalendarIcon, ExternalLink, ChevronRight, type LucideIcon } from 'lucide-react';
+
+const iconMap: Record<string, LucideIcon> = {
+  users: Users,
+  calendar: CalendarIcon,
+  book: BookOpen,
+  bookopen: BookOpen,
+};
+
+function resolveIcon(name: string): LucideIcon {
+  return iconMap[name.toLowerCase()] ?? Users;
+}
 import OfficerCard from '@/components/officers/OfficerCard';
 import OfficerModal from '@/components/officers/OfficerModal';
 import type { Officer, ImportantLink, SiteContent } from '@/lib/google-drive/types';
@@ -150,7 +161,7 @@ export default function HomePage({ officers, importantLinks, siteContent, onPage
           {importantLinks.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
               {importantLinks.map((link, index) => {
-                const IconComponent = link.icon;
+                const IconComponent = resolveIcon(link.icon);
                 return (
                   <Card key={index} className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card hover:-translate-y-2">
                     <CardContent className="p-6 sm:p-8">
