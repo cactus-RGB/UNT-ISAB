@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -62,27 +62,30 @@ export default function GalleryPage({ eventGalleries }: GalleryPageProps) {
     setSelectedImageIndex(null);
   };
 
+  const currentEvent = selectedEvent ? eventGalleries.find(event => event.id === selectedEvent) : null;
+  const currentImage = currentEvent && selectedImageIndex !== null ? currentEvent.images[selectedImageIndex] : null;
+
   const openLightbox = (index: number) => {
     setSelectedImageIndex(index);
     document.body.style.overflow = 'hidden';
   };
 
-  const closeLightbox = () => {
+  const closeLightbox = useCallback(() => {
     setSelectedImageIndex(null);
     document.body.style.overflow = 'unset';
-  };
+  }, []);
 
-  const goToPreviousImage = () => {
+  const goToPreviousImage = useCallback(() => {
     if (selectedImageIndex !== null && currentEvent) {
       setSelectedImageIndex((selectedImageIndex - 1 + currentEvent.images.length) % currentEvent.images.length);
     }
-  };
+  }, [selectedImageIndex, currentEvent]);
 
-  const goToNextImage = () => {
+  const goToNextImage = useCallback(() => {
     if (selectedImageIndex !== null && currentEvent) {
       setSelectedImageIndex((selectedImageIndex + 1) % currentEvent.images.length);
     }
-  };
+  }, [selectedImageIndex, currentEvent]);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -106,10 +109,7 @@ export default function GalleryPage({ eventGalleries }: GalleryPageProps) {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [selectedImageIndex, selectedEvent, goToPreviousImage, goToNextImage]);
-
-  const currentEvent = selectedEvent ? eventGalleries.find(event => event.id === selectedEvent) : null;
-  const currentImage = currentEvent && selectedImageIndex !== null ? currentEvent.images[selectedImageIndex] : null;
+  }, [selectedImageIndex, selectedEvent, closeLightbox, goToPreviousImage, goToNextImage]);
 
   // Main gallery view
   if (!selectedEvent) {

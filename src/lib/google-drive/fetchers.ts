@@ -1,6 +1,6 @@
 import { Users, CalendarIcon, BookOpen, LucideIcon } from 'lucide-react';
 import { googleDriveClient } from './client';
-import { config, getGoogleDriveImageUrl, getFallbackImageUrl } from './config';
+import { config, validateConfig, getGoogleDriveImageUrl, getFallbackImageUrl } from './config';
 import type {
   Officer,
   ImportantLink,
@@ -444,6 +444,7 @@ export async function fetchAllCMSData(): Promise<CMSData> {
   console.log('[Fetchers]: Starting to fetch all CMS data...');
 
   try {
+    validateConfig();
     // Step 1: Fetch documents first (needed for parsing other data)
     const documents = await fetchDocuments().catch(err => {
       console.error('Failed to fetch documents:', err);
