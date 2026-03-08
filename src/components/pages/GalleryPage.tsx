@@ -7,21 +7,6 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Image as ImageIcon, X, Calendar, ImagePlus } from 'lucide-react';
 import type { EventGallery } from '@/lib/google-drive/types';
 
-// Fallback data for when Google Drive isn't set up
-const fallbackEventGalleries: EventGallery[] = [
-  {
-    id: 'sample-event',
-    title: 'Sample ISAB Event',
-    date: 'Recent',
-    description: 'Sample event gallery - please set up Google Drive to see actual events',
-    coverImage: '/assets/gallery/gallery2.jpeg',
-    totalImages: 1,
-    images: [
-      { url: '/assets/gallery/gallery2.jpeg', caption: 'Sample event photo' }
-    ]
-  }
-];
-
 // Next.js Image component with fallback for gallery images
 function GalleryImage({ src, alt, onClick, className }: {
   src: string;
@@ -48,6 +33,7 @@ function GalleryImage({ src, alt, onClick, className }: {
         src={src}
         alt={alt}
         fill
+        quality={95}
         className="object-cover transition-transform duration-500 group-hover:scale-110"
         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         onError={() => setImageError(true)}
@@ -61,8 +47,7 @@ interface GalleryPageProps {
   eventGalleries: EventGallery[];
 }
 
-export default function GalleryPage({ eventGalleries: cmsGalleries }: GalleryPageProps) {
-  const eventGalleries = cmsGalleries.length > 0 ? cmsGalleries : fallbackEventGalleries;
+export default function GalleryPage({ eventGalleries }: GalleryPageProps) {
 
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -121,7 +106,7 @@ export default function GalleryPage({ eventGalleries: cmsGalleries }: GalleryPag
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [selectedImageIndex, selectedEvent]);
+  }, [selectedImageIndex, selectedEvent, goToPreviousImage, goToNextImage]);
 
   const currentEvent = selectedEvent ? eventGalleries.find(event => event.id === selectedEvent) : null;
   const currentImage = currentEvent && selectedImageIndex !== null ? currentEvent.images[selectedImageIndex] : null;
@@ -311,6 +296,7 @@ export default function GalleryPage({ eventGalleries: cmsGalleries }: GalleryPag
                     src={currentImage.url}
                     alt={currentImage.caption || `Photo ${selectedImageIndex + 1}`}
                     fill
+                    quality={95}
                     className="object-contain"
                     sizes="100vw"
                     priority

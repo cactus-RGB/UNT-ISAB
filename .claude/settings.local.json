@@ -4,7 +4,9 @@
       "Bash(git log:*)",
       "Bash(git add:*)",
       "Bash(npm run build:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(taskkill:*)",
+      "Bash(npm run dev:*)"
     ]
   }
 }
