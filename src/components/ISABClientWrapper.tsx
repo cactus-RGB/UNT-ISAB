@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Navigation from '@/components/Navigation';
 import HomePage from '@/components/pages/HomePage';
 import HistoryPage from '@/components/pages/HistoryPage';
@@ -12,13 +13,21 @@ interface ISABClientWrapperProps {
   cmsData: CMSData;
 }
 
+const pageVariants = {
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  exit:    { opacity: 0, y: -8 },
+};
+
+const pageTransition = {
+  duration: 0.28,
+  ease: 'easeOut' as const,
+};
+
 export default function ISABClientWrapper({ cmsData }: ISABClientWrapperProps) {
-  // Navigation state
   const [currentPage, setCurrentPage] = useState('home');
   const [date, setDate] = useState<Date>(new Date());
-  const [isPageTransitioning, setIsPageTransitioning] = useState(false);
 
-  // URL navigation logic
   useEffect(() => {
     const handleInitialLoad = () => {
       if (typeof window !== 'undefined') {
@@ -45,67 +54,54 @@ export default function ISABClientWrapper({ cmsData }: ISABClientWrapperProps) {
     }
   }, []);
 
-  // Page change handler
   const handlePageChange = (page: string) => {
     if (page === currentPage) return;
-
-    setIsPageTransitioning(true);
 
     if (typeof window !== 'undefined') {
       const newUrl = page === 'home' ? '/' : `/#${page}`;
       window.history.pushState({ page }, '', newUrl);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    setTimeout(() => {
-      setCurrentPage(page);
-      setIsPageTransitioning(false);
-      if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 200);
+    setCurrentPage(page);
   };
 
-  // Date selection handler
   const handleDateSelect = (newDate: Date | undefined) => {
-    if (newDate) {
-      setDate(newDate);
-    }
+    if (newDate) setDate(newDate);
   };
 
   return (
     <div className="min-h-screen bg-background w-full">
-      {/* Navigation */}
       <Navigation currentPage={currentPage} onPageChange={handlePageChange} />
 
-      {/* Page Content with Transitions */}
-      <div className={`transition-all duration-200 ${
-        isPageTransitioning ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
-      }`}>
-        {currentPage === 'home' && (
-          <HomePage
-            officers={cmsData.officers}
-            importantLinks={cmsData.importantLinks}
-            siteContent={cmsData.siteContent}
-            onPageChange={handlePageChange}
-          />
-        )}
-        {currentPage === 'history' && (
-          <HistoryPage
-            siteContent={cmsData.siteContent}
-          />
-        )}
-        {currentPage === 'gallery' && (
-          <GalleryPage
-            eventGalleries={cmsData.eventGalleries}
-          />
-        )}
-        {currentPage === 'events' && (
-          <EventsPage
-            date={date}
-            onDateSelect={handleDateSelect}
-          />
-        )}
-      </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentPage}
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          transition={pageTransition}
+        >
+          {currentPage === 'home' && (
+            <HomePage
+              officers={cmsData.officers}
+              importantLinks={cmsData.importantLinks}
+              siteContent={cmsData.siteContent}
+              onPageChange={handlePageChange}
+            />
+          )}
+          {currentPage === 'history' && (
+            <HistoryPage siteContent={cmsData.siteContent} />
+          )}
+          {currentPage === 'gallery' && (
+            <GalleryPage eventGalleries={cmsData.eventGalleries} />
+          )}
+          {currentPage === 'events' && (
+            <EventsPage date={date} onDateSelect={handleDateSelect} />
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
