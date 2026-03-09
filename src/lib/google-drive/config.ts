@@ -32,7 +32,7 @@ export function validateConfig(): void {
 
 // Helper functions
 export const getGoogleDriveImageUrl = (fileId: string): string => {
-  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w500-h500`;
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600-h1600`;
 };
 
 export const getFallbackImageUrl = (name: string): string => {

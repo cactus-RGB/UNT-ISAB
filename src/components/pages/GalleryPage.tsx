@@ -90,7 +90,7 @@ export default function GalleryPage({ eventGalleries }: GalleryPageProps) {
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight text-gradient">
             Event Gallery
           </h1>
-          <p className="text-muted-foreground text-base sm:text-lg max-w-xl">
+          <p className="text-muted-foreground text-base sm:text-lg max-w-2xl">
             Explore our vibrant community through photos from our events and gatherings
           </p>
         </motion.div>

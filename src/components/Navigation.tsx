@@ -89,7 +89,8 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
                       {active && (
                         <motion.span
                           layoutId="nav-pill"
-                          className="absolute inset-0 rounded-lg bg-primary/90"
+                          className="absolute inset-0 rounded-lg"
+                          style={{ background: 'var(--primary)' }}
                           transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                         />
                       )}
@@ -120,7 +121,8 @@ export default function Navigation({ currentPage, onPageChange }: NavigationProp
                       {active && (
                         <motion.span
                           layoutId="nav-pill-mobile"
-                          className="absolute inset-0 rounded-lg bg-primary/90"
+                          className="absolute inset-0 rounded-lg"
+                          style={{ background: 'var(--primary)' }}
                           transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                         />
                       )}

@@ -24,9 +24,6 @@ export default function HistoryPage({ siteContent }: HistoryPageProps) {
   const [selectedBoard, setSelectedBoard]         = useState<string | null>(null);
   const [selectedOfficer, setSelectedOfficer]     = useState<(OfficerProfile & { currentRole?: string }) | null>(null);
   const [isOfficerModalOpen, setIsOfficerModalOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const headerImages = currentSemesterBoards.map(b => b.coverImage);
 
   useEffect(() => {
     const parseUrl = () => {
@@ -60,13 +57,6 @@ export default function HistoryPage({ siteContent }: HistoryPageProps) {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [currentSemesterBoards, currentMasterOfficerProfiles]);
-
-  // Cycle header images
-  useEffect(() => {
-    if (headerImages.length < 2) return;
-    const t = setInterval(() => setCurrentImageIndex(i => (i + 1) % headerImages.length), 3500);
-    return () => clearInterval(t);
-  }, [headerImages.length]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -111,25 +101,16 @@ export default function HistoryPage({ siteContent }: HistoryPageProps) {
   if (!selectedBoard) {
     return (
       <div className="w-full">
-        {/* Cycling hero */}
+        {/* Static hero banner */}
         <div className="relative h-[340px] sm:h-[420px] md:h-[520px] lg:h-[620px] xl:h-[700px] overflow-hidden">
-          {headerImages.map((image, index) => (
-            <motion.div
-              key={index}
-              className="absolute inset-0"
-              animate={{ opacity: index === currentImageIndex ? 1 : 0 }}
-              transition={{ duration: 1.2, ease: 'easeInOut' }}
-            >
-              <Image
-                src={image}
-                alt={`ISAB History - ${currentSemesterBoards[index]?.title || 'Board'}`}
-                fill
-                style={{ objectFit: 'cover' }}
-                sizes="100vw"
-                priority={index === 0}
-              />
-            </motion.div>
-          ))}
+          <Image
+            src="/assets/banners/history-banner.jpg"
+            alt="ISAB History"
+            fill
+            style={{ objectFit: 'cover' }}
+            sizes="100vw"
+            priority
+          />
           {/* Overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70" />
 
@@ -250,7 +231,44 @@ export default function HistoryPage({ siteContent }: HistoryPageProps) {
   /* ── Board detail view ────────────────────────────────────────── */
   if (currentBoard) {
     return (
-      <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
+      <div className="w-full">
+        {/* Board hero */}
+        <div className="relative h-[260px] sm:h-[340px] md:h-[420px] overflow-hidden">
+          <Image
+            src={currentBoard.coverImage}
+            alt={currentBoard.title}
+            fill
+            style={{ objectFit: 'cover' }}
+            sizes="100vw"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/75" />
+          <motion.div
+            className="absolute inset-0 flex flex-col items-center justify-end pb-10 text-center px-4"
+            initial="hidden" animate="visible" variants={staggerContainer}
+          >
+            <motion.p
+              variants={fadeUp} transition={{ ...smoothTransition, delay: 0.05 }}
+              className="text-white/60 text-xs font-medium tracking-widest uppercase mb-3"
+            >
+              <span className="inline-flex items-center gap-2"><span className="block w-5 h-px bg-white/40" />Semester Board<span className="block w-5 h-px bg-white/40" /></span>
+            </motion.p>
+            <motion.h1
+              variants={fadeUp} transition={{ ...smoothTransition, delay: 0.1 }}
+              className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg"
+            >
+              {currentBoard.title}
+            </motion.h1>
+            <motion.p
+              variants={fadeUp} transition={{ ...smoothTransition, delay: 0.15 }}
+              className="text-white/70 mt-2 text-sm sm:text-base"
+            >
+              {currentBoard.totalOfficers} officers · {currentBoard.period}
+            </motion.p>
+          </motion.div>
+        </div>
+
+        <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial="hidden" animate="visible"
@@ -265,10 +283,6 @@ export default function HistoryPage({ siteContent }: HistoryPageProps) {
                 <ChevronRight className="h-4 w-4 mr-2 rotate-180 transition-transform group-hover:-translate-x-1" />
                 Back to History
               </Button>
-              <div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight">{currentBoard.title}</h1>
-                <p className="text-muted-foreground mt-1">{currentBoard.totalOfficers} officers</p>
-              </div>
             </div>
 
             {/* Description */}
@@ -305,6 +319,7 @@ export default function HistoryPage({ siteContent }: HistoryPageProps) {
               boardId={selectedBoard || undefined}
             />
           )}
+        </div>
         </div>
       </div>
     );
