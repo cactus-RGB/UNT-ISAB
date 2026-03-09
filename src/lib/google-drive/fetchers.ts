@@ -167,6 +167,104 @@ export function parseSiteContent(content: string): Partial<SiteContent> {
   return siteData;
 }
 
+/**
+ * Parse board descriptions from the History Content Google Doc.
+ *
+ * Expected format (one block per board, separated by ---):
+ *   ID: founding-board-2023
+ *   Description: The inaugural leadership team...
+ *   ---
+ *   ID: spring-2024-board
+ *   Description: A transformative team of eight...
+ */
+export function parseHistoryDocument(content: string): Record<string, string> {
+  const descriptions: Record<string, string> = {};
+  const sections = content.split(/---+/).filter(s => s.trim());
+
+  for (const section of sections) {
+    const lines = section.split('\n').filter(l => l.trim());
+    let boardId = '';
+    let description = '';
+
+    for (const line of lines) {
+      if (!line.includes(':')) continue;
+      const [key, ...valueParts] = line.split(':');
+      const value = valueParts.join(':').trim();
+      if (!value) continue;
+
+      const keyLower = key.toLowerCase().trim();
+      if (keyLower === 'id') boardId = value.trim();
+      else if (keyLower === 'description') description = value.trim();
+    }
+
+    if (boardId && description) {
+      descriptions[boardId] = description;
+    }
+  }
+
+  return descriptions;
+}
+
+/**
+ * Map a Board Photos sub-folder name (e.g. "2024-fall", "2023-founding")
+ * to the corresponding board ID used in history.ts.
+ */
+function boardFolderNameToId(folderName: string): string | null {
+  const name = folderName.toLowerCase();
+  const yearMatch = name.match(/\b(20\d{2})\b/);
+  if (!yearMatch) return null;
+  const year = yearMatch[1];
+
+  if (name.includes('founding')) return `founding-board-${year}`;
+  if (name.includes('spring'))   return `spring-${year}-board`;
+  if (name.includes('fall'))     return `fall-${year}-board`;
+  if (name.includes('summer'))   return `summer-${year}-board`;
+  return null;
+}
+
+/**
+ * Fetch board cover photos from the Board Photos Google Drive folder.
+ * Returns a map of boardId → image URL. Empty map if folder not configured.
+ */
+async function fetchBoardPhotos(): Promise<Record<string, string>> {
+  if (!config.googleDrive.boardPhotosFolder) return {};
+
+  try {
+    console.log('[Fetchers]: Loading board photos from Google Drive...');
+    const subfolders = await googleDriveClient.listFolderContents(
+      config.googleDrive.boardPhotosFolder
+    );
+
+    const result: Record<string, string> = {};
+
+    await Promise.all(
+      subfolders
+        .filter(f => f.mimeType === 'application/vnd.google-apps.folder')
+        .map(async folder => {
+          const boardId = boardFolderNameToId(folder.name);
+          if (!boardId) return;
+
+          const files = await googleDriveClient.listFolderContents(folder.id);
+          const imageFiles = files.filter(
+            f =>
+              f.mimeType.startsWith('image/') ||
+              /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(f.name)
+          );
+
+          if (imageFiles.length > 0) {
+            result[boardId] = getGoogleDriveImageUrl(imageFiles[0].id);
+          }
+        })
+    );
+
+    console.log(`[Fetchers]: Loaded photos for ${Object.keys(result).length} boards`);
+    return result;
+  } catch (error) {
+    console.error('[Fetchers]: Error loading board photos:', error);
+    return {};
+  }
+}
+
 // ============================================================================
 // DATA FETCHING FUNCTIONS
 // ============================================================================
@@ -321,7 +419,8 @@ async function fetchImportantLinks(
 }
 
 /**
- * Fetch site content
+ * Fetch site content (about text) and parse board descriptions from history doc.
+ * Board photos are fetched separately and merged in fetchAllCMSData.
  */
 async function fetchSiteContentData(
   documents: DocumentContent[]
@@ -333,17 +432,19 @@ async function fetchSiteContentData(
       'Our mission is to serve as the voice for international students at UNT, advocating for their needs and fostering a welcoming community that celebrates diversity.',
     heroTitle: 'International Student Advisory Board',
     heroSubtitle: 'Empowering international students at the University of North Texas',
+    boardPhotos: {},
+    boardDescriptions: {},
   };
 
-  const aboutDoc = documents.find(doc => doc.type === 'about');
-  if (!aboutDoc) {
-    console.log('[Fetchers]: No about document found, using defaults');
-    return defaultContent;
-  }
+  const aboutDoc   = documents.find(doc => doc.type === 'about');
+  const historyDoc = documents.find(doc => doc.type === 'history');
 
-  console.log('[Fetchers]: Processing about document...');
-  const aboutData = parseSiteContent(aboutDoc.content);
-  return { ...defaultContent, ...aboutData };
+  const aboutData        = aboutDoc   ? parseSiteContent(aboutDoc.content)      : {};
+  const boardDescriptions = historyDoc ? parseHistoryDocument(historyDoc.content) : {};
+
+  console.log(`[Fetchers]: Parsed descriptions for ${Object.keys(boardDescriptions).length} boards`);
+
+  return { ...defaultContent, ...aboutData, boardDescriptions };
 }
 
 /**
@@ -435,7 +536,7 @@ export async function fetchAllCMSData(): Promise<CMSData> {
     });
 
     // Step 2: Fetch everything else in parallel
-    const [officers, importantLinks, eventGalleries, siteContent] =
+    const [officers, importantLinks, eventGalleries, siteContent, boardPhotos] =
       await Promise.all([
         fetchOfficersWithPhotos(documents).catch(err => {
           console.error('Failed to fetch officers:', err);
@@ -459,7 +560,13 @@ export async function fetchAllCMSData(): Promise<CMSData> {
             heroTitle: 'International Student Advisory Board',
             heroSubtitle:
               'Empowering international students at the University of North Texas',
+            boardPhotos: {},
+            boardDescriptions: {},
           };
+        }),
+        fetchBoardPhotos().catch(err => {
+          console.error('Failed to fetch board photos:', err);
+          return {} as Record<string, string>;
         }),
       ]);
 
@@ -473,12 +580,11 @@ export async function fetchAllCMSData(): Promise<CMSData> {
       officers,
       importantLinks,
       eventGalleries,
-      siteContent,
+      siteContent: { ...siteContent, boardPhotos },
       documents,
     };
   } catch (error) {
     console.error('Critical error fetching CMS data:', error);
-    // Return empty data rather than failing build
     return {
       officers: [],
       importantLinks: [],
@@ -491,6 +597,8 @@ export async function fetchAllCMSData(): Promise<CMSData> {
         heroTitle: 'International Student Advisory Board',
         heroSubtitle:
           'Empowering international students at the University of North Texas',
+        boardPhotos: {},
+        boardDescriptions: {},
       },
       documents: [],
     };

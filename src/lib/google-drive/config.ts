@@ -11,6 +11,8 @@ export const config = {
     documentsFolder: process.env.DOCUMENTS_FOLDER_ID ?? '',
     officerPhotosFolder: process.env.OFFICER_PHOTOS_FOLDER_ID ?? '',
     eventPhotosFolder: process.env.EVENT_PHOTOS_FOLDER_ID ?? '',
+    // Optional — if missing, board photos fall back to local assets
+    boardPhotosFolder: process.env.BOARD_PHOTOS_FOLDER_ID ?? '',
   }
 };
 

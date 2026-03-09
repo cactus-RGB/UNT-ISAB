@@ -16,10 +16,15 @@ interface HistoryPageProps {
   siteContent: SiteContent;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function HistoryPage({ siteContent }: HistoryPageProps) {
-  const currentSemesterBoards   = semesterBoards;
+  const currentSemesterBoards        = semesterBoards;
   const currentMasterOfficerProfiles = masterOfficerProfiles;
+
+  // Helpers: prefer CMS data, fall back to local static values
+  const getBoardCover = (board: typeof semesterBoards[0]) =>
+    siteContent.boardPhotos[board.id] || board.coverImage;
+  const getBoardDescription = (board: typeof semesterBoards[0]) =>
+    siteContent.boardDescriptions[board.id] || board.description;
 
   const [selectedBoard, setSelectedBoard]         = useState<string | null>(null);
   const [selectedOfficer, setSelectedOfficer]     = useState<(OfficerProfile & { currentRole?: string }) | null>(null);
@@ -197,7 +202,7 @@ export default function HistoryPage({ siteContent }: HistoryPageProps) {
                 >
                   <div className="relative h-44 overflow-hidden">
                     <Image
-                      src={board.coverImage}
+                      src={getBoardCover(board)}
                       alt={board.title}
                       fill
                       style={{ objectFit: 'cover' }}
@@ -214,7 +219,7 @@ export default function HistoryPage({ siteContent }: HistoryPageProps) {
                   </div>
                   <div className="p-5">
                     <h3 className="text-lg font-bold mb-1.5 text-foreground group-hover:text-primary transition-colors duration-300">{board.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">{board.description}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">{getBoardDescription(board)}</p>
                     <p className="text-xs text-primary font-semibold mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1">
                       View officers <ChevronRight className="h-3 w-3" />
                     </p>
@@ -235,7 +240,7 @@ export default function HistoryPage({ siteContent }: HistoryPageProps) {
         {/* Board hero */}
         <div className="relative h-[260px] sm:h-[340px] md:h-[420px] overflow-hidden">
           <Image
-            src={currentBoard.coverImage}
+            src={getBoardCover(currentBoard)}
             alt={currentBoard.title}
             fill
             style={{ objectFit: 'cover' }}
@@ -290,7 +295,7 @@ export default function HistoryPage({ siteContent }: HistoryPageProps) {
               <div className="absolute top-0 left-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent rounded-full" />
               <div className="ml-5">
                 <h3 className="text-base font-bold text-foreground mb-2">About This Board</h3>
-                <p className="text-muted-foreground leading-relaxed">{currentBoard.description}</p>
+                <p className="text-muted-foreground leading-relaxed">{getBoardDescription(currentBoard)}</p>
               </div>
             </div>
           </motion.div>

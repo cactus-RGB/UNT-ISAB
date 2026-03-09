@@ -42,6 +42,10 @@ export interface SiteContent {
   missionStatement: string;
   heroTitle: string;
   heroSubtitle: string;
+  /** boardId → Google Drive image URL. Empty when folder not configured. */
+  boardPhotos: Record<string, string>;
+  /** boardId → description text parsed from History Content doc. */
+  boardDescriptions: Record<string, string>;
 }
 
 // ============================================================================
