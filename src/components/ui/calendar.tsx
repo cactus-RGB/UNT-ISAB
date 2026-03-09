@@ -106,19 +106,6 @@ const Calendar = ({ className, selected, onSelect, events = [], ...props }: Cale
   // Get the days array for rendering
   const daysArray = getDaysInMonth();
 
-  // Debug: Log events for current month (remove in production)
-  React.useEffect(() => {
-    if (events && events.length > 0) {
-      const currentMonthEvents = events.filter(eventDate => {
-        const eventDateObj = eventDate instanceof Date ? eventDate : new Date(eventDate);
-        return (
-          eventDateObj.getMonth() === currentMonth.getMonth() &&
-          eventDateObj.getFullYear() === currentMonth.getFullYear()
-        );
-      });
-      console.log('Calendar: Events for current month:', currentMonthEvents);
-    }
-  }, [events, currentMonth]);
 
   return (
     <div className={`bg-card border border-border rounded-xl p-4 shadow-card hover:shadow-card-hover transition-all duration-300 ${className || ""}`} {...props}>

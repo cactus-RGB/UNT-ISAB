@@ -47,7 +47,6 @@ export default function VideoSplashScreen({
     if (!video || !isVisible) return;
 
     const handleCanPlay = () => {
-      console.log('[Splash]: Video loaded and ready to play');
       setVideoLoaded(true);
       setPhase('playing');
       
@@ -60,7 +59,6 @@ export default function VideoSplashScreen({
     };
 
     const handleEnded = () => {
-      console.log('[Splash]: Video ended, ensuring Next button is visible');
       setPhase('ended');
       setShowNextButton(true);
       setButtonStable(true);
@@ -81,7 +79,6 @@ export default function VideoSplashScreen({
     // Fallback timer - show fallback if video takes too long to load
     const fallbackTimer = setTimeout(() => {
       if (!videoLoaded) {
-        console.log('[Splash]: Video taking too long, showing fallback');
         setShowFallback(true);
         setShowNextButton(true);
       }
@@ -89,7 +86,6 @@ export default function VideoSplashScreen({
 
     // Emergency button timer - ensure button always appears and stays
     const emergencyButtonTimer = setTimeout(() => {
-      console.log('[Splash]: Emergency button activation');
       setShowNextButton(true);
       setButtonStable(true);
     }, 5000);

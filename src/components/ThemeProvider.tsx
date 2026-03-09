@@ -10,12 +10,12 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: 'dark',
+  theme: 'light',
   toggle: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('dark');
+  const [theme, setTheme] = useState<Theme>('light');
 
   // On mount, read saved preference
   useEffect(() => {
@@ -24,9 +24,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       if (saved === 'light' || saved === 'dark') {
         setTheme(saved);
         document.documentElement.classList.toggle('light', saved === 'light');
+      } else {
+        // No saved preference — apply light mode default
+        document.documentElement.classList.add('light');
       }
     } catch {
       // localStorage unavailable (SSR or private browsing)
+      document.documentElement.classList.add('light');
     }
   }, []);
 
