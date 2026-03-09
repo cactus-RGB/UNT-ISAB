@@ -1,97 +1,24 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Image as ImageIcon, X, RefreshCw, AlertCircle } from 'lucide-react';
-import { useGoogleDriveCMS } from '@/hooks/useGoogleDriveCMS';
-import type { EventGallery } from '@/hooks/useGoogleDriveCMS';
+import { ChevronLeft, ChevronRight, Image as ImageIcon, X, Calendar, ImagePlus } from 'lucide-react';
+import type { EventGallery } from '@/lib/google-drive/types';
+import { fadeUp, staggerContainer, cardEntrance, smoothTransition, cardTransition, viewportOnce } from '@/lib/motion';
 
-// Fallback data for when Google Drive isn't set up
-const fallbackEventGalleries: EventGallery[] = [
-  {
-    id: 'sample-event',
-    title: 'Sample ISAB Event',
-    date: 'Recent',
-    description: 'Sample event gallery - please set up Google Drive to see actual events',
-    coverImage: '/assets/gallery/gallery2.jpeg',
-    totalImages: 1,
-    images: [
-      { url: '/assets/gallery/gallery2.jpeg', caption: 'Sample event photo' }
-    ]
-  }
-];
-
-// Smart Image component for Google Drive images
-function GalleryImage({ src, alt, onClick, className }: { 
-  src: string; 
-  alt: string; 
-  onClick?: () => void;
-  className?: string;
+function GalleryImage({ src, alt, onClick, className }: {
+  src: string; alt: string; onClick?: () => void; className?: string;
 }) {
   const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-  const [currentSrc, setCurrentSrc] = useState(src);
-  const [attemptCount, setAttemptCount] = useState(0);
-
-  // Extract file ID from Google Drive URL
-  const getFileIdFromUrl = (url: string): string | null => {
-    const match = url.match(/[?&]id=([^&]+)/);
-    return match ? match[1] : null;
-  };
-
-  // Generate different URL formats for Google Drive
-  const getAlternativeUrls = (originalUrl: string): string[] => {
-    const fileId = getFileIdFromUrl(originalUrl);
-    if (!fileId) return [originalUrl];
-
-    return [
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w800-h800`,
-      `https://lh3.googleusercontent.com/d/${fileId}=w800-h800`,
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w600-h600`,
-      `https://lh3.googleusercontent.com/d/${fileId}=s800`,
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w400-h400`,
-      originalUrl,
-    ];
-  };
-
-  const handleImageError = () => {
-    const isGoogleDriveUrl = src.includes('drive.google.com');
-    
-    if (isGoogleDriveUrl && attemptCount < 5) {
-      const alternatives = getAlternativeUrls(src);
-      const nextUrl = alternatives[attemptCount + 1];
-      
-      if (nextUrl) {
-        setAttemptCount(prev => prev + 1);
-        setCurrentSrc(nextUrl);
-        setImageLoading(true);
-        return;
-      }
-    }
-
-    setImageError(true);
-    setImageLoading(false);
-  };
-
-  const handleImageLoad = () => {
-    setImageError(false);
-    setImageLoading(false);
-  };
-
-  useEffect(() => {
-    setImageError(false);
-    setImageLoading(true);
-    setCurrentSrc(src);
-    setAttemptCount(0);
-  }, [src]);
 
   if (imageError) {
     return (
       <div className={`bg-muted/50 flex items-center justify-center ${className}`}>
         <div className="text-center">
-          <ImageIcon className="h-12 w-12 text-muted-foreground/50 mx-auto mb-2" />
-          <p className="text-xs text-muted-foreground">Image unavailable</p>
+          <ImageIcon className="h-10 w-10 text-muted-foreground/40 mx-auto mb-2" />
+          <p className="text-xs text-muted-foreground">Unavailable</p>
         </div>
       </div>
     );
@@ -99,281 +26,260 @@ function GalleryImage({ src, alt, onClick, className }: {
 
   return (
     <div className={`relative ${className}`} onClick={onClick}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={currentSrc}
+      <Image
+        src={src}
         alt={alt}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        onError={handleImageError}
-        onLoad={handleImageLoad}
-        crossOrigin="anonymous"
+        fill
+        quality={100}
+        className="object-cover transition-transform duration-500 group-hover:scale-110"
+        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+        onError={() => setImageError(true)}
+        priority={false}
+        unoptimized
       />
-      
-      {imageLoading && (
-        <div className="absolute inset-0 bg-muted/20 flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-        </div>
-      )}
     </div>
   );
 }
 
-export default function GalleryPage() {
-  const { 
-    eventGalleries: cmsGalleries, 
-    loading, 
-    error
-  } = useGoogleDriveCMS();
+interface GalleryPageProps {
+  eventGalleries: EventGallery[];
+}
 
-  const eventGalleries = cmsGalleries.length > 0 ? cmsGalleries : fallbackEventGalleries;
-
+export default function GalleryPage({ eventGalleries }: GalleryPageProps) {
   const [selectedEvent, setSelectedEvent] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [currentScrollPosition, setCurrentScrollPosition] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
 
-  const openEventGallery = (eventId: string) => {
-    setSelectedEvent(eventId);
-  };
+  const openEventGallery = (eventId: string) => { setSelectedEvent(eventId); setSelectedImageIndex(null); };
+  const closeEventGallery = () => { setSelectedEvent(null); setSelectedImageIndex(null); };
 
-  const closeEventGallery = () => {
-    setSelectedEvent(null);
-  };
+  const currentEvent = selectedEvent ? eventGalleries.find(e => e.id === selectedEvent) : null;
+  const currentImage = currentEvent && selectedImageIndex !== null ? currentEvent.images[selectedImageIndex] : null;
 
-  const openLightbox = (imageUrl: string) => {
-    // Save the current scroll position when opening lightbox
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    setCurrentScrollPosition(scrollTop);
-    
-    setSelectedImage(imageUrl);
-    document.body.style.overflow = 'hidden';
-  };
-
-  const closeLightbox = () => {
-    setSelectedImage(null);
-    setCurrentScrollPosition(0);
-    document.body.style.overflow = 'unset';
-  };
+  const openLightbox = (index: number) => { setSelectedImageIndex(index); document.body.style.overflow = 'hidden'; };
+  const closeLightbox = useCallback(() => { setSelectedImageIndex(null); document.body.style.overflow = 'unset'; }, []);
+  const goToPrev = useCallback(() => {
+    if (selectedImageIndex !== null && currentEvent)
+      setSelectedImageIndex((selectedImageIndex - 1 + currentEvent.images.length) % currentEvent.images.length);
+  }, [selectedImageIndex, currentEvent]);
+  const goToNext = useCallback(() => {
+    if (selectedImageIndex !== null && currentEvent)
+      setSelectedImageIndex((selectedImageIndex + 1) % currentEvent.images.length);
+  }, [selectedImageIndex, currentEvent]);
 
   useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        if (selectedImage) {
-          closeLightbox();
-        } else if (selectedEvent) {
-          closeEventGallery();
-        }
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { if (selectedImageIndex !== null) closeLightbox(); else if (selectedEvent) closeEventGallery(); }
+      else if (selectedImageIndex !== null) {
+        if (e.key === 'ArrowLeft') goToPrev();
+        else if (e.key === 'ArrowRight') goToNext();
       }
     };
+    document.addEventListener('keydown', handler);
+    return () => { document.removeEventListener('keydown', handler); document.body.style.overflow = 'unset'; };
+  }, [selectedImageIndex, selectedEvent, closeLightbox, goToPrev, goToNext]);
 
-    document.addEventListener('keydown', handleEscape);
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [selectedImage, selectedEvent]);
-
-  const currentEvent = selectedEvent ? eventGalleries.find(event => event.id === selectedEvent) : null;
-
-  // Main gallery view
+  /* ── Event grid ───────────────────────────────────────────────── */
   if (!selectedEvent) {
     return (
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
-        <div className="mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-foreground">Event Gallery</h1>
-          <p className="text-muted-foreground text-sm sm:text-base md:text-lg">
-            Click on any event folder to view photos from that event
+        <motion.div
+          className="mb-10 sm:mb-14"
+          initial="hidden" whileInView="visible" viewport={viewportOnce}
+          variants={fadeUp} transition={smoothTransition}
+        >
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight text-gradient pb-[0.15em]">
+            Event Gallery
+          </h1>
+          <p className="text-muted-foreground text-base sm:text-lg max-w-2xl">
+            Explore our vibrant community through photos from our events and gatherings
           </p>
-        </div>
-
-        {error && (
-          <Card className="mb-8 border-destructive bg-destructive/5">
-            <CardContent className="p-6">
-              <div className="flex items-start space-x-3">
-                <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-destructive mb-1">Gallery Content Error</h3>
-                  <p className="text-sm text-muted-foreground">{error}</p>
-                  <p className="text-sm text-muted-foreground mt-1">Using fallback data.</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {loading && (
-          <Card className="mb-8 border-primary bg-primary/5">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-3">
-                <RefreshCw className="h-5 w-5 animate-spin text-primary" />
-                <p className="text-primary">Loading galleries...</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        </motion.div>
 
         {eventGalleries.length === 0 ? (
-          <Card className="text-center py-12">
-            <CardContent className="p-12">
-              <ImageIcon className="h-16 w-16 text-muted-foreground/50 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-foreground mb-2">No Event Galleries Found</h3>
-              <p className="text-muted-foreground">
-                Create event folders in your Google Drive to see galleries here.
-              </p>
-            </CardContent>
-          </Card>
+          <div className="text-center py-20 rounded-2xl border-2 border-dashed border-border">
+            <ImageIcon className="h-16 w-16 text-muted-foreground/30 mx-auto mb-5" />
+            <h3 className="text-xl font-bold text-foreground mb-2">No Event Galleries</h3>
+            <p className="text-muted-foreground">Create event folders in Google Drive to see galleries here.</p>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+            initial="hidden" whileInView="visible" viewport={viewportOnce}
+            variants={staggerContainer}
+          >
             {eventGalleries.map((event, index) => (
-              <Card 
-                key={index} 
-                className="group transition-all duration-300 hover:shadow-card-elevated border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-2"
+              <motion.div
+                key={index}
+                variants={cardEntrance}
+                transition={cardTransition}
+                className="group relative rounded-2xl border border-border bg-card overflow-hidden cursor-pointer card-hover-glow"
+                whileHover={{ y: -6 }}
                 onClick={() => openEventGallery(event.id)}
               >
+                {/* Cover image */}
                 <div className="relative h-64 overflow-hidden">
-                  <GalleryImage
-                    src={event.coverImage}
-                    alt={event.title}
-                    className="w-full h-full"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  
-                  <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {event.totalImages} photos
+                  <GalleryImage src={event.coverImage} alt={event.title} className="w-full h-full" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-85 transition-opacity duration-300" />
+
+                  {/* Photo count */}
+                  <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-primary/90 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+                    <ImagePlus className="h-3.5 w-3.5" />
+                    {event.totalImages}
+                  </div>
+
+                  {/* Title overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-5">
+                    <h3 className="text-xl font-bold text-white mb-1 drop-shadow-md">{event.title}</h3>
+                    <div className="flex items-center gap-1.5 text-white/80 text-xs">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>{event.date}</span>
+                    </div>
                   </div>
                 </div>
-                
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
-                    {event.title}
-                  </h3>
-                  <p className="text-primary font-medium text-sm mb-2">{event.date}</p>
-                  <p className="text-muted-foreground leading-relaxed">{event.description}</p>
-                  
-                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <p className="text-sm text-primary font-medium">Click to view gallery →</p>
-                  </div>
-                </CardContent>
-              </Card>
+
+                {/* Footer */}
+                <div className="px-5 py-4 flex items-center justify-between">
+                  <span className="text-primary font-semibold text-sm">View Gallery</span>
+                  <ChevronRight className="h-4 w-4 text-primary transition-transform duration-300 group-hover:translate-x-1" />
+                </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </div>
     );
   }
 
-  // Individual event gallery view
+  /* ── Individual event gallery ─────────────────────────────────── */
   if (currentEvent) {
     return (
       <div className="container mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 w-full">
-        <div className="flex flex-col sm:flex-row sm:items-center mb-6 sm:mb-8">
-          <Button 
-            variant="ghost" 
-            onClick={closeEventGallery}
-            className="mb-4 sm:mb-0 sm:mr-4 hover:bg-primary/10 self-start"
+        <motion.div
+          className="mb-10 sm:mb-14"
+          initial="hidden" animate="visible"
+          variants={fadeUp} transition={smoothTransition}
+        >
+          <Button
+            variant="ghost"
+            onClick={e => { e.preventDefault(); closeEventGallery(); }}
+            className="mb-6 hover:bg-primary/10 group"
           >
-            <ChevronRight className="h-4 sm:h-5 w-4 sm:w-5 mr-2 rotate-180" />
-            Back to Gallery
+            <ChevronLeft className="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1" />
+            <span className="font-semibold">All Galleries</span>
           </Button>
-          <div className="flex-1">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">{currentEvent.title}</h1>
-            <p className="text-muted-foreground text-sm sm:text-base md:text-lg mt-2">{currentEvent.date} • {currentEvent.totalImages} photos</p>
+
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 text-foreground tracking-tight">
+            {currentEvent.title}
+          </h1>
+          <div className="flex items-center gap-4 text-muted-foreground">
+            <span className="flex items-center gap-1.5 text-sm"><Calendar className="h-4 w-4 text-primary" />{currentEvent.date}</span>
+            <span className="flex items-center gap-1.5 text-sm"><ImagePlus className="h-4 w-4 text-primary" />{currentEvent.totalImages} photos</span>
           </div>
-        </div>
+        </motion.div>
 
-        <Card className="mb-8 shadow-card-hover border-border bg-card">
-          <CardContent className="p-6">
-            <p className="text-muted-foreground leading-relaxed">{currentEvent.description}</p>
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <motion.div
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
+          initial="hidden" animate="visible"
+          variants={staggerContainer}
+        >
           {currentEvent.images.map((image, index) => (
-            <div
-              key={index} 
-              className="group transition-all duration-300 hover:shadow-card-elevated border border-border bg-card overflow-hidden cursor-pointer hover:-translate-y-1 rounded-lg"
-              onClick={() => openLightbox(image.url)}
+            <motion.div
+              key={index}
+              variants={cardEntrance}
+              transition={{ ...cardTransition, delay: Math.min(index * 0.03, 0.3) }}
+              className="group relative rounded-xl border border-border bg-card overflow-hidden cursor-pointer"
+              whileHover={{ scale: 1.04, y: -3 }}
+              onClick={() => openLightbox(index)}
             >
               <div className="relative aspect-square overflow-hidden">
-                <GalleryImage
-                  src={image.url}
-                  alt={`Gallery image ${index + 1}`}
-                  className="w-full h-full"
-                />
-                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Perfect Mobile Lightbox with Background Blur - Positioned at Current Scroll Level */}
-        {selectedImage && (
-          <>
-            {/* Background blur overlay */}
-            <div 
-              className="fixed inset-0 z-40"
-              style={{
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-              }}
-            />
-            
-            {/* Lightbox content */}
-            <div 
-              className="fixed inset-0 z-50"
-              onClick={closeLightbox}
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                zIndex: 50,
-                width: '100vw',
-                height: '100vh',
-              }}
-            >
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  closeLightbox();
-                }}
-                className="absolute top-4 right-4 z-20 p-3 rounded-full bg-black/60 hover:bg-black/80 transition-colors duration-200 text-white"
-                style={{ position: 'fixed' }}
-              >
-                <X className="h-6 w-6" />
-              </button>
-              
-              {/* Image positioned at user's current scroll position */}
-              <div 
-                className="absolute w-full h-screen flex items-center justify-center p-4"
-                style={{
-                  top: `${currentScrollPosition}px`,
-                  left: 0,
-                  right: 0,
-                }}
-              >
-                <div className="relative max-w-[90vw] max-h-[90vh] w-full h-full flex items-center justify-center">
-                  <GalleryImage
-                    src={selectedImage}
-                    alt="Gallery image"
-                    className="max-w-full max-h-full object-contain"
-                  />
+                <GalleryImage src={image.url} alt={image.caption || `Photo ${index + 1}`} className="w-full h-full" />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-2.5">
+                    <ImageIcon className="h-5 w-5 text-primary" />
+                  </div>
                 </div>
               </div>
-              
-              {/* Mobile instruction positioned relative to scroll */}
-              <div 
-                className="absolute left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-2 rounded-lg text-sm backdrop-blur-sm sm:hidden"
-                style={{
-                  top: `${currentScrollPosition + window.innerHeight - 80}px`,
-                }}
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* ── Lightbox ──────────────────────────────────────────── */}
+        <AnimatePresence>
+          {selectedImageIndex !== null && currentImage && (
+            <motion.div
+              className="fixed inset-0 z-50 flex items-center justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(16px)' }}
+            >
+              {/* Close */}
+              <button
+                onClick={closeLightbox}
+                className="absolute top-4 right-4 z-20 p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white border border-white/10"
               >
-                Tap to close
+                <X className="h-5 w-5" />
+              </button>
+
+              {/* Counter */}
+              <div className="absolute top-4 left-4 z-20 px-4 py-2 rounded-full bg-white/10 text-white text-sm font-semibold border border-white/10">
+                {selectedImageIndex + 1} / {currentEvent.images.length}
               </div>
-            </div>
-          </>
-        )}
+
+              {/* Nav */}
+              {currentEvent.images.length > 1 && (
+                <>
+                  <button
+                    onClick={e => { e.stopPropagation(); goToPrev(); }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white border border-white/10"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    onClick={e => { e.stopPropagation(); goToNext(); }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-4 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white border border-white/10"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                </>
+              )}
+
+              {/* Image with crossfade on navigation */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedImageIndex}
+                  className="w-full h-full flex items-center justify-center p-4 sm:p-16"
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.18 }}
+                  onClick={closeLightbox}
+                >
+                  <div className="relative max-w-7xl max-h-full w-full h-full">
+                    <Image
+                      src={currentImage.url}
+                      alt={currentImage.caption || `Photo ${selectedImageIndex + 1}`}
+                      fill
+                      quality={100}
+                      className="object-contain"
+                      sizes="100vw"
+                      unoptimized
+                      priority
+                    />
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Caption */}
+              {currentImage.caption && (
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 max-w-2xl px-5 py-2.5 bg-white/10 backdrop-blur-md rounded-lg text-white text-center text-sm border border-white/10">
+                  {currentImage.caption}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     );
   }

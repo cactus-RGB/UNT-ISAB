@@ -2,117 +2,142 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Force dark mode always - disable light mode and system preference detection */
+/* ─── Google Fonts ────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ─── Dark mode tokens (default) ─────────────────────────────── */
 :root {
-  /* Dark mode colors only */
-  --background: #0a0a0a;
-  --foreground: #fafafa;
-  
-  /* Dark mode green theme colors */
+  color-scheme: dark;
+
+  /* Backgrounds */
+  --background: #080808;
+  --background-subtle: #0f0f0f;
+  --foreground: #f5f5f5;
+
+  /* Primary — green */
   --primary: #22c55e;
   --primary-foreground: #000000;
-  
-  --secondary: #1a1a1a;
-  --secondary-foreground: #fafafa;
-  
-  --muted: #262626;
-  --muted-foreground: #a3a3a3;
-  
+  --primary-muted: rgba(34, 197, 94, 0.12);
+  --primary-border: rgba(34, 197, 94, 0.25);
+
+  /* Secondary */
+  --secondary: #141414;
+  --secondary-foreground: #f5f5f5;
+
+  /* Muted */
+  --muted: #1f1f1f;
+  --muted-foreground: #8a8a8a;
+
+  /* Accent — emerald */
   --accent: #34d399;
   --accent-foreground: #000000;
-  
+
+  /* Destructive */
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  
-  --card: #171717;
-  --card-foreground: #fafafa;
-  
-  --popover: #171717;
-  --popover-foreground: #fafafa;
-  
-  --border: #404040;
-  --input: #404040;
-  
+
+  /* Card */
+  --card: #111111;
+  --card-foreground: #f5f5f5;
+  --card-elevated: #171717;
+
+  /* Popover */
+  --popover: #111111;
+  --popover-foreground: #f5f5f5;
+
+  /* Borders & Inputs */
+  --border: #2a2a2a;
+  --border-subtle: #1e1e1e;
+  --input: #2a2a2a;
+
+  /* Ring */
   --ring: #22c55e;
-  
+
+  /* Radius */
   --radius: 0.75rem;
-  
-  /* Additional colors */
+
+  /* Semantic */
   --success: #22c55e;
   --warning: #f59e0b;
   --info: #3b82f6;
+
+  /* Nav */
+  --nav-height: 88px;
+
+  /* Mode-specific utility values */
+  --nav-bg: rgba(8, 8, 8, 0.88);
+  --card-glass-bg: rgba(17, 17, 17, 0.7);
+  --scrollbar-thumb: #3a3a3a;
+  --scrollbar-thumb-hover: #505050;
+  --dot-color: rgba(255, 255, 255, 0.06);
+  --shimmer-mid: #2a2a2a;
 }
 
-/* Force dark mode for all elements */
-* {
-  color-scheme: dark;
+/* ─── Light mode tokens ───────────────────────────────────────── */
+:root.light {
+  color-scheme: light;
+
+  --background: #fafafa;
+  --background-subtle: #f4f4f5;
+  --foreground: #0a0a0a;
+
+  --primary: #16a34a;
+  --primary-foreground: #ffffff;
+  --primary-muted: rgba(22, 163, 74, 0.10);
+  --primary-border: rgba(22, 163, 74, 0.22);
+
+  --secondary: #f0f0f0;
+  --secondary-foreground: #0a0a0a;
+
+  --muted: #f0f0f0;
+  --muted-foreground: #6b7280;
+
+  --accent: #15803d;
+  --accent-foreground: #ffffff;
+
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  --card-elevated: #f8f8f8;
+
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+
+  --border: #e4e4e7;
+  --border-subtle: #f0f0f0;
+  --input: #e4e4e7;
+
+  --ring: #16a34a;
+
+  --nav-bg: rgba(250, 250, 250, 0.92);
+  --card-glass-bg: rgba(255, 255, 255, 0.8);
+  --scrollbar-thumb: #d4d4d8;
+  --scrollbar-thumb-hover: #a1a1aa;
+  --dot-color: rgba(0, 0, 0, 0.06);
+  --shimmer-mid: #e4e4e7;
+}
+
+/* ─── Base Reset ──────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Roboto", sans-serif;
   line-height: 1.6;
-}
-
-/* Ensure green backgrounds have white text */
-.bg-primary-gradient {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-  color: white !important;
-}
-
-.bg-primary-gradient * {
-  color: white !important;
-}
-
-/* Fix for green/primary backgrounds to ensure white text - BUT exclude buttons */
-.bg-primary:not(button):not(.bg-white),
-.text-primary-foreground:not(button):not(.bg-white),
-.bg-accent:not(button):not(.bg-white) {
-  color: white !important;
-}
-
-/* Ensure white background buttons keep their intended text color */
-button.bg-white,
-.bg-white button {
-  color: inherit;
-}
-
-/* Force Learn More button to have green text - MAXIMUM SPECIFICITY */
-header.bg-primary-gradient button,
-header.bg-primary-gradient button *,
-.bg-primary-gradient header button,
-.bg-primary-gradient header button *,
-.bg-primary-gradient .container button,
-.bg-primary-gradient .container button *,
-.bg-primary-gradient button.bg-white,
-.bg-primary-gradient button.bg-white *,
-.bg-primary-gradient .bg-white,
-.bg-primary-gradient .bg-white * {
-  color: #15803d !important; /* green-700 */
-}
-
-header.bg-primary-gradient button:hover,
-header.bg-primary-gradient button:hover *,
-.bg-primary-gradient header button:hover,
-.bg-primary-gradient header button:hover *,
-.bg-primary-gradient .container button:hover,
-.bg-primary-gradient .container button:hover *,
-.bg-primary-gradient button.bg-white:hover,
-.bg-primary-gradient button.bg-white:hover *,
-.bg-primary-gradient .bg-white:hover,
-.bg-primary-gradient .bg-white:hover * {
-  color: #166534 !important; /* green-800 */
-}
-
-/* Navigation improvements for mobile - center icons */
-@media (max-width: 640px) {
-  .nav-mobile-icons {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-  }
+  overflow-x: hidden;
 }
 
 @layer base {
@@ -122,156 +147,173 @@ header.bg-primary-gradient button:hover *,
   body {
     @apply bg-background text-foreground;
   }
-}
-
-/* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Enhanced shadow utilities */
-.shadow-card {
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-}
-
-.shadow-card-hover {
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-}
-
-.shadow-card-elevated {
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-}
-
-/* ISAB Splash Screen & History Page Animations */
-@keyframes fade-in {
-  from { 
-    opacity: 0; 
-  }
-  to { 
-    opacity: 1; 
+  ::selection {
+    background: rgba(34, 197, 94, 0.25);
+    color: var(--foreground);
   }
 }
 
-@keyframes fade-in-fast {
-  from { 
-    opacity: 0; 
-  }
-  to { 
-    opacity: 1; 
-  }
+/* ─── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
 }
 
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ─── Hero / Gradient helpers ─────────────────────────────────── */
+.bg-primary-gradient {
+  background: linear-gradient(135deg, #15803d 0%, #22c55e 50%, #34d399 100%);
 }
 
-@keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(1.05);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+/* ─── Card helpers ────────────────────────────────────────────── */
+.card-glass {
+  background: var(--card-glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
 }
 
-@keyframes fade-in-delayed {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  50% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.card-hover-glow:hover {
+  box-shadow:
+    0 0 0 1px var(--primary-border),
+    0 20px 40px -8px rgba(0, 0, 0, 0.18),
+    0 0 30px var(--primary-muted);
 }
 
-/* Animation Classes */
-.animate-fade-in {
-  animation: fade-in 0.5s ease-out;
+/* ─── Nav helpers ─────────────────────────────────────────────── */
+.nav-glass {
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-.animate-fade-in-fast {
-  animation: fade-in-fast 0.8s ease-out;
+/* ─── Gradient text ───────────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.animate-slide-up {
-  animation: slide-up 0.8s ease-out;
+/* ─── Shimmer skeleton ────────────────────────────────────────── */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--muted) 0%,
+    var(--shimmer-mid) 50%,
+    var(--muted) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
 }
 
-.animate-scale-in {
-  animation: scale-in 1.2s ease-out;
+/* ─── Dot grid background ─────────────────────────────────────── */
+.dot-grid {
+  background-image: radial-gradient(
+    circle,
+    var(--dot-color) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
 }
 
-.animate-fade-in-delayed {
-  animation: fade-in-delayed 1.5s ease-out;
+/* ─── Modal ───────────────────────────────────────────────────── */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-.animate-slide-up-delayed {
-  animation: slide-up 1s ease-out 0.3s both;
+.modal-content {
+  background-color: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
 }
 
-/* Utility class for GPU acceleration */
+/* ─── Footer ──────────────────────────────────────────────────── */
+footer {
+  color: white !important;
+}
+footer * {
+  color: white !important;
+}
+footer a {
+  color: white !important;
+  text-decoration: underline;
+}
+footer a:hover {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* ─── Utility ─────────────────────────────────────────────────── */
 .gpu-accelerated {
   transform: translateZ(0);
   will-change: transform, opacity;
 }
 
-/* Smooth transitions for interactive elements */
-.transition-smooth {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Hero button colour fixes (green gradient background) */
+.bg-primary-gradient * {
+  color: white;
+}
+button.bg-white,
+.bg-white button {
+  color: inherit;
+}
+header.bg-primary-gradient button,
+.bg-primary-gradient .bg-white,
+.bg-primary-gradient button.bg-white {
+  color: #15803d !important;
+}
+header.bg-primary-gradient button *,
+.bg-primary-gradient .bg-white *,
+.bg-primary-gradient button.bg-white * {
+  color: #15803d !important;
+}
+header.bg-primary-gradient button:hover,
+.bg-primary-gradient .bg-white:hover,
+.bg-primary-gradient button.bg-white:hover,
+header.bg-primary-gradient button:hover *,
+.bg-primary-gradient .bg-white:hover *,
+.bg-primary-gradient button.bg-white:hover * {
+  color: #166534 !important;
 }
 
-/* Enhanced hover effects */
-.hover-lift:hover {
-  transform: translateY(-2px);
-  transition: transform 0.2s ease-out;
+/* ─── Keyframe Animations ─────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
 }
 
-.hover-scale:hover {
-  transform: scale(1.02);
-  transition: transform 0.2s ease-out;
-}
-
-/* Modal background fixes for dark mode */
-.modal-backdrop {
-  background-color: rgba(0, 0, 0, 0.8) !important;
-  backdrop-filter: blur(8px);
-}
-
-/* Ensure proper contrast in modals */
-.modal-content {
-  background-color: var(--card) !important;
-  color: var(--foreground) !important;
-  border: 1px solid var(--border);
-}
-
-/* Footer text color fix */
-footer {
-  color: white !important;
-}
-
-footer * {
-  color: white !important;
-}
-
-footer a {
-  color: white !important;
-  text-decoration: underline;
-}
-
-footer a:hover {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
+.animate-fade-in          { animation: fade-in  0.5s ease-out both; }
+.animate-slide-up         { animation: slide-up 0.6s ease-out both; }
+.animate-scale-in         { animation: scale-in 0.4s ease-out both; }
+.animate-slide-up-delayed { animation: slide-up 0.6s ease-out 0.3s both; }
+.animate-fade-in-delayed  { animation: fade-in  0.6s ease-out 0.5s both; }
+.animate-float            { animation: float    3s ease-in-out infinite; }

@@ -31,7 +31,6 @@ function HistoryCardImage({ src, alt, hasPhoto }: {
   };
 
   const handleImageLoad = () => {
-    console.log(`History Card: Successfully loaded image: ${src}`);
     setImageError(false);
     setImageLoading(false);
   };

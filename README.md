@@ -29,8 +29,31 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Environment Variables
+
+This project requires the following environment variables to be set in Vercel:
+
+### Server-Side (Build Time)
+- `GOOGLE_DRIVE_API_KEY` - Google Drive API key for fetching CMS content
+- `DOCUMENTS_FOLDER_ID` - Google Drive folder ID for documents
+- `OFFICER_PHOTOS_FOLDER_ID` - Google Drive folder ID for officer photos
+- `EVENT_PHOTOS_FOLDER_ID` - Google Drive folder ID for event galleries
+
+### Client-Side (Runtime)
+- `NEXT_PUBLIC_GOOGLE_CALENDAR_API_KEY` - Google Calendar API key
+- `NEXT_PUBLIC_ISAB_CALENDAR_ID` - ISAB Google Calendar ID
+
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push your code to GitHub
+2. Import the project in [Vercel](https://vercel.com/new)
+3. Add the environment variables listed above in Project Settings → Environment Variables
+4. Deploy!
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The site uses:
+- **Static Site Generation (SSG)** with **Incremental Static Regeneration (ISR)**
+- Pages rebuild every hour automatically
+- Images optimized with Next.js Image (AVIF/WebP)
+- Google Drive CMS integration fetched at build time
+
+Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

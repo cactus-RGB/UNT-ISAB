@@ -29,7 +29,6 @@ function HistoryModalSmartImage({ src, alt, onLoad, onError }: {
   };
 
   const handleImageLoad = () => {
-    console.log(`History Modal: Successfully loaded image: ${src}`);
     setImageError(false);
     setImageLoading(false);
     if (onLoad) onLoad();
