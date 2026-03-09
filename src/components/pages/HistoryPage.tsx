@@ -112,7 +112,7 @@ export default function HistoryPage({ siteContent }: HistoryPageProps) {
     return (
       <div className="w-full">
         {/* Cycling hero */}
-        <div className="relative h-64 sm:h-80 md:h-96 lg:h-[480px] xl:h-[560px] overflow-hidden">
+        <div className="relative h-[340px] sm:h-[420px] md:h-[520px] lg:h-[620px] xl:h-[700px] overflow-hidden">
           {headerImages.map((image, index) => (
             <motion.div
               key={index}

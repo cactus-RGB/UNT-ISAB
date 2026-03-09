@@ -30,11 +30,12 @@ function GalleryImage({ src, alt, onClick, className }: {
         src={src}
         alt={alt}
         fill
-        quality={90}
+        quality={100}
         className="object-cover transition-transform duration-500 group-hover:scale-110"
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
         onError={() => setImageError(true)}
         priority={false}
+        unoptimized
       />
     </div>
   );
@@ -260,9 +261,10 @@ export default function GalleryPage({ eventGalleries }: GalleryPageProps) {
                       src={currentImage.url}
                       alt={currentImage.caption || `Photo ${selectedImageIndex + 1}`}
                       fill
-                      quality={95}
+                      quality={100}
                       className="object-contain"
                       sizes="100vw"
+                      unoptimized
                       priority
                     />
                   </div>

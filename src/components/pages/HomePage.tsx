@@ -113,7 +113,7 @@ export default function HomePage({ officers, importantLinks, siteContent, onPage
               <motion.p
                 variants={fadeUp}
                 transition={{ ...smoothTransition, delay: 0.1 }}
-                className="text-base sm:text-lg md:text-xl text-white/80 leading-relaxed max-w-xl"
+                className="text-base sm:text-lg md:text-xl text-white/80 leading-relaxed"
               >
                 {siteContent.heroSubtitle}
               </motion.p>
