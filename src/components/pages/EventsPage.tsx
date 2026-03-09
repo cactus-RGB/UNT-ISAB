@@ -80,7 +80,7 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
         variants={fadeUp} transition={smoothTransition}
       >
         <h1 className="text-4xl sm:text-5xl font-extrabold text-foreground tracking-tight mb-2">
-          ISAB <span className="text-gradient">Events</span>
+          ISAB <span className="text-gradient inline-block pb-1">Events</span>
         </h1>
         <p className="text-muted-foreground text-base sm:text-lg">
           Browse upcoming events and check what&apos;s happening on any date

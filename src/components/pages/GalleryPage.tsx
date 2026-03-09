@@ -87,7 +87,7 @@ export default function GalleryPage({ eventGalleries }: GalleryPageProps) {
           initial="hidden" whileInView="visible" viewport={viewportOnce}
           variants={fadeUp} transition={smoothTransition}
         >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight text-gradient">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-3 tracking-tight text-gradient pb-1">
             Event Gallery
           </h1>
           <p className="text-muted-foreground text-base sm:text-lg max-w-2xl">

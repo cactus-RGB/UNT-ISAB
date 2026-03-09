@@ -1,5 +1,6 @@
 import { googleDriveClient } from './client';
 import { config, validateConfig, getGoogleDriveImageUrl, getFallbackImageUrl } from './config';
+import { getEventDate } from '@/data/eventDates';
 import type {
   Officer,
   ImportantLink,
@@ -371,20 +372,19 @@ async function fetchEventGalleriesData(): Promise<EventGallery[]> {
             return null;
           }
 
-          const galleryId = folder.name
+          // Strip "YYYY-MM-DD " prefix for display — keep full name for date parsing
+          const displayTitle = folder.name.replace(/^\d{4}-\d{2}-\d{2}\s+/, '');
+          const galleryId = displayTitle
             .toLowerCase()
             .replace(/\s+/g, '-')
             .replace(/[^a-z0-9-]/g, '');
 
+          const folderDate = new Date(folder.modifiedTime);
           return {
             id: galleryId,
-            title: folder.name,
-            date: new Date(folder.modifiedTime).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            }),
-            description: `Photos from ${folder.name}`,
+            title: displayTitle,
+            date: getEventDate(folder.name, folderDate),
+            description: `Photos from ${displayTitle}`,
             coverImage: getGoogleDriveImageUrl(imageFiles[0].id),
             totalImages: imageFiles.length,
             images: imageFiles.map(img => ({
@@ -405,6 +405,7 @@ async function fetchEventGalleriesData(): Promise<EventGallery[]> {
       (gallery): gallery is EventGallery => gallery !== null
     );
 
+    // Sort newest-first using the already-resolved accurate date strings
     return validGalleries.sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
