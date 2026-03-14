@@ -164,7 +164,10 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
                           )}
                         </div>
                         {event.description && (
-                          <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{event.description}</p>
+                          <div
+                            className="mt-3 text-sm text-muted-foreground leading-relaxed prose prose-sm prose-invert max-w-none [&_h1]:text-sm [&_h2]:text-sm [&_h3]:text-sm [&_*]:text-muted-foreground"
+                            dangerouslySetInnerHTML={{ __html: event.description }}
+                          />
                         )}
                         {event.status && event.status !== 'confirmed' && (
                           <span className={`inline-flex mt-3 items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColors[event.status] ?? ''}`}>
@@ -214,7 +217,8 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
           >
             {upcomingEvents.map((event, i) => (
               <motion.div key={i} variants={cardEntrance} transition={cardTransition}>
-                <div className="group relative h-full rounded-2xl border border-border bg-card overflow-hidden card-hover-glow transition-all duration-300 hover:-translate-y-1.5">
+                <a href={event.googleCalendarLink} target="_blank" rel="noopener noreferrer" className="block h-full">
+                <div className="group relative h-full rounded-2xl border border-border bg-card overflow-hidden card-hover-glow transition-all duration-300 hover:-translate-y-1.5 cursor-pointer">
                   <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="p-6">
                     {/* Date badge */}
@@ -240,7 +244,9 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
                     )}
 
                     {event.description && (
-                      <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{event.description}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                        {event.description.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}
+                      </p>
                     )}
 
                     <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -248,6 +254,7 @@ export default function EventsPage({ date, onDateSelect }: EventsPageProps) {
                     </div>
                   </div>
                 </div>
+                </a>
               </motion.div>
             ))}
           </motion.div>
